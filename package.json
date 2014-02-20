@@ -1,0 +1,30 @@
+{
+  "name": "hummingbird",
+  "description": "Impossibly quick, precise, and beautiful to behold day or night",
+  "homepage": "http://glg.github.io/hummingbird.js",
+  "version": "0.1.0",
+  "index_version": "1.0",
+  "author": "Daniel Griffis, Steve Quince",
+  "main": "hummingbird.js",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/glg/hummingbird.js.git"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.0",
+    "grunt-contrib-coffee": "~0.10.1",
+    "grunt-contrib-connect": "~0.1.2",
+    "grunt-contrib-watch": "~0.3.1",
+    "grunt-contrib-clean": "~0.4.0",
+    "grunt-contrib-concat": "~0.1.3",
+    "phantomjs": "1.8.1-3",
+    "load-grunt-tasks": "~0.3.0",
+    "grunt-shell": "~0.6.4",
+    "browserify": "~3.30.1",
+    "grunt-browserify": "~1.3.1",
+    "diacritics": "~1.1.0",
+    "grunt-include-replace": "~1.2.0"
+  },
+  "dependencies": {}
+}
