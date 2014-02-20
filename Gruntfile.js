@@ -70,7 +70,7 @@ module.exports = function(grunt) {
       test: {
        options: {
          stdout: true,
-         stderr: false
+         stderr: true
        },
       command: 'PATH="./node_modules/.bin:${PATH}" phantomjs test/env/runner.js http://localhost:8100/test'
       }

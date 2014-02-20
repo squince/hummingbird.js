@@ -324,6 +324,8 @@ hummingbird = function() {
   return idx;
 };
 
+hummingbird.loggingOn = false;
+
 hummingbird.version = "0.1.0";
 
 hummingbird.index_version = "1.0";
@@ -614,7 +616,7 @@ hummingbird.utils.warn = function(message) {
 
 hummingbird.utils.logTiming = function(msg) {
   var d;
-  if (console.log) {
+  if (console.log && hummingbird.loggingOn) {
     d = new Date();
     return console.log(d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds() + '.' + d.getMilliseconds() + ' - ' + msg);
   }
