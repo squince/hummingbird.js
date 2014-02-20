@@ -1,8 +1,11 @@
-# Index
+## Index
 The object that manages everything
-most importantly it contains the inverted index of tokens
-found in each name in the corpus
 
+Most importantly it contains the inverted index of tokens
+found in each name in the corpus, associated meta data, and methods
+for interacting with the data
+
+### constructor
     hummingbird.Index = ->
       @tokenStore = new hummingbird.TokenStore
       @eventEmitter = new hummingbird.EventEmitter
@@ -10,35 +13,22 @@ found in each name in the corpus
       @logTimer = hummingbird.utils.logTiming
       return
 
-## Index Events
-Bind a handler to events being emitted by the index.
-
-param {String} [eventName] The events to bind to the function
-param {Function} handler The serialised set to load
-memberOf Index
+### ::on
+Binds handler to events emitted by the index
 
     hummingbird.Index::on = ->
       args = Array::slice.call(arguments)
       @eventEmitter.addListener.apply @eventEmitter, args
 
-Removes a handler from an event being emitted by the index.
-
-param {String} eventName The events from which to remove the function
-param {Function} handler The serialised set to load
-memberOf Index
+### ::off
+Removes handler from event emitted by the index
 
     hummingbird.Index::off = (name, fn) ->
       @eventEmitter.removeListener name, fn
 
-## Index Load
-Loads a previously serialised index.
-
-Issues a warning if the index being imported was serialised
-by a different version of hummingbird.
-
-param {Object} serialisedData The serialised set to load.
-returns {hummingbird.Index}
-memberOf Index
+### ::load
+Loads serialised index and issues a warning if the index being imported is in a different format
+than what is now supported by this version of hummingbird
 
     hummingbird.Index.load = (serialisedData) ->
       hummingbird.utils.warn 'version mismatch: current ' + hummingbird.index_version + ' importing ' + serialisedData.index_version  if serialisedData.index_version isnt hummingbird.index_version
@@ -46,24 +36,18 @@ memberOf Index
       idx.tokenStore = hummingbird.TokenStore.load(serialisedData.tokenStore)
       idx
 
-## Index Add
-Add a name to the index so that it is available to choose from results
+### ::add
+Add a name to the index (i.e., the tokenStore and its associated metadata to the metaStore)
+Takes an Object as an argument that must have at least 2 properties:
 
-An 'add' event is emitted with the document that has been added and the index
-the document has been added to. This event can be silenced by passing false
-as the second argument to add.
-
-param {Object} doc The document to add to the index.
-param {Boolean} emitEvent Whether or not to emit events, default true.
-memberOf Index
+* 'id' = document reference used to map to associated data
+* 'name' = the string to be indexed for autocompletion
 
     hummingbird.Index::add = (doc, emitEvent) ->
-
       allDocumentTokens = {}
-
       emitEvent = (if emitEvent is `undefined` then true else emitEvent)
-
       fieldTokens = this.tokenizer.tokenize(doc['name'])
+
       for i of fieldTokens
         token = fieldTokens[i]
         allDocumentTokens[token] = token.length
@@ -76,26 +60,9 @@ memberOf Index
       @eventEmitter.emit 'add', doc, this  if emitEvent
       return
 
-## Index Remove
-Removes a document from the index.
+### ::remove
+Removes the document from the index that is referenced by the 'id' property
 
-To make sure documents no longer show up in search results they can be
-removed from the index using this method.
-
-The document passed only needs to have the same id value as the
-document that was added to the index, they could be completely different
-objects.
-
-A 'remove' event is emitted with the document that has been removed and the index
-the document has been removed from. This event can be silenced by passing false
-as the second argument to remove.
-
-param {Object} doc The document to remove from the index.
-param {Boolean} emitEvent Whether to emit remove events, defaults to true
-memberOf Index
-
-    # Need to support removing names in our updates (not in here, but in the external
-    # update mechanism that calls hummingbird
     hummingbird.Index::remove = (doc, emitEvent) ->
       docRef = doc['id']
       emitEvent = (if emitEvent is `undefined` then true else emitEvent)
@@ -107,25 +74,9 @@ memberOf Index
       @eventEmitter.emit 'remove', doc, this  if emitEvent
       return
 
-## Index Update
-Updates a document in the index.
-
-When a document contained within the index gets updated, fields changed,
-added or removed, to make sure it correctly matched against search queries,
-it should be updated in the index.
-
+### ::update
+Updates the document from the index that is referenced by the 'id' property
 This method is just a wrapper around `remove` and `add`
-
-An 'update' event is emitted with the document that has been updated and the index.
-This event can be silenced by passing false as the second argument to update. Only
-an update event will be fired, the 'add' and 'remove' events of the underlying calls
-are silenced.
-
-param {Object} doc The document to update in the index.
-param {Boolean} emitEvent Whether to emit update events, defaults to true
-see Index.prototype.remove
-see Index.prototype.add
-memberOf Index
 
     hummingbird.Index::update = (doc, emitEvent) ->
 
@@ -136,14 +87,10 @@ memberOf Index
       @eventEmitter.emit 'update', doc, this  if emitEvent
       return
 
-## Index Search
-Finds the best matching names and returns them in order of best match
-
-param {String} query The query to search the index with
-param {Number} howMany How many results to return
-param {String} startPos Starting offset if paging through results is desired
-returns {Object}
-memberOf Index
+### ::search
+Finds matching names and returns them in order of best match
+The number of results returned and how far from the top of the list
+are optional parameters
 
     hummingbird.Index::search = (query, howMany, startPos) ->
       queryTokens = @tokenizer.tokenize(query)
@@ -157,9 +104,6 @@ memberOf Index
       , this)
       return []  unless hasSomeToken
 
-      # for every token in the user's query
-      #  * retrieve all of the associated documents
-      #  * and add to the documentSets Object with score
       self.logTimer 'Start - Find all docs that match each query token and score'
       queryTokens.forEach ((token, i, tokens) ->
         self = this
@@ -182,24 +126,19 @@ memberOf Index
       self.logTimer 'Start - Sorting'
       for key of documentSets
         documentSet.push index
-
         documentSet[index] =
           id: key
           score: documentSets[key]
-
         index++
+
       documentSet.sort (a, b) ->
         b.score - a.score
 
       self.logTimer 'Finish - Sorting'
       documentSet.slice offset, numResults
 
-
-## Index toJSON
+### ::toJSON
 Returns a representation of the index ready for serialisation.
-
-returns {Object}
-memberOf Index
 
     hummingbird.Index::toJSON = ->
       version: hummingbird.version
