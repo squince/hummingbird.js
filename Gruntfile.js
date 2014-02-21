@@ -65,7 +65,7 @@ module.exports = function(grunt) {
            stdout: false,
            stderr: true
          },
-        command: 'doc-n-toc ./intro.md ./lib/hummingbird.litcoffee ./lib/index.litcoffee ./lib/tokenizer.litcoffee ./lib/token_store.litcoffee --title "Hummingbird v<%= pkg.version %>" > ./index.html'
+        command: 'PATH="./node_modules/.bin:${PATH}" doc-n-toc ./intro.md ./lib/hummingbird.litcoffee ./lib/index.litcoffee ./lib/tokenizer.litcoffee ./lib/token_store.litcoffee --title "Hummingbird v<%= pkg.version %>" > ./index.html'
       },
       test: {
        options: {
