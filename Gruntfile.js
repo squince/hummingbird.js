@@ -66,13 +66,15 @@ module.exports = function(grunt) {
            stderr: true
          },
         command: 'PATH="./node_modules/.bin:${PATH}" doc-n-toc ./intro.md ./lib/hummingbird.litcoffee ./lib/index.litcoffee ./lib/tokenizer.litcoffee ./lib/token_store.litcoffee --title "Hummingbird v<%= pkg.version %>" > ./index.html'
-      },
-      test: {
-       options: {
-         stdout: true,
-         stderr: true
-       },
-      command: 'PATH="./node_modules/.bin:${PATH}" phantomjs test/env/runner.js http://localhost:8100/test'
+      }
+    },
+    qunit: {
+      all: {
+        options: {
+          urls: [
+            'http://localhost:8100/test',
+          ]
+        }
       }
     },
     connect: {
@@ -87,5 +89,5 @@ module.exports = function(grunt) {
 
   // Default task
   grunt.registerTask('default', ['clean', 'includereplace', 'browserify', 'coffee', 'concat', 'shell:docs']);
-  grunt.registerTask('dev', ['default',  'connect:dev', 'shell:test', 'watch']);
+  grunt.registerTask('dev', ['default',  'connect:dev', 'qunit', 'watch']);
 };
