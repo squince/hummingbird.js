@@ -1,4 +1,3 @@
-# API
 ## Hummingbird Core
 
 ### constructor
