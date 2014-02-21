@@ -6,6 +6,7 @@ found in each name in the corpus, associated meta data, and methods
 for interacting with the data
 
 ### constructor
+
     hummingbird.Index = ->
       @tokenStore = new hummingbird.TokenStore
       @eventEmitter = new hummingbird.EventEmitter
