@@ -1,19 +1,15 @@
-# EventEmitter
-hummingbird.EventEmitter is an event emitter for hummingbird. It manages adding and removing event handlers and triggering events and their handlers.
+## EventEmitter
+Manages adding, removing, and triggering events handlers
 
-## constructor
+### constructor
 
     hummingbird.EventEmitter = ->
       @events = {}
       return
 
-## addListener
-Binds a handler function to a specific event(s).
-Can bind a single function to many different events in one call.
-
-* param {String} [eventName] The name(s) of events to bind this function to.
-* param {Function} handler The function to call when an event is fired.
-* memberOf EventEmitter
+### ::addListener
+Binds a handler function to specific events
+Can bind a single function to many different events in one call
 
     hummingbird.EventEmitter::addListener = ->
       args = Array::slice.call(arguments)
@@ -27,12 +23,8 @@ Can bind a single function to many different events in one call.
       ), this
       return
 
-## removeListener
-Removes a handler function from a specific event.
-
-* param {String} eventName The name of the event to remove this function from.
-* param {Function} handler The function to remove from an event.
-* memberOf EventEmitter
+### ::removeListener
+Removes a handler function from a specific event
 
     hummingbird.EventEmitter::removeListener = (name, fn) ->
       return  unless @hasHandler(name)
@@ -42,13 +34,8 @@ Removes a handler function from a specific event.
       return
 
 
-## emit
-Calls all functions bound to the given event.
-Additional data can be passed to the event handler as arguments to `emit`
-after the event name.
-
-* param {String} eventName The name of the event to emit.
-* memberOf EventEmitter
+### ::emit
+Calls all functions bound to the given event
 
     hummingbird.EventEmitter::emit = (name) ->
       return  unless @hasHandler(name)
@@ -59,12 +46,8 @@ after the event name.
       return
 
 
-## hasHandler
+### ::hasHandler
 Checks whether a handler has ever been stored against an event.
-
-* param {String} eventName The name of the event to check.
-* private
-* memberOf EventEmitter
 
     hummingbird.EventEmitter::hasHandler = (name) ->
       name of @events

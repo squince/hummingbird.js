@@ -1,16 +1,16 @@
-# Utils
-For Debugging Only - exclude from build
+## utils
+For Debugging Only
 
     hummingbird.utils = {}
 
-## warn
+### .warn
 logs a warning message to the console
 
     hummingbird.utils.warn = (message) ->
       console.warn message if console.warn
 
-## logTiming
-logs message preceded by time of day
+### .logTiming
+logs a message to the console preceded by time of day
 
     hummingbird.utils.logTiming = (msg) ->
       if console.log and hummingbird.loggingOn

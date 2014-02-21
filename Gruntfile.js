@@ -45,15 +45,6 @@ module.exports = function(grunt) {
         dest: 'hummingbird.js'
       }
     },
-    qunit: {
-      all: {
-        options: {
-          urls: [
-          'http://localhost:8100/test/index.html',
-          ]
-        }
-      }
-    },
     watch: {
       dev: {
         files: ["lib/*", "!lib/hummingbird.litcoffee"],
@@ -65,7 +56,7 @@ module.exports = function(grunt) {
     },
     clean: {
       dist: {
-        src: ['./hummingbird.js','./hummingbird-core.js','./index.html', './vendor.js', './lib/hummingbird.litcoffee']
+        src: ['./hummingbird.js', './hummingbird-core.js', './index.html', './vendor.js', './lib/hummingbird.litcoffee']
       }
     },
     shell: {
@@ -74,7 +65,16 @@ module.exports = function(grunt) {
            stdout: false,
            stderr: true
          },
-        command: 'PATH="./node_modules/.bin:${PATH}" doc-n-toc ./intro.md ./lib/index.litcoffee ./lib/tokenizer.litcoffee ./lib/token_store.litcoffee --title "Hummingbird v<%= pkg.version %>" > ./index.html'
+        command: 'PATH="./node_modules/.bin:${PATH}" doc-n-toc ./intro.md ./lib/hummingbird.litcoffee ./lib/index.litcoffee ./lib/tokenizer.litcoffee ./lib/token_store.litcoffee --title "Hummingbird v<%= pkg.version %>" > ./index.html'
+      }
+    },
+    qunit: {
+      all: {
+        options: {
+          urls: [
+            'http://localhost:8100/test',
+          ]
+        }
       }
     },
     connect: {
