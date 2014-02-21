@@ -1,13 +1,13 @@
 # Hummingbird
 Look!...  there..., in the sky...
 
-it's _not_ [Lucene](https://lucene.apache.org/),
+...it's _not_ [Lucene](https://lucene.apache.org/),
 
-it's _not_ [Solr](https://lucene.apache.org/solr/),
+...it's _not_ [Solr](https://lucene.apache.org/solr/),
 
-it's _not_ [ElasticSearch](http://www.elasticsearch.org/),
+...it's _not_ [ElasticSearch](http://www.elasticsearch.org/),
 
-it's _not_ [Lunr](http://lunrjs.com/),
+...it's _not_ [Lunr](http://lunrjs.com/),
 
 It's **Hummingbird**.js
 
