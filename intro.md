@@ -35,10 +35,10 @@ Thus, **Hummingbird**.js was born...
 [MIT Licensed](./LICENSE)
 
 ## Install
-`$ npm install hummingbird`
+**$ npm install hummingbird**
 
 ## Contribute
-This plugin requires Grunt `~0.4.0`
+This plugin requires Grunt ~0.4.0
 
 If you haven't used [Grunt](http://gruntjs.com/) before, be sure to
 check out the [Getting
@@ -48,6 +48,6 @@ install and use Grunt plugins.
 
 Clone or fork the source, [github.com/glg/hummingbird.js](http://github.com/glg/hummingbird.js), then
 
-`$ npm install`
+**$ npm install**
 
-`$ grunt dev`
+**$ grunt dev**
