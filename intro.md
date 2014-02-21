@@ -20,7 +20,7 @@ most popular open source search solutions as well as GLG's
 [AutoComplete](https://github.com/glg/AutoComplete).  Hummingbird's
 goals were simple:
 
-* Focus stricly on in-line name search
+* Focus strictly on in-line name search
   (i.e., autocomplete, autosuggest, typeahead)
 * Focus on speed and simplicity
 
