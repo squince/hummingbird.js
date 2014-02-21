@@ -1,6 +1,6 @@
 # API
 
-## Hummingbird Core
+## Core
 
 ### constructor
 Convenience function for instantiating a hummingbird index
