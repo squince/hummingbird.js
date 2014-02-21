@@ -35,6 +35,9 @@ Thus, **Hummingbird**.js was born...
 [MIT Licensed](./LICENSE)
 
 ## Install
+Get familiar with [node.js](http://nodejs.org/) if you haven't used it
+before, then
+
 **$ npm install hummingbird**
 
 ## Contribute
