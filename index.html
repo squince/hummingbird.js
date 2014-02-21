@@ -13,21 +13,19 @@ module.exports = hummingbird if typeof module isnt 'undefined'</code></pre> <h2>
  hummingbird.utils.warn 'version mismatch: current ' + hummingbird.index_version + ' importing ' + serialisedData.index_version if serialisedData.index_version isnt hummingbird.index_version
  idx = new this
  idx.tokenStore = hummingbird.TokenStore.load(serialisedData.tokenStore)
- idx</code></pre> <h3>::add</h3> <p>Add a name to the index (i.e., the tokenStore and its associated metadata to the metaStore) Takes an Object as an argument that must have at least 2 properties:</p> <ul> <li>'id' = document reference used to map to associated data</li> <li><p>'name' = the string to be indexed for autocompletion</p> <p> hummingbird.Index::add = (doc, emitEvent) -&gt;</p> <pre><code>allDocumentTokens = {}
-emitEvent = (if emitEvent is `undefined` then true else emitEvent)
-fieldTokens = this.tokenizer.tokenize(doc['name'])
-
-for i of fieldTokens
+ idx</code></pre> <h3>::add</h3> <p>Add a name to the index (i.e., the tokenStore and its associated metadata to the metaStore) Takes an Object as an argument that must have at least 2 properties:</p> <p>'id' = document reference used to map to associated data</p> <p>'name' = the string to be indexed for autocompletion</p> <pre><code>hummingbird.Index::add = (doc, emitEvent) -&gt;
+ allDocumentTokens = {}
+ emitEvent = (if emitEvent is `undefined` then true else emitEvent)
+ fieldTokens = this.tokenizer.tokenize(doc['name'])
+ for i of fieldTokens
  token = fieldTokens[i]
  allDocumentTokens[token] = token.length
-
-Object.keys(allDocumentTokens).forEach ((token) -&gt;
+ Object.keys(allDocumentTokens).forEach ((token) -&gt;
  @tokenStore.add token, doc['id']
  return
-), this
-
-@eventEmitter.emit 'add', doc, this if emitEvent
-return</code></pre> </li> </ul> <h3>::remove</h3> <p>Removes the document from the index that is referenced by the 'id' property</p> <pre><code>hummingbird.Index::remove = (doc, emitEvent) -&gt;
+ ), this
+ @eventEmitter.emit 'add', doc, this if emitEvent
+ return</code></pre> <h3>::remove</h3> <p>Removes the document from the index that is referenced by the 'id' property</p> <pre><code>hummingbird.Index::remove = (doc, emitEvent) -&gt;
  docRef = doc['id']
  emitEvent = (if emitEvent is `undefined` then true else emitEvent)
  Object.keys(@tokenStore).forEach ((token) -&gt;
