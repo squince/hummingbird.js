@@ -9,6 +9,7 @@ for interacting with the data
 
     hummingbird.Index = ->
       @tokenStore = new hummingbird.TokenStore
+      @metaStore = new hummingbird.MetaStore
       @eventEmitter = new hummingbird.EventEmitter
       @tokenizer = new hummingbird.tokenizer
       @logTimer = hummingbird.utils.logTiming
@@ -35,6 +36,7 @@ than what is now supported by this version of hummingbird
       hummingbird.utils.warn 'version mismatch: current ' + hummingbird.index_version + ' importing ' + serialisedData.index_version  if serialisedData.index_version isnt hummingbird.index_version
       idx = new this
       idx.tokenStore = hummingbird.TokenStore.load(serialisedData.tokenStore)
+      idx.metaStore = hummingbird.MetaStore.load(serialisedData.metaStore)
       idx
 
 ### ::add
@@ -56,6 +58,7 @@ Takes an Object as an argument that must have at least 2 properties:
         @tokenStore.add token, doc['id']
         return
       ), this
+      @metaStore.add doc['id'], doc
       @eventEmitter.emit 'add', doc, this  if emitEvent
       return
 
@@ -143,3 +146,4 @@ Returns a representation of the index ready for serialisation.
       version: hummingbird.version
       index_version: hummingbird.index_version
       tokenStore: @tokenStore.toJSON()
+      metaStore: @metaStore.toJSON()
