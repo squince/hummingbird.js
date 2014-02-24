@@ -25,7 +25,7 @@ Returns a JSON representation of the MetaStore
 Adds a hash of name-value pairs to the MetaStore
 
     hummingbird.MetaStore::add = (doc) ->
-      @root[doc['id']] = doc  unless @has(doc['id']) or doc is `undefined`
+      @root[doc['id']] = doc['obj']  unless @has(doc['id']) or doc is `undefined`
       return
 
 ### ::has

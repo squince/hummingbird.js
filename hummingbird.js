@@ -422,7 +422,7 @@ hummingbird.Index.prototype.add = function(doc, emitEvent) {
   Object.keys(allDocumentTokens).forEach((function(token) {
     this.tokenStore.add(token, doc['id']);
   }), this);
-  this.metaStore.add(doc['id'], doc);
+  this.metaStore.add(doc);
   if (emitEvent) {
     this.eventEmitter.emit('add', doc, this);
   }
@@ -524,7 +524,7 @@ hummingbird.MetaStore.prototype.toJSON = function() {
 
 hummingbird.MetaStore.prototype.add = function(doc) {
   if (!(this.has(doc['id']) || doc === undefined)) {
-    this.root[doc['id']] = doc;
+    this.root[doc['id']] = doc['obj'];
   }
 };
 

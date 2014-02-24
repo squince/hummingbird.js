@@ -26,7 +26,7 @@ module.exports = hummingbird if typeof module isnt 'undefined'</code></pre> <h2>
  @tokenStore.add token, doc['id']
  return
  ), this
- @metaStore.add doc['id'], doc
+ @metaStore.add doc
  @eventEmitter.emit 'add', doc, this if emitEvent
  return</code></pre> <h3>::remove</h3> <p>Removes the document from the index that is referenced by the 'id' property</p> <pre><code>hummingbird.Index::remove = (doc, emitEvent) -&gt;
  docRef = doc['id']
@@ -151,7 +151,7 @@ module.exports = hummingbird if typeof module isnt 'undefined'</code></pre> <h2>
  store.root = serializedData.root
  store</code></pre> <h3>::toJSON</h3> <p>Returns a JSON representation of the MetaStore</p> <pre><code>hummingbird.MetaStore::toJSON = -&gt;
  root: @root</code></pre> <h3>::add</h3> <p>Adds a hash of name-value pairs to the MetaStore</p> <pre><code>hummingbird.MetaStore::add = (doc) -&gt;
- @root[doc['id']] = doc unless @has(doc['id']) or doc is `undefined`
+ @root[doc['id']] = doc['obj'] unless @has(doc['id']) or doc is `undefined`
  return</code></pre> <h3>::has</h3> <p>Checks for this id in the MetaStore</p> <pre><code>hummingbird.MetaStore::has = (docId) -&gt;
  return false unless docId
  if docId of @root
