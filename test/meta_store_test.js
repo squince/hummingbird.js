@@ -5,8 +5,7 @@ test('adding empty meta object to the store', function () {
 
   var doc = {
     id:'123',
-    name: 'test',
-    meta:{}
+    name: 'test'
   }
   store.add(doc)
 
@@ -19,20 +18,18 @@ test('adding meta object to the store', function () {
   var doc = {
     id:'123',
     name: 'test',
-    meta:{
-      fname:'fred',
-      lname:'smith',
-      title: 'boss of the world'
-    }
+    fname:'fred',
+    lname:'smith',
+    title: 'boss of the world'
   }
   store.add(doc)
 
   ok(store.root['123'] === doc)
 
-  var objMetaObj = store.root['123'].meta
-  equal(objMetaObj['fname'], 'fred')
-  equal(objMetaObj['lname'], 'smith')
-  equal(objMetaObj['title'], 'boss of the world')
+  var obj = store.root['123']
+  equal(obj['fname'], 'fred')
+  equal(obj['lname'], 'smith')
+  equal(obj['title'], 'boss of the world')
 })
 
 
@@ -42,7 +39,7 @@ test('removing meta from the store', function () {
   var doc = {
     id:'123',
     name: 'test',
-    meta:{}
+    foo: 'bar'
   }
   store.add(doc)
 
@@ -60,17 +57,16 @@ test('retrieving empty meta from the store', function () {
 
   var doc = {
     id:'123',
-    name: 'test',
-    meta:{}
+    name: 'test'
   }
   store.add(doc)
 
   ok(store.root['123'] === doc)
 
   var docId = '123'
-  var meta = store.get(docId)
+  var doc = store.get(docId)
 
-  ok(typeof meta === 'object')
+  ok(typeof doc === 'object')
 
 })
 
@@ -80,19 +76,17 @@ test('retrieving meta object to the store', function () {
   var doc = {
     id:'123',
     name: 'test',
-    meta:{
-      fname:'fred',
-      lname:'smith',
-      title: 'boss of the world'
-    }
+    fname:'fred',
+    lname:'smith',
+    title: 'boss of the world'
   }
   store.add(doc)
 
   ok(store.root['123'] === doc)
 
   var docId = '123'
-  var objMetaObj = store.get(docId).meta
-  equal(objMetaObj['fname'], 'fred')
-  equal(objMetaObj['lname'], 'smith')
-  equal(objMetaObj['title'], 'boss of the world')
+  var obj = store.get(docId)
+  equal(obj['fname'], 'fred')
+  equal(obj['lname'], 'smith')
+  equal(obj['title'], 'boss of the world')
 })

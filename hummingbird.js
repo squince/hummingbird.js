@@ -326,9 +326,9 @@ hummingbird = function() {
 
 hummingbird.loggingOn = false;
 
-hummingbird.version = "0.1.0";
+hummingbird.version = "0.2.0";
 
-hummingbird.index_version = "1.0";
+hummingbird.index_version = "2.0";
 
 if (typeof module !== 'undefined') {
   module.exports = hummingbird;
@@ -411,12 +411,12 @@ hummingbird.Index.load = function(serializedData) {
 };
 
 hummingbird.Index.prototype.add = function(doc, emitEvent) {
-  var allDocumentTokens, fieldTokens, i, token;
+  var allDocumentTokens, i, token, tokens;
   allDocumentTokens = {};
   emitEvent = (emitEvent === undefined ? true : emitEvent);
-  fieldTokens = this.tokenizer.tokenize(doc['name']);
-  for (i in fieldTokens) {
-    token = fieldTokens[i];
+  tokens = this.tokenizer.tokenize(doc['name']);
+  for (i in tokens) {
+    token = tokens[i];
     allDocumentTokens[token] = token.length;
   }
   Object.keys(allDocumentTokens).forEach((function(token) {

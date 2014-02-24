@@ -6,36 +6,27 @@ module('search', {
     ;([{
       id: 'a',
       name: 'Mr. Green killed Colonel Mustard in the study with the candlestick. Mr. Green is not a very nice fellow.',
-      meta: {
-        title: 'Mr. Green kills Colonel Mustard',
-        wordCount: 19
-      }
+      title: 'Mr. Green kills Colonel Mustard',
+      wordCount: 19
     },{
       id: 'b',
       name: 'Professor Plumb has a green plant in his study',
-      meta: {
-        title: 'Plumb waters plant',
-        wordCount: 9
-      }
+      title: 'Plumb waters plant',
+      wordCount: 9
     },{
       id: 'c',
       name: 'Miss Scarlett watered Professor Plumbs green plant while he was away from his office last week.',
-      meta: {
-        title: 'Scarlett helps Professor',
-        wordCount: 16
-      }
+      title: 'Scarlett helps Professor',
+      wordCount: 16
     },{
       id: 'd',
       name: 'handsome',
-      meta: {
-        title: 'title',
-      }
+      title: 'title'
     },{
       id: 'e',
       name: 'hand',
-      meta: {
-        title: 'title',
-      }
+      title: 'title',
+      company: 'foo bar llc'
     }]).forEach(function (doc) {  idx.add(doc) })
 
     this.idx = idx
@@ -48,10 +39,10 @@ test('returning the correct results', function () {
     equal(results[0].id, 'b')
     equal(results[1].id, 'c')
     equal(results[2].id, 'a')
-    equal(results[0].meta.title, 'Plumb waters plant')
-    equal(results[0].meta.wordCount, '9')
-    equal(results[1].meta.title, 'Scarlett helps Professor')
-    equal(results[2].meta.title, 'Mr. Green kills Colonel Mustard')
+    equal(results[0].title, 'Plumb waters plant')
+    equal(results[0].wordCount, '9')
+    equal(results[1].title, 'Scarlett helps Professor')
+    equal(results[2].title, 'Mr. Green kills Colonel Mustard')
   });
 })
 

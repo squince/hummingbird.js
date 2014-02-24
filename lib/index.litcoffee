@@ -43,9 +43,11 @@ than what is now supported by this version of hummingbird
 Add a name to the index (i.e., the tokenStore and its associated metadata to the metaStore)
 Takes an Object as an argument that must have at least 2 properties:
 
-'id' = document reference used to map to associated data
+_doc.id_ = must be a unique reference to the document as it is used to map to associated meta data
 
-'name' = the string to be indexed for autocompletion
+_doc.name_ = the string to be indexed for autocompletion
+
+_doc.meta_ = object/hash that is an arbitrary collection of name-value pairs
 
     hummingbird.Index::add = (doc, emitEvent) ->
       allDocumentTokens = {}
