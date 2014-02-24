@@ -50,9 +50,9 @@ Takes an Object as an argument that must have at least 2 properties:
     hummingbird.Index::add = (doc, emitEvent) ->
       allDocumentTokens = {}
       emitEvent = (if emitEvent is `undefined` then true else emitEvent)
-      fieldTokens = this.tokenizer.tokenize(doc['name'])
-      for i of fieldTokens
-        token = fieldTokens[i]
+      tokens = this.tokenizer.tokenize(doc['name'])
+      for i of tokens
+        token = tokens[i]
         allDocumentTokens[token] = token.length
       Object.keys(allDocumentTokens).forEach ((token) ->
         @tokenStore.add token, doc['id']
