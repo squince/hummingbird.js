@@ -89,11 +89,12 @@ module.exports = hummingbird if typeof module isnt 'undefined'</code></pre> <h2>
  self.logTimer 'Finish - Sorting'
  # loop over limited return set and augment with meta
  results = documentSet.slice offset, numResults
- results.map (doc, i, results) -&gt;
- doc.meta = @metaStore.get doc.id
- return
- , this
- return results</code></pre> <h3>::toJSON</h3> <p>Returns a representation of the index ready for serialization.</p> <pre><code>hummingbird.Index::toJSON = -&gt;
+ resultSet = (results.map (result, i, results) -&gt;
+ result = @metaStore.get result.id
+ result.score = results[i].score
+ return result
+ , this)
+ return resultSet</code></pre> <h3>::toJSON</h3> <p>Returns a representation of the index ready for serialization.</p> <pre><code>hummingbird.Index::toJSON = -&gt;
  version: hummingbird.version
  index_version: hummingbird.index_version
  tokenStore: @tokenStore.toJSON()
@@ -157,7 +158,7 @@ module.exports = hummingbird if typeof module isnt 'undefined'</code></pre> <h2>
  store.root = serializedData.root
  store</code></pre> <h3>::toJSON</h3> <p>Returns a JSON representation of the MetaStore</p> <pre><code>hummingbird.MetaStore::toJSON = -&gt;
  root: @root</code></pre> <h3>::add</h3> <p>Adds a hash of name-value pairs to the MetaStore</p> <pre><code>hummingbird.MetaStore::add = (doc) -&gt;
- @root[doc['id']] = doc['meta'] unless @has(doc['id']) or doc is `undefined`
+ @root[doc['id']] = doc unless @has(doc['id']) or doc is `undefined`
  return</code></pre> <h3>::has</h3> <p>Checks for this id in the MetaStore</p> <pre><code>hummingbird.MetaStore::has = (docId) -&gt;
  return false unless docId
  if docId of @root

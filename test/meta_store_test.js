@@ -10,7 +10,7 @@ test('adding empty meta object to the store', function () {
   }
   store.add(doc)
 
-  ok(store.root['123'] === doc['meta'])
+  ok(store.root['123'] === doc)
 })
 
 test('adding meta object to the store', function () {
@@ -27,9 +27,9 @@ test('adding meta object to the store', function () {
   }
   store.add(doc)
 
-  ok(store.root['123'] === doc['meta'])
+  ok(store.root['123'] === doc)
 
-  var objMetaObj = store.root['123']
+  var objMetaObj = store.root['123'].meta
   equal(objMetaObj['fname'], 'fred')
   equal(objMetaObj['lname'], 'smith')
   equal(objMetaObj['title'], 'boss of the world')
@@ -46,7 +46,7 @@ test('removing meta from the store', function () {
   }
   store.add(doc)
 
-  ok(store.root['123'] === doc['meta'])
+  ok(store.root['123'] === doc)
 
   var docId = '123'
   store.remove(docId)
@@ -65,7 +65,7 @@ test('retrieving empty meta from the store', function () {
   }
   store.add(doc)
 
-  ok(store.root['123'] === doc['meta'])
+  ok(store.root['123'] === doc)
 
   var docId = '123'
   var meta = store.get(docId)
@@ -88,10 +88,10 @@ test('retrieving meta object to the store', function () {
   }
   store.add(doc)
 
-  ok(store.root['123'] === doc['meta'])
+  ok(store.root['123'] === doc)
 
   var docId = '123'
-  var objMetaObj = store.get(docId)
+  var objMetaObj = store.get(docId).meta
   equal(objMetaObj['fname'], 'fred')
   equal(objMetaObj['lname'], 'smith')
   equal(objMetaObj['title'], 'boss of the world')

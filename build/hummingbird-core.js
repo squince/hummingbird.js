@@ -132,7 +132,7 @@ hummingbird.Index.prototype.update = function(doc, emitEvent) {
 };
 
 hummingbird.Index.prototype.search = function(query, howMany, startPos) {
-  var documentSet, documentSets, hasSomeToken, index, key, numResults, offset, queryTokens, results, self;
+  var documentSet, documentSets, hasSomeToken, index, key, numResults, offset, queryTokens, resultSet, results, self;
   queryTokens = this.tokenizer.tokenize(query);
   numResults = (howMany === undefined ? 10 : howMany);
   offset = (startPos === undefined ? 0 : startPos);
@@ -176,10 +176,12 @@ hummingbird.Index.prototype.search = function(query, howMany, startPos) {
   });
   self.logTimer('Finish - Sorting');
   results = documentSet.slice(offset, numResults);
-  results.map(function(doc, i, results) {
-    doc.meta = this.metaStore.get(doc.id);
+  resultSet = results.map(function(result, i, results) {
+    result = this.metaStore.get(result.id);
+    result.score = results[i].score;
+    return result;
   }, this);
-  return results;
+  return resultSet;
 };
 
 hummingbird.Index.prototype.toJSON = function() {
@@ -210,7 +212,7 @@ hummingbird.MetaStore.prototype.toJSON = function() {
 
 hummingbird.MetaStore.prototype.add = function(doc) {
   if (!(this.has(doc['id']) || doc === undefined)) {
-    this.root[doc['id']] = doc['meta'];
+    this.root[doc['id']] = doc;
   }
 };
 

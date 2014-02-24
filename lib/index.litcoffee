@@ -139,11 +139,12 @@ are optional parameters
       self.logTimer 'Finish - Sorting'
       # loop over limited return set and augment with meta
       results = documentSet.slice offset, numResults
-      results.map (doc, i, results) ->
-        doc.meta = @metaStore.get doc.id
-        return
-      , this
-      return results
+      resultSet = (results.map (result, i, results) ->
+        result = @metaStore.get result.id
+        result.score = results[i].score
+        return result
+      , this)
+      return resultSet
 
 
 ### ::toJSON
