@@ -49,6 +49,10 @@ test('returning the correct results', function () {
   equal(results[0].id, 'b')
   equal(results[1].id, 'c')
   equal(results[2].id, 'a')
+  equal(results[0].meta.title, 'Plumb waters plant')
+  equal(results[0].meta.wordCount, '9')
+  equal(results[1].meta.title, 'Scarlett helps Professor')
+  equal(results[2].meta.title, 'Mr. Green kills Colonel Mustard')
 })
 
 test('no search tokens in the index', function () {
