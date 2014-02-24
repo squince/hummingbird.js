@@ -326,9 +326,9 @@ hummingbird = function() {
 
 hummingbird.loggingOn = false;
 
-hummingbird.version = "0.2.0";
+hummingbird.version = "0.1.0";
 
-hummingbird.index_version = "2.0";
+hummingbird.index_version = "1.0";
 
 if (typeof module !== 'undefined') {
   module.exports = hummingbird;
@@ -450,7 +450,7 @@ hummingbird.Index.prototype.update = function(doc, emitEvent) {
 };
 
 hummingbird.Index.prototype.search = function(query, howMany, startPos) {
-  var documentSet, documentSets, hasSomeToken, index, key, numResults, offset, queryTokens, self;
+  var documentSet, documentSets, hasSomeToken, index, key, numResults, offset, queryTokens, results, self;
   queryTokens = this.tokenizer.tokenize(query);
   numResults = (howMany === undefined ? 10 : howMany);
   offset = (startPos === undefined ? 0 : startPos);
@@ -493,7 +493,11 @@ hummingbird.Index.prototype.search = function(query, howMany, startPos) {
     return b.score - a.score;
   });
   self.logTimer('Finish - Sorting');
-  return documentSet.slice(offset, numResults);
+  results = documentSet.slice(offset, numResults);
+  results.map(function(doc, i, results) {
+    doc.meta = this.metaStore.get(doc.id);
+  }, this);
+  return results;
 };
 
 hummingbird.Index.prototype.toJSON = function() {
@@ -524,7 +528,7 @@ hummingbird.MetaStore.prototype.toJSON = function() {
 
 hummingbird.MetaStore.prototype.add = function(doc) {
   if (!(this.has(doc['id']) || doc === undefined)) {
-    this.root[doc['id']] = doc['obj'];
+    this.root[doc['id']] = doc['meta'];
   }
 };
 

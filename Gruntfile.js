@@ -89,5 +89,6 @@ module.exports = function(grunt) {
 
   // Default task
   grunt.registerTask('default', ['clean', 'includereplace', 'browserify', 'coffee', 'concat', 'shell:docs']);
-  grunt.registerTask('dev', ['default',  'connect:dev', 'qunit', 'watch']);
+  grunt.registerTask('dev', ['default',  'connect:dev', 'watch']);
+  grunt.registerTask('test', ['default',  'connect:dev', 'qunit', 'watch']);
 };

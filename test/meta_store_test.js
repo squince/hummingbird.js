@@ -2,48 +2,51 @@ module('hummingbird.MetaStore')
 
 test('adding empty meta object to the store', function () {
   var store = new hummingbird.MetaStore
-  
+
   var doc = {
     id:'123',
-    obj:{} 
+    name: 'test',
+    meta:{}
   }
   store.add(doc)
 
-  ok(store.root['123'] === doc['obj'])
+  ok(store.root['123'] === doc['meta'])
 })
 
 test('adding meta object to the store', function () {
   var store = new hummingbird.MetaStore
-  
+
   var doc = {
     id:'123',
-    obj:{
+    name: 'test',
+    meta:{
       fname:'fred',
       lname:'smith',
       title: 'boss of the world'
-    } 
+    }
   }
   store.add(doc)
 
-  ok(store.root['123'] === doc['obj'])
-  
-  var myObj = store.root['123']
-  equal(myObj['fname'], 'fred')
-  equal(myObj['lname'], 'smith')
-  equal(myObj['title'], 'boss of the world')
+  ok(store.root['123'] === doc['meta'])
+
+  var objMetaObj = store.root['123']
+  equal(objMetaObj['fname'], 'fred')
+  equal(objMetaObj['lname'], 'smith')
+  equal(objMetaObj['title'], 'boss of the world')
 })
 
 
 test('removing meta from the store', function () {
   var store = new hummingbird.MetaStore
-  
+
   var doc = {
     id:'123',
-    obj:{} 
+    name: 'test',
+    meta:{}
   }
   store.add(doc)
 
-  ok(store.root['123'] === doc['obj'])
+  ok(store.root['123'] === doc['meta'])
 
   var docId = '123'
   store.remove(docId)
@@ -54,42 +57,42 @@ test('removing meta from the store', function () {
 
 test('retrieving empty meta from the store', function () {
   var store = new hummingbird.MetaStore
-  
+
   var doc = {
     id:'123',
-    obj:{} 
+    name: 'test',
+    meta:{}
   }
   store.add(doc)
 
-  ok(store.root['123'] === doc['obj'])
+  ok(store.root['123'] === doc['meta'])
 
   var docId = '123'
-  var obj = store.get(docId)
+  var meta = store.get(docId)
 
-  ok(typeof obj === 'object')
+  ok(typeof meta === 'object')
 
 })
 
 test('retrieving meta object to the store', function () {
   var store = new hummingbird.MetaStore
-  
+
   var doc = {
     id:'123',
-    obj:{
+    name: 'test',
+    meta:{
       fname:'fred',
       lname:'smith',
       title: 'boss of the world'
-    } 
+    }
   }
   store.add(doc)
 
-  ok(store.root['123'] === doc['obj'])
-  
+  ok(store.root['123'] === doc['meta'])
+
   var docId = '123'
-  var myObj = store.get(docId)
-  equal(myObj['fname'], 'fred')
-  equal(myObj['lname'], 'smith')
-  equal(myObj['title'], 'boss of the world')
+  var objMetaObj = store.get(docId)
+  equal(objMetaObj['fname'], 'fred')
+  equal(objMetaObj['lname'], 'smith')
+  equal(objMetaObj['title'], 'boss of the world')
 })
-
-

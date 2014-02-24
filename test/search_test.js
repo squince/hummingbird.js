@@ -5,27 +5,37 @@ module('search', {
 
     ;([{
       id: 'a',
-      title: 'Mr. Green kills Colonel Mustard',
       name: 'Mr. Green killed Colonel Mustard in the study with the candlestick. Mr. Green is not a very nice fellow.',
-      wordCount: 19
+      meta: {
+        title: 'Mr. Green kills Colonel Mustard',
+        wordCount: 19
+      }
     },{
       id: 'b',
-      title: 'Plumb waters plant',
       name: 'Professor Plumb has a green plant in his study',
-      wordCount: 9
+      meta: {
+        title: 'Plumb waters plant',
+        wordCount: 9
+      }
     },{
       id: 'c',
-      title: 'Scarlett helps Professor',
       name: 'Miss Scarlett watered Professor Plumbs green plant while he was away from his office last week.',
-      wordCount: 16
+      meta: {
+        title: 'Scarlett helps Professor',
+        wordCount: 16
+      }
     },{
       id: 'd',
-      title: 'title',
       name: 'handsome',
+      meta: {
+        title: 'title',
+      }
     },{
       id: 'e',
-      title: 'title',
       name: 'hand',
+      meta: {
+        title: 'title',
+      }
     }]).forEach(function (doc) {  idx.add(doc) })
 
     this.idx = idx

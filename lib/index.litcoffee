@@ -137,7 +137,14 @@ are optional parameters
         b.score - a.score
 
       self.logTimer 'Finish - Sorting'
-      documentSet.slice offset, numResults
+      # loop over limited return set and augment with meta
+      results = documentSet.slice offset, numResults
+      results.map (doc, i, results) ->
+        doc.meta = @metaStore.get doc.id
+        return
+      , this
+      return results
+
 
 ### ::toJSON
 Returns a representation of the index ready for serialization.
