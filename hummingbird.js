@@ -449,7 +449,7 @@ hummingbird.Index.prototype.update = function(doc, emitEvent) {
   }
 };
 
-hummingbird.Index.prototype.search = function(query, howMany, startPos) {
+hummingbird.Index.prototype.search = function(query, callback, howMany, startPos) {
   var documentSet, documentSets, hasSomeToken, index, key, numResults, offset, queryTokens, resultSet, results, self;
   queryTokens = this.tokenizer.tokenize(query);
   numResults = (howMany === undefined ? 10 : howMany);
@@ -499,7 +499,7 @@ hummingbird.Index.prototype.search = function(query, howMany, startPos) {
     result.score = results[i].score;
     return result;
   }, this);
-  return resultSet;
+  return callback(resultSet);
 };
 
 hummingbird.Index.prototype.toJSON = function() {

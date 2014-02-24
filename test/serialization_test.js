@@ -27,6 +27,8 @@ test('dumping and loading an index', function () {
       clonedIdx = hummingbird.Index.load(JSON.parse(dumpedIdx))
 
   clonedIdx.tokenizer = new hummingbird.tokenizer(3,6)
+  var set1 = idx.search('green plant', function (results) {return results})
+  var set2 = clonedIdx.search('green plant', function (results) {return results})
 
-  deepEqual(idx.search('green plant'), clonedIdx.search('green plant'))
+  deepEqual(set1, set2)
 })

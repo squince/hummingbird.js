@@ -44,7 +44,7 @@ module.exports = hummingbird if typeof module isnt 'undefined'</code></pre> <h2>
  @add doc, false
 
  @eventEmitter.emit 'update', doc, this if emitEvent
- return</code></pre> <h3>::search</h3> <p>Finds matching names and returns them in order of best match The number of results returned and how far from the top of the list are optional parameters</p> <pre><code>hummingbird.Index::search = (query, howMany, startPos) -&gt;
+ return</code></pre> <h3>::search</h3> <p>Finds matching names and returns them in order of best match Takes a callback function that has the resultSet array as its only argument</p> <p>The number of results returned and how far from the top of the list are optional parameters</p> <pre><code>hummingbird.Index::search = (query, callback, howMany, startPos) -&gt;
  queryTokens = @tokenizer.tokenize(query)
  numResults = (if (howMany is `undefined`) then 10 else howMany)
  offset = (if (startPos is `undefined`) then 0 else startPos)
@@ -94,7 +94,7 @@ module.exports = hummingbird if typeof module isnt 'undefined'</code></pre> <h2>
  result.score = results[i].score
  return result
  , this)
- return resultSet</code></pre> <h3>::toJSON</h3> <p>Returns a representation of the index ready for serialization.</p> <pre><code>hummingbird.Index::toJSON = -&gt;
+ callback resultSet</code></pre> <h3>::toJSON</h3> <p>Returns a representation of the index ready for serialization.</p> <pre><code>hummingbird.Index::toJSON = -&gt;
  version: hummingbird.version
  index_version: hummingbird.index_version
  tokenStore: @tokenStore.toJSON()

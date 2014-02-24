@@ -91,10 +91,12 @@ This method is just a wrapper around `remove` and `add`
 
 ### ::search
 Finds matching names and returns them in order of best match
+Takes a callback function that has the resultSet array as its only argument
+
 The number of results returned and how far from the top of the list
 are optional parameters
 
-    hummingbird.Index::search = (query, howMany, startPos) ->
+    hummingbird.Index::search = (query, callback, howMany, startPos) ->
       queryTokens = @tokenizer.tokenize(query)
       numResults = (if (howMany is `undefined`) then 10 else howMany)
       offset = (if (startPos is `undefined`) then 0 else startPos)
@@ -144,7 +146,7 @@ are optional parameters
         result.score = results[i].score
         return result
       , this)
-      return resultSet
+      callback resultSet
 
 
 ### ::toJSON
