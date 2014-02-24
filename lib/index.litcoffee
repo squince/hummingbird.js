@@ -29,14 +29,14 @@ Removes handler from event emitted by the index
       @eventEmitter.removeListener name, fn
 
 ### ::load
-Loads serialised index and issues a warning if the index being imported is in a different format
+Loads serialized index and issues a warning if the index being imported is in a different format
 than what is now supported by this version of hummingbird
 
-    hummingbird.Index.load = (serialisedData) ->
-      hummingbird.utils.warn 'version mismatch: current ' + hummingbird.index_version + ' importing ' + serialisedData.index_version  if serialisedData.index_version isnt hummingbird.index_version
+    hummingbird.Index.load = (serializedData) ->
+      hummingbird.utils.warn 'version mismatch: current ' + hummingbird.index_version + ' importing ' + serializedData.index_version  if serializedData.index_version isnt hummingbird.index_version
       idx = new this
-      idx.tokenStore = hummingbird.TokenStore.load(serialisedData.tokenStore)
-      idx.metaStore = hummingbird.MetaStore.load(serialisedData.metaStore)
+      idx.tokenStore = hummingbird.TokenStore.load(serializedData.tokenStore)
+      idx.metaStore = hummingbird.MetaStore.load(serializedData.metaStore)
       idx
 
 ### ::add
@@ -140,7 +140,7 @@ are optional parameters
       documentSet.slice offset, numResults
 
 ### ::toJSON
-Returns a representation of the index ready for serialisation.
+Returns a representation of the index ready for serialization.
 
     hummingbird.Index::toJSON = ->
       version: hummingbird.version

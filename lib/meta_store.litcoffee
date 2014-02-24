@@ -1,6 +1,5 @@
 ## MetaStore
-The inverted index that maps each token in the corpus to all the names
-that contain said token
+Maps each id from the TokenStore to its stored, _untokenized_ fields in the MetaStore
 
 ### constructor
 
@@ -9,28 +8,28 @@ that contain said token
       return
 
 ### .load
-Loads a previously serialised token store
+Loads a previously serialized MetaStore
 
-    hummingbird.MetaStore.load = (serialisedData) ->
+    hummingbird.MetaStore.load = (serializedData) ->
       store = new this
-      store.root = serialisedData.root
+      store.root = serializedData.root
       store
 
 ### ::toJSON
-Returns a representation of the token store ready for serialisation.
+Returns a JSON representation of the MetaStore
 
     hummingbird.MetaStore::toJSON = ->
       root: @root
 
 ### ::add
-Adds a document to the meta store
+Adds a hash of name-value pairs to the MetaStore
 
     hummingbird.MetaStore::add = (doc) ->
       @root[doc['id']] = doc  unless @has(doc['id']) or doc is `undefined`
       return
 
 ### ::has
-Checks whether this key is contained within this hummingbird.MetaStore.
+Checks for this id in the MetaStore
 
     hummingbird.MetaStore::has = (docId) ->
       return false  unless docId
@@ -41,13 +40,13 @@ Checks whether this key is contained within this hummingbird.MetaStore.
       return
 
 ### ::get
-Retrieve the documents for the given token
+Retrieve the name-value pairs associated with this id
 
     hummingbird.MetaStore::get = (docId) ->
       @root[docId] or {}
 
 ### ::remove
-Remove the document identified by docId from the token in the store
+Remove the name-value pairs associated with this id
 
     hummingbird.MetaStore::remove = (docId) ->
       return  if not docId or not @root[docId]

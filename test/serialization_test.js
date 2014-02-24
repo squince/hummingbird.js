@@ -1,4 +1,4 @@
-module('serialisation', {
+module('serialization', {
   setup: function () {
     this.corpus = [{
       id: 'a',
