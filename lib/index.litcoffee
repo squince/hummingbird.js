@@ -58,7 +58,7 @@ Takes an Object as an argument that must have at least 2 properties:
         @tokenStore.add token, doc['id']
         return
       ), this
-      @metaStore.add doc['id'], doc
+      @metaStore.add doc
       @eventEmitter.emit 'add', doc, this  if emitEvent
       return
 

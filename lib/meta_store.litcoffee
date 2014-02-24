@@ -26,7 +26,7 @@ Returns a representation of the token store ready for serialisation.
 Adds a document to the meta store
 
     hummingbird.MetaStore::add = (doc) ->
-      @root[doc['id']] = doc  unless @has(doc['id']) or doc is `undefined`
+      @root[doc['id']] = doc['obj']  unless @has(doc['id']) or doc is `undefined`
       return
 
 ### ::has

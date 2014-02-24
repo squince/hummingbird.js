@@ -383,6 +383,7 @@ hummingbird.EventEmitter.prototype.hasHandler = function(name) {
 
 hummingbird.Index = function() {
   this.tokenStore = new hummingbird.TokenStore;
+  this.metaStore = new hummingbird.MetaStore;
   this.eventEmitter = new hummingbird.EventEmitter;
   this.tokenizer = new hummingbird.tokenizer;
   this.logTimer = hummingbird.utils.logTiming;
@@ -405,6 +406,7 @@ hummingbird.Index.load = function(serialisedData) {
   }
   idx = new this;
   idx.tokenStore = hummingbird.TokenStore.load(serialisedData.tokenStore);
+  idx.metaStore = hummingbird.MetaStore.load(serialisedData.metaStore);
   return idx;
 };
 
@@ -420,6 +422,7 @@ hummingbird.Index.prototype.add = function(doc, emitEvent) {
   Object.keys(allDocumentTokens).forEach((function(token) {
     this.tokenStore.add(token, doc['id']);
   }), this);
+  this.metaStore.add(doc);
   if (emitEvent) {
     this.eventEmitter.emit('add', doc, this);
   }
@@ -497,8 +500,54 @@ hummingbird.Index.prototype.toJSON = function() {
   return {
     version: hummingbird.version,
     index_version: hummingbird.index_version,
-    tokenStore: this.tokenStore.toJSON()
+    tokenStore: this.tokenStore.toJSON(),
+    metaStore: this.metaStore.toJSON()
   };
+};
+
+hummingbird.MetaStore = function() {
+  this.root = {};
+};
+
+hummingbird.MetaStore.load = function(serialisedData) {
+  var store;
+  store = new this;
+  store.root = serialisedData.root;
+  return store;
+};
+
+hummingbird.MetaStore.prototype.toJSON = function() {
+  return {
+    root: this.root
+  };
+};
+
+hummingbird.MetaStore.prototype.add = function(doc) {
+  if (!(this.has(doc['id']) || doc === undefined)) {
+    this.root[doc['id']] = doc['obj'];
+  }
+};
+
+hummingbird.MetaStore.prototype.has = function(docId) {
+  if (!docId) {
+    return false;
+  }
+  if (docId in this.root) {
+    return true;
+  } else {
+    return false;
+  }
+};
+
+hummingbird.MetaStore.prototype.get = function(docId) {
+  return this.root[docId] || {};
+};
+
+hummingbird.MetaStore.prototype.remove = function(docId) {
+  if (!docId || !this.root[docId]) {
+    return;
+  }
+  return delete this.root[docId];
 };
 
 hummingbird.TokenStore = function() {

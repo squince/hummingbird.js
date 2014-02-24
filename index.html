@@ -3,6 +3,7 @@
  idx</code></pre> <h3>.loggingOn</h3> <p>Set to true or false to enable or disable logging respectively Defaults to false</p> <pre><code>hummingbird.loggingOn = false</code></pre> <h3>.version</h3> <p>Version of the hummingbird code base</p> <pre><code>hummingbird.version = "0.1.0"</code></pre> <h3>.index_version</h3> <p>Version of the index data structure</p> <pre><code>hummingbird.index_version = "1.0"
 module.exports = hummingbird if typeof module isnt 'undefined'</code></pre> <h2>Index</h2> <p>The object that manages everything</p> <p>Most importantly it contains the inverted index of tokens found in each name in the corpus, associated meta data, and methods for interacting with the data</p> <h3>constructor</h3> <pre><code>hummingbird.Index = -&gt;
  @tokenStore = new hummingbird.TokenStore
+ @metaStore = new hummingbird.MetaStore
  @eventEmitter = new hummingbird.EventEmitter
  @tokenizer = new hummingbird.tokenizer
  @logTimer = hummingbird.utils.logTiming
@@ -13,6 +14,7 @@ module.exports = hummingbird if typeof module isnt 'undefined'</code></pre> <h2>
  hummingbird.utils.warn 'version mismatch: current ' + hummingbird.index_version + ' importing ' + serialisedData.index_version if serialisedData.index_version isnt hummingbird.index_version
  idx = new this
  idx.tokenStore = hummingbird.TokenStore.load(serialisedData.tokenStore)
+ idx.metaStore = hummingbird.MetaStore.load(serialisedData.metaStore)
  idx</code></pre> <h3>::add</h3> <p>Add a name to the index (i.e., the tokenStore and its associated metadata to the metaStore) Takes an Object as an argument that must have at least 2 properties:</p> <p>'id' = document reference used to map to associated data</p> <p>'name' = the string to be indexed for autocompletion</p> <pre><code>hummingbird.Index::add = (doc, emitEvent) -&gt;
  allDocumentTokens = {}
  emitEvent = (if emitEvent is `undefined` then true else emitEvent)
@@ -24,6 +26,7 @@ module.exports = hummingbird if typeof module isnt 'undefined'</code></pre> <h2>
  @tokenStore.add token, doc['id']
  return
  ), this
+ @metaStore.add doc
  @eventEmitter.emit 'add', doc, this if emitEvent
  return</code></pre> <h3>::remove</h3> <p>Removes the document from the index that is referenced by the 'id' property</p> <pre><code>hummingbird.Index::remove = (doc, emitEvent) -&gt;
  docRef = doc['id']
@@ -87,7 +90,8 @@ module.exports = hummingbird if typeof module isnt 'undefined'</code></pre> <h2>
  documentSet.slice offset, numResults</code></pre> <h3>::toJSON</h3> <p>Returns a representation of the index ready for serialisation.</p> <pre><code>hummingbird.Index::toJSON = -&gt;
  version: hummingbird.version
  index_version: hummingbird.index_version
- tokenStore: @tokenStore.toJSON()</code></pre> <h2>Tokenizer</h2> <p>A flexible ngram tokenizer that can index a string using a range of lengths for substrings suitable for autocomplete indexing and fuzzy name matching</p> <h3>constructor</h3> <pre><code>hummingbird.tokenizer = (min, max) -&gt;
+ tokenStore: @tokenStore.toJSON()
+ metaStore: @metaStore.toJSON()</code></pre> <h2>Tokenizer</h2> <p>A flexible ngram tokenizer that can index a string using a range of lengths for substrings suitable for autocomplete indexing and fuzzy name matching</p> <h3>constructor</h3> <pre><code>hummingbird.tokenizer = (min, max) -&gt;
  if not arguments.length or not min? or typeof min isnt 'number' or min &lt; 1
  @min = 3
  else
