@@ -65,36 +65,19 @@
     }
 
     input {
-      width: 200px;
+      width: 300px;
       font-size: 1.4em;
     }
-
-    .loading {
-      color: #D11c24;
-      font-size: 0.9em;
-      border: 1px solid #D11c24;
-      padding: 10px;
-    }
-
-    .controls {
-      padding-top: 30px;
-      padding-bottom: 10px;
-      border-top: 3px dashed #708284;
-    }
   </style>
-
 </head>
 <body>
    <form>
-      <label for="searchTerm">Search for: </label>
-      <input type="text" id="searchTerm" size="35"
-             placeholder="United St...">
-      <input type="button" id="searchButton" value="Search"><br><br>
+     <label for="searchTerm">Type here ->&nbsp;&nbsp;</label>
+     <input type="text" id="searchTerm" size="100" placeholder="United St...">
+     <input type="button" id="searchButton" value="go">
   </form>
-  </div>
   <div>
-    <h2>Results</h2>
-    <ul id="matchResultsList">
-    </ul>
+    <h3>Results</h2>
+    <ul id="matchResultsList"/>
  </div>
 </body>
