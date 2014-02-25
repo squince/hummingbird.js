@@ -1,10 +1,10 @@
 # CLI Example
 # You can just 'require' hummingbird if you run it locally via terminal or in a node.js app
-hummingbird = require '../hummingbird'
+hummingbird = require '../../hummingbird'
 fs = require 'fs'
 prompt = require 'prompt'
 
-localIndex = "./examples/output/people.json"
+localIndex = "people.json"
 
 # In this case, we'll build an autocomplete on person names.  Serialize the index out to disk if so desired.
 buildIndex = (people) ->
