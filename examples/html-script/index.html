@@ -1,0 +1,100 @@
+<head>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6/jquery.min.js"></script> 
+  <script src="/hummingbird.js" type="text/javascript" charset="utf-8"></script>
+  <script type="text/javascript" charset="utf-8">
+    // set up the index, specifying that we want to index the title, tags and body fields of documents.
+    var idx
+
+    $(document).ready(function () {
+      $.ajaxSetup({ cache: false })
+
+      var searchButton = document.getElementById("searchButton");
+      searchButton.onclick = searchText;
+
+      $.getJSON('/examples/coffee-repl/idx-countries.json')
+      .success(function (indexData) {
+        console.time("load")
+        idx = hummingbird.Index.load(indexData)
+        console.timeEnd("load")
+      })
+    })
+  </script>
+  <script type="text/javascript" charset="utf-8">
+    function searchText() {
+      var searchTerm = document.getElementById("searchTerm").value;
+
+      searchTerm = searchTerm.trim();
+      if (searchTerm == null || searchTerm == "") {
+        alert("Please enter a string to search for");
+        return;
+      }
+
+      console.time('search')
+      idx.search(searchTerm, showResults)
+      console.timeEnd('search')
+    }
+
+    function showResults(results) {
+      clearResultsList();  
+      var ul = document.getElementById("matchResultsList");
+      var frag = document.createDocumentFragment();
+
+      $.each(results, function( i, val ) {
+        var li = document.createElement("li");
+        li.innerHTML = val.id + " is " + val.name + " is located at " + val.lat + " degrees latitude and " + val.long + " degrees longitude";
+        frag.appendChild(li);
+      });
+      ul.appendChild(frag);
+    }
+
+    function clearResultsList() {
+      var ul = document.getElementById("matchResultsList");
+      while (ul.firstChild) {
+        ul.removeChild(ul.firstChild);
+      }
+    }
+  </script>
+
+  <style type="text/css" media="screen">
+
+    body {
+      background-color: #FFFFFF;
+      color: #666666;
+      font-family: 'Helvetica Neue';
+      font-size: 16px;
+    }
+
+    input {
+      width: 200px;
+      font-size: 1.4em;
+    }
+
+    .loading {
+      color: #D11c24;
+      font-size: 0.9em;
+      border: 1px solid #D11c24;
+      padding: 10px;
+    }
+
+    .controls {
+      padding-top: 30px;
+      padding-bottom: 10px;
+      border-top: 3px dashed #708284;
+    }
+  </style>
+
+</head>
+<body>
+   <form>
+      <label for="searchTerm">Search for: </label>
+      <input type="text" id="searchTerm" size="35"
+             placeholder="United St...">
+      <input type="button" id="searchButton" value="Search"><br><br>
+  </form>
+  </div>
+  <div>
+    <h2>Results</h2>
+    <ul id="matchResultsList">
+    </ul>
+ </div>
+</body>

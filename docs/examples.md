@@ -2,6 +2,11 @@
 Special thanks to [socrata.com](https://opendata.socrata.com/) for
 making a wide range of interesting data available
 
+### html script
+The most obvious way to use hummingbird.js is from within an html page.
+See a working example
+[here](http://glg.github.io/hummingbird.js/examples/html-script/index.html)
+
 ### coffee repl
 Yep, you can even run this from the command-line.  This can be useful if
 making changes to the code or if you simply want to experiment with the
