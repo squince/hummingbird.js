@@ -326,9 +326,9 @@ hummingbird = function() {
 
 hummingbird.loggingOn = false;
 
-hummingbird.version = "0.1.0";
+hummingbird.version = "0.2.0";
 
-hummingbird.index_version = "1.0";
+hummingbird.index_version = "2.0";
 
 if (typeof module !== 'undefined') {
   module.exports = hummingbird;
@@ -383,6 +383,7 @@ hummingbird.EventEmitter.prototype.hasHandler = function(name) {
 
 hummingbird.Index = function() {
   this.tokenStore = new hummingbird.TokenStore;
+  this.metaStore = new hummingbird.MetaStore;
   this.eventEmitter = new hummingbird.EventEmitter;
   this.tokenizer = new hummingbird.tokenizer;
   this.logTimer = hummingbird.utils.logTiming;
@@ -398,28 +399,30 @@ hummingbird.Index.prototype.off = function(name, fn) {
   return this.eventEmitter.removeListener(name, fn);
 };
 
-hummingbird.Index.load = function(serialisedData) {
+hummingbird.Index.load = function(serializedData) {
   var idx;
-  if (serialisedData.index_version !== hummingbird.index_version) {
-    hummingbird.utils.warn('version mismatch: current ' + hummingbird.index_version + ' importing ' + serialisedData.index_version);
+  if (serializedData.index_version !== hummingbird.index_version) {
+    hummingbird.utils.warn('version mismatch: current ' + hummingbird.index_version + ' importing ' + serializedData.index_version);
   }
   idx = new this;
-  idx.tokenStore = hummingbird.TokenStore.load(serialisedData.tokenStore);
+  idx.tokenStore = hummingbird.TokenStore.load(serializedData.tokenStore);
+  idx.metaStore = hummingbird.MetaStore.load(serializedData.metaStore);
   return idx;
 };
 
 hummingbird.Index.prototype.add = function(doc, emitEvent) {
-  var allDocumentTokens, fieldTokens, i, token;
+  var allDocumentTokens, i, token, tokens;
   allDocumentTokens = {};
   emitEvent = (emitEvent === undefined ? true : emitEvent);
-  fieldTokens = this.tokenizer.tokenize(doc['name']);
-  for (i in fieldTokens) {
-    token = fieldTokens[i];
+  tokens = this.tokenizer.tokenize(doc['name']);
+  for (i in tokens) {
+    token = tokens[i];
     allDocumentTokens[token] = token.length;
   }
   Object.keys(allDocumentTokens).forEach((function(token) {
     this.tokenStore.add(token, doc['id']);
   }), this);
+  this.metaStore.add(doc);
   if (emitEvent) {
     this.eventEmitter.emit('add', doc, this);
   }
@@ -446,8 +449,8 @@ hummingbird.Index.prototype.update = function(doc, emitEvent) {
   }
 };
 
-hummingbird.Index.prototype.search = function(query, howMany, startPos) {
-  var documentSet, documentSets, hasSomeToken, index, key, numResults, offset, queryTokens, self;
+hummingbird.Index.prototype.search = function(query, callback, howMany, startPos) {
+  var documentSet, documentSets, hasSomeToken, index, key, numResults, offset, queryTokens, resultSet, results, self;
   queryTokens = this.tokenizer.tokenize(query);
   numResults = (howMany === undefined ? 10 : howMany);
   offset = (startPos === undefined ? 0 : startPos);
@@ -490,25 +493,77 @@ hummingbird.Index.prototype.search = function(query, howMany, startPos) {
     return b.score - a.score;
   });
   self.logTimer('Finish - Sorting');
-  return documentSet.slice(offset, numResults);
+  results = documentSet.slice(offset, numResults);
+  resultSet = results.map(function(result, i, results) {
+    result = this.metaStore.get(result.id);
+    result.score = results[i].score;
+    return result;
+  }, this);
+  return callback(resultSet);
 };
 
 hummingbird.Index.prototype.toJSON = function() {
   return {
     version: hummingbird.version,
     index_version: hummingbird.index_version,
-    tokenStore: this.tokenStore.toJSON()
+    tokenStore: this.tokenStore.toJSON(),
+    metaStore: this.metaStore.toJSON()
   };
+};
+
+hummingbird.MetaStore = function() {
+  this.root = {};
+};
+
+hummingbird.MetaStore.load = function(serializedData) {
+  var store;
+  store = new this;
+  store.root = serializedData.root;
+  return store;
+};
+
+hummingbird.MetaStore.prototype.toJSON = function() {
+  return {
+    root: this.root
+  };
+};
+
+hummingbird.MetaStore.prototype.add = function(doc) {
+  if (!(this.has(doc['id']) || doc === undefined)) {
+    this.root[doc['id']] = doc;
+  }
+};
+
+hummingbird.MetaStore.prototype.has = function(docId) {
+  if (!docId) {
+    return false;
+  }
+  if (docId in this.root) {
+    return true;
+  } else {
+    return false;
+  }
+};
+
+hummingbird.MetaStore.prototype.get = function(docId) {
+  return this.root[docId] || {};
+};
+
+hummingbird.MetaStore.prototype.remove = function(docId) {
+  if (!docId || !this.root[docId]) {
+    return;
+  }
+  return delete this.root[docId];
 };
 
 hummingbird.TokenStore = function() {
   this.root = {};
 };
 
-hummingbird.TokenStore.load = function(serialisedData) {
+hummingbird.TokenStore.load = function(serializedData) {
   var store;
   store = new this;
-  store.root = serialisedData.root;
+  store.root = serializedData.root;
   return store;
 };
 

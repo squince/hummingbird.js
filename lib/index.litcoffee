@@ -9,6 +9,7 @@ for interacting with the data
 
     hummingbird.Index = ->
       @tokenStore = new hummingbird.TokenStore
+      @metaStore = new hummingbird.MetaStore
       @eventEmitter = new hummingbird.EventEmitter
       @tokenizer = new hummingbird.tokenizer
       @logTimer = hummingbird.utils.logTiming
@@ -28,34 +29,38 @@ Removes handler from event emitted by the index
       @eventEmitter.removeListener name, fn
 
 ### ::load
-Loads serialised index and issues a warning if the index being imported is in a different format
+Loads serialized index and issues a warning if the index being imported is in a different format
 than what is now supported by this version of hummingbird
 
-    hummingbird.Index.load = (serialisedData) ->
-      hummingbird.utils.warn 'version mismatch: current ' + hummingbird.index_version + ' importing ' + serialisedData.index_version  if serialisedData.index_version isnt hummingbird.index_version
+    hummingbird.Index.load = (serializedData) ->
+      hummingbird.utils.warn 'version mismatch: current ' + hummingbird.index_version + ' importing ' + serializedData.index_version  if serializedData.index_version isnt hummingbird.index_version
       idx = new this
-      idx.tokenStore = hummingbird.TokenStore.load(serialisedData.tokenStore)
+      idx.tokenStore = hummingbird.TokenStore.load(serializedData.tokenStore)
+      idx.metaStore = hummingbird.MetaStore.load(serializedData.metaStore)
       idx
 
 ### ::add
 Add a name to the index (i.e., the tokenStore and its associated metadata to the metaStore)
 Takes an Object as an argument that must have at least 2 properties:
 
-'id' = document reference used to map to associated data
+_doc.id_ = must be a unique reference to the document as it is used to map to associated meta data
 
-'name' = the string to be indexed for autocompletion
+_doc.name_ = the string to be indexed for autocompletion
+
+_doc.meta_ = object/hash that is an arbitrary collection of name-value pairs
 
     hummingbird.Index::add = (doc, emitEvent) ->
       allDocumentTokens = {}
       emitEvent = (if emitEvent is `undefined` then true else emitEvent)
-      fieldTokens = this.tokenizer.tokenize(doc['name'])
-      for i of fieldTokens
-        token = fieldTokens[i]
+      tokens = this.tokenizer.tokenize(doc['name'])
+      for i of tokens
+        token = tokens[i]
         allDocumentTokens[token] = token.length
       Object.keys(allDocumentTokens).forEach ((token) ->
         @tokenStore.add token, doc['id']
         return
       ), this
+      @metaStore.add doc
       @eventEmitter.emit 'add', doc, this  if emitEvent
       return
 
@@ -88,10 +93,12 @@ This method is just a wrapper around `remove` and `add`
 
 ### ::search
 Finds matching names and returns them in order of best match
+Takes a callback function that has the resultSet array as its only argument
+
 The number of results returned and how far from the top of the list
 are optional parameters
 
-    hummingbird.Index::search = (query, howMany, startPos) ->
+    hummingbird.Index::search = (query, callback, howMany, startPos) ->
       queryTokens = @tokenizer.tokenize(query)
       numResults = (if (howMany is `undefined`) then 10 else howMany)
       offset = (if (startPos is `undefined`) then 0 else startPos)
@@ -134,12 +141,21 @@ are optional parameters
         b.score - a.score
 
       self.logTimer 'Finish - Sorting'
-      documentSet.slice offset, numResults
+      # loop over limited return set and augment with meta
+      results = documentSet.slice offset, numResults
+      resultSet = (results.map (result, i, results) ->
+        result = @metaStore.get result.id
+        result.score = results[i].score
+        return result
+      , this)
+      callback resultSet
+
 
 ### ::toJSON
-Returns a representation of the index ready for serialisation.
+Returns a representation of the index ready for serialization.
 
     hummingbird.Index::toJSON = ->
       version: hummingbird.version
       index_version: hummingbird.index_version
       tokenStore: @tokenStore.toJSON()
+      metaStore: @metaStore.toJSON()

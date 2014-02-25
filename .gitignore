@@ -1,4 +1,6 @@
+.DS_Store
 npm-debug.log
 node_modules
 lib/hummingbird.litcoffee
 hummingbird-core.js
+output/*.json

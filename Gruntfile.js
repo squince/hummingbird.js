@@ -16,14 +16,14 @@ module.exports = function(grunt) {
         }
       },
       dist: {
-        src: './hummingbird.litcoffee',
-        dest: 'lib/hummingbird.litcoffee'
+        src: 'lib/hummingbird.litcoffee',
+        dest: 'build/hummingbird.litcoffee'
       }
     },
     browserify: {
       dist: {
         files: {
-          'vendor.js': ['lib/vendor.js']
+          'build/vendor.js': ['lib/vendor.js']
         },
         debug: true
       }
@@ -31,7 +31,7 @@ module.exports = function(grunt) {
     coffee:{
       dist: {
         files: {
-          'hummingbird-core.js' : ['./lib/hummingbird.litcoffee', './lib/*.litcoffee']
+          'build/hummingbird-core.js' : ['build/hummingbird.litcoffee', 'lib/*.litcoffee', '!lib/hummingbird.litcoffee']
         },
         options: {
           bare: true,
@@ -41,13 +41,13 @@ module.exports = function(grunt) {
     },
     concat: {
       dist: {
-        src: ['vendor.js', 'hummingbird-core.js'],
+        src: ['build/vendor.js', 'build/hummingbird-core.js'],
         dest: 'hummingbird.js'
       }
     },
     watch: {
       dev: {
-        files: ["lib/*", "!lib/hummingbird.litcoffee"],
+        files: ["lib/*", "!lib/hummingbird.litcoffee", "docs/*"],
         tasks: ['default'],
         options: {
           interrupt: true
@@ -56,7 +56,7 @@ module.exports = function(grunt) {
     },
     clean: {
       dist: {
-        src: ['./hummingbird.js', './hummingbird-core.js', './index.html', './vendor.js', './lib/hummingbird.litcoffee']
+        src: ['hummingbird.js', 'build/*', 'index.html']
       }
     },
     shell: {
@@ -65,7 +65,7 @@ module.exports = function(grunt) {
            stdout: false,
            stderr: true
          },
-        command: 'PATH="./node_modules/.bin:${PATH}" doc-n-toc ./intro.md ./lib/hummingbird.litcoffee ./lib/index.litcoffee ./lib/tokenizer.litcoffee ./lib/token_store.litcoffee --title "Hummingbird v<%= pkg.version %>" > ./index.html'
+        command: 'PATH="node_modules/.bin:${PATH}" doc-n-toc docs/intro.md docs/examples.md docs/contribute.md --css docs/my.less --title "Hummingbird v<%= pkg.version %>" > index.html'
       }
     },
     qunit: {
@@ -89,5 +89,7 @@ module.exports = function(grunt) {
 
   // Default task
   grunt.registerTask('default', ['clean', 'includereplace', 'browserify', 'coffee', 'concat', 'shell:docs']);
-  grunt.registerTask('dev', ['default',  'connect:dev', 'qunit', 'watch']);
+  grunt.registerTask('dev', ['default',  'connect:dev', 'watch']);
+  grunt.registerTask('test', ['default',  'connect:dev', 'qunit', 'watch']);
+  grunt.registerTask('docs', ['shell:docs']);
 };

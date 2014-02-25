@@ -9,15 +9,15 @@ that contain said token
       return
 
 ### .load
-Loads a previously serialised token store
+Loads a previously serialized token store
 
-    hummingbird.TokenStore.load = (serialisedData) ->
+    hummingbird.TokenStore.load = (serializedData) ->
       store = new this
-      store.root = serialisedData.root
+      store.root = serializedData.root
       store
 
 ### ::toJSON
-Returns a representation of the token store ready for serialisation.
+Returns a representation of the token store ready for serialization.
 
     hummingbird.TokenStore::toJSON = ->
       root: @root

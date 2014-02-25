@@ -107,7 +107,7 @@ test('removing a document from a key that does not exist', function () {
   ok(!store.has('foo'))
 })
 
-test('serialisation', function () {
+test('serialization', function () {
   var store = new hummingbird.TokenStore
 
   //deepEqual(store.toJSON(), { root: { docs: {} }, length: 0 })
@@ -124,14 +124,14 @@ test('serialisation', function () {
   )
 })
 
-test('loading a serialised story', function () {
-  var serialisedData = {
+test('loading a serialized story', function () {
+  var serializedData = {
     root: {
       foo: [123]
     }
   }
 
-  var store = hummingbird.TokenStore.load(serialisedData),
+  var store = hummingbird.TokenStore.load(serializedData),
       documents = store.get('foo')
 
   //equal(store.length, 1)
