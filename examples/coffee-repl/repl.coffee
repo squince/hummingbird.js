@@ -3,28 +3,29 @@
 hummingbird = require '../../hummingbird'
 fs = require 'fs'
 prompt = require 'prompt'
+countries = require '../raw-countries.json'
 
-localIndex = "people.json"
+localIndex = "idx-countries.json"
 
-# In this case, we'll build an autocomplete on person names.  Serialize the index out to disk if so desired.
-buildIndex = (people) ->
-  for person in people
+# In this case, we'll build an autocomplete on item names.  Serialize the index out to disk if so desired.
+buildIndex = (data) ->
+  for item in data
     # indexed 'documents' must be a hash with id, name (thing to be tokenized) as required properties
     # any other arbitrary hash of name-value pairs will be stored but not tokenized
     index.add
-      id: person.id,
-      name: "#{person.fn} #{person.ln}"
-      firstname: person.fn
-      middleinitial: person.mi
-      lastname: person.ln
-      company: person.cn
-      phone: person.pn
+      id: item.numeric_code,
+      name: item.country
+      code2: item.alpha_2_code
+      code3: item.alpha_3_code
+      lat: item.latitude_average
+      long: item.longitude_average
   fs.writeFileSync localIndex, JSON.stringify(index.toJSON(), null, '\t')
 
 # Just print them out using console.log
 printResults = (results) ->
+  console.log "\n"
   for result in results
-    console.log "#{result.firstname} #{result.middleinitial} #{result.lastname} | #{result.company} (tel. #{result.phone})"
+    console.log "\t#{result.name} (#{result.code3}) \n\t\t>> lat: #{result.lat} / lon: #{result.long}\n"
   console.log "\n"
 
 # search for some string
@@ -34,31 +35,11 @@ search = (err, arg) ->
   serializedindex.search arg.q, printResults
   prompt.get ['q'], search
 
-
-# Sample Data
-# This is just a statically defined array of 'documents', but obviously you can get whatever data you want from wherever you want
-people = [
-  {
-    id: 123
-    fn: 'Steve'
-    ln: 'Quince'
-    mi: 'P'
-    cn: 'Gerson Lehrman Group'
-    pn: '867.5309'},
-  {
-    id: 456
-    fn: 'Dan'
-    ln: 'Griffis'
-    mi: ''
-    cn: 'Gerson Lehrman Group'
-    pn: '123.456.9999'}
-]
-
 # Build & Serialize Index
 hummingbird.loggingOn = false
 index = new hummingbird
 index.tokenizer = new hummingbird.tokenizer(3)
-buildIndex(people)
+buildIndex(countries)
 
 # Load & Search Index
 serializedindex = hummingbird.Index.load(JSON.parse(fs.readFileSync localIndex, ['utf8']))
