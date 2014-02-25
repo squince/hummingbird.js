@@ -11,7 +11,7 @@
       var searchButton = document.getElementById("searchButton");
       searchButton.onclick = searchText;
 
-      $.getJSON('/examples/coffee-repl/idx-countries.json')
+      $.getJSON('/hummingbird.js/examples/coffee-repl/idx-countries.json')
       .success(function (indexData) {
         console.time("load")
         idx = hummingbird.Index.load(indexData)
