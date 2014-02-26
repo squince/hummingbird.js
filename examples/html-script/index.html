@@ -23,7 +23,7 @@
       
       $("#matchResultsList").empty();
       var searchTerm = $("#searchTerm").val().trim();
-      if (searchTerm == null || searchTerm == "" || searchTerm.length < 2) {
+      if (!searchTerm || searchTerm.length < 2) {
         return;
       }
 
