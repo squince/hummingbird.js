@@ -92,4 +92,5 @@ module.exports = function(grunt) {
   grunt.registerTask('dev', ['default',  'connect:dev', 'watch']);
   grunt.registerTask('test', ['default',  'connect:dev', 'qunit', 'watch']);
   grunt.registerTask('docs', ['shell:docs']);
+  grunt.registerTask('serve', ['connect:dev', 'watch']);
 };
