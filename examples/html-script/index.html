@@ -8,7 +8,7 @@
     $(document).ready(function () {
       $.ajaxSetup({ cache: false })
 
-      $("#searchTerm").keydown(searchText)
+      $("#searchTerm").keyup(searchText)
 
       $.getJSON('/hummingbird.js/examples/coffee-repl/idx-countries.json')
       .success(function (indexData) {
