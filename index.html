@@ -22,7 +22,7 @@
 
     $("#matchResultsList").empty();
     var searchTerm = $("#searchTerm").val().trim();
-    if (!searchTerm || searchTerm.length < 2) {
+    if (!searchTerm) {
       return;
     }
 
@@ -37,7 +37,7 @@
 
     $.each(results, function( i, val ) {
       var li = document.createElement("li");
-      li.innerHTML = val.id + " is " + val.name + " is located at " + val.lat + " degrees latitude and " + val.long + " degrees longitude";
+      li.innerHTML = val.name + " -> " + val.lat + "&deg; latitude / " + val.long + "&deg; longitude";
       frag.appendChild(li);
     });
 
@@ -46,8 +46,7 @@
 </script>
 
 <form>
-   <label for="searchTerm">Type here ->&nbsp;&nbsp;</label>
-   <input type="text" id="searchTerm" size="100" placeholder="United St...">
+   <input type="text" id="searchTerm" size="50" placeholder="United St...">
     <ul id="matchResultsList"/>
 </form>
 
