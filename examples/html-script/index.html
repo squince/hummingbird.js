@@ -8,8 +8,7 @@
     $(document).ready(function () {
       $.ajaxSetup({ cache: false })
 
-      var searchButton = document.getElementById("searchButton");
-      searchButton.onclick = searchText;
+      $("#searchTerm").keypress(searchText)
 
       $.getJSON('/hummingbird.js/examples/coffee-repl/idx-countries.json')
       .success(function (indexData) {
@@ -24,8 +23,7 @@
       var searchTerm = document.getElementById("searchTerm").value;
 
       searchTerm = searchTerm.trim();
-      if (searchTerm == null || searchTerm == "") {
-        alert("Please enter a string to search for");
+      if (searchTerm == null || searchTerm == "" || searchTerm.length < 2) {
         return;
       }
 
@@ -74,7 +72,6 @@
    <form>
      <label for="searchTerm">Type here ->&nbsp;&nbsp;</label>
      <input type="text" id="searchTerm" size="100" placeholder="United St...">
-     <input type="button" id="searchButton" value="go">
   </form>
   <div>
     <h3>Results</h2>
