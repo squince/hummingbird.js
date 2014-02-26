@@ -10,12 +10,12 @@
 
       $("#searchTerm").keyup(searchText)
 
+      console.time("load")
       $.getJSON('/hummingbird.js/examples/coffee-repl/idx-countries.json')
       .success(function (indexData) {
-        console.time("load")
         idx = hummingbird.Index.load(indexData)
-        console.timeEnd("load")
       })
+      console.timeEnd("load")
     })
   </script>
   <script type="text/javascript" charset="utf-8">
