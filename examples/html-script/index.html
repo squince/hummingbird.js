@@ -20,9 +20,8 @@
   </script>
   <script type="text/javascript" charset="utf-8">
     function searchText() {
-      var searchTerm = document.getElementById("searchTerm").value;
-
-      searchTerm = searchTerm.trim();
+      
+      var searchTerm = $("#searchTerm").val().trim();
       if (searchTerm == null || searchTerm == "" || searchTerm.length < 2) {
         return;
       }
@@ -33,8 +32,8 @@
     }
 
     function showResults(results) {
-      clearResultsList();  
-      var ul = document.getElementById("matchResultsList");
+      
+      var $ul = $("#matchResultsList").empty();
       var frag = document.createDocumentFragment();
 
       $.each(results, function( i, val ) {
@@ -42,15 +41,10 @@
         li.innerHTML = val.id + " is " + val.name + " is located at " + val.lat + " degrees latitude and " + val.long + " degrees longitude";
         frag.appendChild(li);
       });
-      ul.appendChild(frag);
+
+      $ul.append(frag);
     }
 
-    function clearResultsList() {
-      var ul = document.getElementById("matchResultsList");
-      while (ul.firstChild) {
-        ul.removeChild(ul.firstChild);
-      }
-    }
   </script>
 
   <style type="text/css" media="screen">
