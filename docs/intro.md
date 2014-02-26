@@ -9,6 +9,8 @@ It's **Hummingbird**.js
 
 Impossibly quick, precise, and beautiful to behold (day _or_ night)
 
+@@EXAMPLE
+
 ## Overview
 Inspired by the desire to help folks _get to_ what they're looking for
 without having to leave what they're doing.  Heavily influenced by
