@@ -3,21 +3,32 @@ module.exports = function(grunt) {
   require('load-grunt-tasks')(grunt);
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
+    example: grunt.file.read('examples/html-script/example.html'),
     banner: '/*! <%= pkg.title || pkg.name %> - v<%= pkg.version %> - ' +
       '<%= grunt.template.today("yyyy-mm-dd") %>\n' +
       '<%= pkg.homepage ? "* " + pkg.homepage + "\\n" : "" %>' +
       '* Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author %>;' +
       ' Licensed <%= _.pluck(pkg.license, "type").join(", ") %> */\n',
     includereplace: {
-      options: {
-        globals: {
-          VERSION: '<%= pkg.version %>',
-          INDEX_VERSION: '<%= pkg.index_version %>'
-        }
-      },
-      dist: {
+      pre: {
+        options: {
+          globals: {
+            VERSION: '<%= pkg.version %>',
+            INDEX_VERSION: '<%= pkg.index_version %>',
+            EXAMPLE: '<%= example %>'
+          }
+        },
         src: 'lib/hummingbird.litcoffee',
         dest: 'build/hummingbird.litcoffee'
+      },
+      post: {
+        options: {
+          globals: {
+            EXAMPLE: '<%= example %>'
+          }
+        },
+        src: 'build/index.html',
+        dest: 'index.html'
       }
     },
     browserify: {
@@ -56,7 +67,7 @@ module.exports = function(grunt) {
     },
     clean: {
       dist: {
-        src: ['hummingbird.js', 'build/*', 'index.html']
+        src: ['hummingbird.js', 'build/*', 'build/index.html']
       }
     },
     shell: {
@@ -65,7 +76,7 @@ module.exports = function(grunt) {
            stdout: false,
            stderr: true
          },
-        command: 'PATH="node_modules/.bin:${PATH}" doc-n-toc docs/intro.md docs/examples.md docs/contribute.md --css docs/my.less --title "Hummingbird v<%= pkg.version %>" > index.html'
+        command: 'PATH="node_modules/.bin:${PATH}" doc-n-toc docs/intro.md docs/examples.md docs/contribute.md --css docs/my.less --title "Hummingbird v<%= pkg.version %>" > build/index.html'
       }
     },
     qunit: {
@@ -88,9 +99,9 @@ module.exports = function(grunt) {
   });
 
   // Default task
-  grunt.registerTask('default', ['clean', 'includereplace', 'browserify', 'coffee', 'concat', 'shell:docs']);
+  grunt.registerTask('default', ['clean', 'includereplace:pre', 'browserify', 'coffee', 'concat', 'shell:docs', 'includereplace:post']);
   grunt.registerTask('dev', ['default',  'connect:dev', 'watch']);
   grunt.registerTask('test', ['default',  'connect:dev', 'qunit', 'watch']);
-  grunt.registerTask('docs', ['shell:docs']);
+  grunt.registerTask('docs', ['shell:docs', 'includereplace:post']);
   grunt.registerTask('serve', ['connect:dev', 'watch']);
 };
