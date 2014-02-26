@@ -21,6 +21,7 @@
   <script type="text/javascript" charset="utf-8">
     function searchText() {
       
+      $("#matchResultsList").empty();
       var searchTerm = $("#searchTerm").val().trim();
       if (searchTerm == null || searchTerm == "" || searchTerm.length < 2) {
         return;
@@ -33,7 +34,6 @@
 
     function showResults(results) {
       
-      var $ul = $("#matchResultsList").empty();
       var frag = document.createDocumentFragment();
 
       $.each(results, function( i, val ) {
@@ -42,7 +42,7 @@
         frag.appendChild(li);
       });
 
-      $ul.append(frag);
+      $("#matchResultsList").append(frag);
     }
 
   </script>
