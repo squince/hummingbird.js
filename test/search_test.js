@@ -34,6 +34,7 @@ module('search', {
 })
 
 test('returning the correct results', function () {
+  var options = {"howMany":10, "boostPrefix":false, "scoreThreshold":0};
   this.idx.search('green plant', function(results) {
     equal(results.length, 3)
     equal(results[0].id, 'b')
@@ -43,16 +44,18 @@ test('returning the correct results', function () {
     equal(results[0].wordCount, '9')
     equal(results[1].title, 'Scarlett helps Professor')
     equal(results[2].title, 'Mr. Green kills Colonel Mustard')
-  });
+  }, options);
 })
 
 test('no search tokens in the index', 0, function () {
+  var options = {"howMany":10, "boostPrefix":false, "scoreThreshold":0};
   this.idx.search('zoo', function (results) {
     // no results returned, so nothing to do
-  });
+  }, options);
 })
 
 test('search results ranked by score', function () {
+  var options = {"howMany":10, "boostPrefix":false, "scoreThreshold":0};
   this.idx.search('professor', function(results){
 
     equal(results.length, 2)
@@ -61,10 +64,11 @@ test('search results ranked by score', function () {
 
     equal(results[0].score, 24)
     equal(results[1].score, 21)
-  });
+  }, options);
 })
 
 test('search boosts exact matches', function () {
+  var options = {"howMany":10, "boostPrefix":false, "scoreThreshold":0};
   this.idx.search('hand', function(results){
 
     equal(results.length, 3)
@@ -74,19 +78,21 @@ test('search boosts exact matches', function () {
 
     ok(results[0].score > results[1].score)
     ok(results[1].score > results[2].score)
-  });
+  }, options);
 })
 
 test('ngram search prefix matching', function () {
+  var options = {"howMany":10, "boostPrefix":false, "scoreThreshold":0};
   this.idx.search('plu', function(results){
 
     equal(results.length, 2)
     equal(results[0].id, 'b')
     equal(results[1].id, 'c')
-  });
+  }, options);
 })
 
 test('ngram search suffix matching', function () {
+  var options = {"howMany":10, "boostPrefix":false, "scoreThreshold":0};
   this.idx.search('udy', function(results){
 
     equal(results.length, 2)
@@ -94,18 +100,20 @@ test('ngram search suffix matching', function () {
     equal(results[1].id, 'a')
 
     ok(results[0].score > results[1].score)
-  });
+  }, options);
 })
 
 test('ngram search query too short', 0, function () {
+  var options = {"howMany":10, "boostPrefix":false, "scoreThreshold":0};
   this.idx.search('y', function(results){
     // no results returned, so nothing to do
-  });
+  }, options);
 })
 
 test('ngram search mid string phrase with typo', function () {
+  var options = {"howMany":10, "boostPrefix":false, "scoreThreshold":0};
   this.idx.search('watered plant', function(results){
 
     equal(results[0].id, 'c')
-  });
+  }, options);
 })
