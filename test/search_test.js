@@ -33,7 +33,18 @@ module('search', {
   }
 })
 
-test('returning the correct results', function () {
+test('return correct results - default options', function () {
+  this.idx.search('green plant', function(results) {
+    equal(results.length, 2)
+    equal(results[0].id, 'b')
+    equal(results[1].id, 'c')
+    equal(results[0].title, 'Plumb waters plant')
+    equal(results[0].wordCount, '9')
+    equal(results[1].title, 'Scarlett helps Professor')
+  });
+})
+
+test('return correct results - modified options', function () {
   var options = {"howMany":10, "boostPrefix":false, "scoreThreshold":0};
   this.idx.search('green plant', function(results) {
     equal(results.length, 3)
@@ -132,7 +143,17 @@ test('no search tokens in the index', 0, function () {
   }, options);
 })
 
-test('search results ranked by score', function () {
+test('search results ranked by score - default options', function () {
+  this.idx.search('professor', function(results){
+    equal(results.length, 2)
+    equal(results[0].id, 'b')
+    equal(results[1].id, 'c')
+    equal(results[0].score, 26)
+    equal(results[1].score, 21)
+  });
+})
+
+test('search results ranked by score - modified options', function () {
   var options = {"howMany":10, "boostPrefix":false, "scoreThreshold":0};
   this.idx.search('professor', function(results){
 
