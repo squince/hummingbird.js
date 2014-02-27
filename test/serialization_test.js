@@ -19,7 +19,7 @@ module('serialization', {
 test('dumping and loading an index', function () {
   var idx = new hummingbird.Index
 
-  idx.tokenizer = new hummingbird.tokenizer(3)
+  idx.tokenizer = new hummingbird.tokenizer(3,6)
 
   this.corpus.forEach(function (doc) { idx.add(doc) })
 
