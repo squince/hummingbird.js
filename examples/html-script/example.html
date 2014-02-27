@@ -1,4 +1,4 @@
-<script src="/hummingbird.js/hummingbird.js" type="text/javascript" charset="utf-8"></script>
+<script src="hummingbird.js" type="text/javascript" charset="utf-8"></script>
 <script type="text/javascript" charset="utf-8">
   var idx
 
@@ -8,7 +8,7 @@
     $("#searchTerm").keyup(searchText)
 
     console.time("load")
-    $.getJSON('/hummingbird.js/examples/coffee-repl/idx-countries.json')
+    $.getJSON('examples/coffee-repl/idx-countries.json')
     .success(function (indexData) {
       idx = hummingbird.Index.load(indexData)
     })

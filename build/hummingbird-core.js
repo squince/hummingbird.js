@@ -131,14 +131,19 @@ hummingbird.Index.prototype.update = function(doc, emitEvent) {
   }
 };
 
-hummingbird.Index.prototype.search = function(query, callback, howMany, startPos) {
-  var documentSet, documentSets, hasSomeToken, index, key, numResults, offset, queryTokens, resultSet, results, self;
+hummingbird.Index.prototype.search = function(query, callback, options) {
+  var boost, documentSet, documentSets, hasSomeToken, key, maxScore, numResults, offset, queryTokens, resultSet, results, self, threshold;
+  if ((query == null) || query.length < (this.tokenizer.min - 1)) {
+    return [];
+  }
   queryTokens = this.tokenizer.tokenize(query);
-  numResults = (howMany === undefined ? 10 : howMany);
-  offset = (startPos === undefined ? 0 : startPos);
+  numResults = (options != null ? options.howMany : void 0) === undefined ? 10 : Math.floor(options.howMany);
+  offset = (options != null ? options.startPos : void 0) === undefined ? 0 : Math.floor(options.startPos);
   documentSets = {};
   documentSet = [];
   self = this;
+  maxScore = 0;
+  boost = ((options != null ? options.boostPrefix : void 0) == null) || (options != null ? options.boostPrefix : void 0) ? true : false;
   hasSomeToken = queryTokens.some(function(token) {
     return this.tokenStore.has(token);
   }, this);
@@ -147,29 +152,39 @@ hummingbird.Index.prototype.search = function(query, callback, howMany, startPos
   }
   self.logTimer('Start - Find all docs that match each query token and score');
   queryTokens.forEach((function(token, i, tokens) {
-    var localToken;
+    var len, localToken;
     self = this;
     localToken = token;
+    len = localToken.length;
+    maxScore += boost && localToken.substring(0, 1) === '\u0002' ? len + 2 : len;
     self.tokenStore.get(token).forEach(function(docRef, i, documents) {
       var docScore;
-      docScore = localToken.length;
+      docScore = boost && localToken.substring(0, 1) === '\u0002' ? len + 2 : len;
       if (docRef in documentSets) {
-        documentSets[docRef] = documentSets[docRef] + docScore;
+        documentSets[docRef] += docScore;
       } else {
         documentSets[docRef] = docScore;
       }
     });
   }), this);
   self.logTimer('Finish - Find all docs that match each query token and score');
-  index = 0;
+  if ((options != null ? options.scoreThreshold : void 0) == null) {
+    threshold = 0.5 * maxScore;
+  } else if ((options != null ? options.scoreThreshold : void 0) < 0) {
+    threshold = 0;
+  } else if ((options != null ? options.scoreThreshold : void 0) > 1) {
+    threshold = maxScore;
+  } else {
+    threshold = options.scoreThreshold * maxScore;
+  }
   self.logTimer('Start - Sorting');
   for (key in documentSets) {
-    documentSet.push(index);
-    documentSet[index] = {
-      id: key,
-      score: documentSets[key]
-    };
-    index++;
+    if (documentSets[key] >= threshold) {
+      documentSet.push({
+        id: key,
+        score: documentSets[key]
+      });
+    }
   }
   documentSet.sort(function(a, b) {
     return b.score - a.score;

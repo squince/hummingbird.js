@@ -32,7 +32,6 @@ tightly match than a similar series of characters elsewhere in sought terms.
       n = @min
 
       while n <= @max
-        # str = '\u0002' + normalized_name + '\u0003'
         buffer = []
         if normalized_name.length <= n
           buffer.push normalized_name

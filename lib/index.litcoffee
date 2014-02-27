@@ -47,12 +47,12 @@ _doc.id_ = must be a unique reference to the document as it is used to map to as
 
 _doc.name_ = the string to be indexed for autocompletion
 
-_doc.meta_ = object/hash that is an arbitrary collection of name-value pairs
+Optionally includes additional arbitrary name-value pairs to be stored, but not indexed
 
     hummingbird.Index::add = (doc, emitEvent) ->
       allDocumentTokens = {}
       emitEvent = (if emitEvent is `undefined` then true else emitEvent)
-      tokens = this.tokenizer.tokenize(doc['name'])
+      tokens = @tokenizer.tokenize(doc['name'])
       for i of tokens
         token = tokens[i]
         allDocumentTokens[token] = token.length
@@ -94,17 +94,26 @@ This method is just a wrapper around `remove` and `add`
 ### ::search
 Finds matching names and returns them in order of best match
 Takes a callback function that has the resultSet array as its only argument
+Optionally, takes an options object with the following possible properties
 
-The number of results returned and how far from the top of the list
-are optional parameters
+* howMany - the maximum number of results to be returned (_default=10_)
+* startPos - how far into the sorted matched set should the returned resultset start (_default=0_)
+* scoreThreshold - (number between 0,1 inclusive) only matches with a score equal to or greater
+  than this fraction of the maximum theoretical score will be returned in the result set (_default=0.5_, includes all matches)
+* boostPrefix - (boolean) if _true_ provides an additional boost to results that start with the first query token (_default=true_)
 
-    hummingbird.Index::search = (query, callback, howMany, startPos) ->
+    hummingbird.Index::search = (query, callback, options) ->
+      if (not query? or query.length < (@tokenizer.min - 1)) then return []
+
       queryTokens = @tokenizer.tokenize(query)
-      numResults = (if (howMany is `undefined`) then 10 else howMany)
-      offset = (if (startPos is `undefined`) then 0 else startPos)
+      numResults = if (options?.howMany is `undefined`) then 10 else Math.floor(options.howMany)
+      offset = if (options?.startPos is `undefined`) then 0 else Math.floor(options.startPos)
       documentSets = {}
       documentSet = []
       self = this
+      maxScore = 0
+      boost = if not options?.boostPrefix? or options?.boostPrefix then true else false
+
       hasSomeToken = queryTokens.some((token) ->
         @tokenStore.has token
       , this)
@@ -114,11 +123,13 @@ are optional parameters
       queryTokens.forEach ((token, i, tokens) ->
         self = this
         localToken = token
+        len = localToken.length
+        maxScore += if boost and localToken.substring(0,1) is '\u0002' then len + 2 else len
         self.tokenStore.get(token).forEach (docRef, i, documents) ->
-          docScore = localToken.length
 
+          docScore = if boost and localToken.substring(0,1) is '\u0002' then len + 2 else len
           if docRef of documentSets
-            documentSets[docRef] = documentSets[docRef] + docScore
+            documentSets[docRef] += docScore
           else
             documentSets[docRef] = docScore
           return
@@ -127,20 +138,29 @@ are optional parameters
       ), this
       self.logTimer 'Finish - Find all docs that match each query token and score'
 
+      if not options?.scoreThreshold?
+        threshold = 0.5 * maxScore
+      else if options?.scoreThreshold < 0
+        threshold = 0
+      else if options?.scoreThreshold > 1
+        threshold = maxScore
+      else
+        threshold = options.scoreThreshold * maxScore
+
       # convert hash to array of hashes for sorting
-      index = 0
+      # filter out results below the threshold
       self.logTimer 'Start - Sorting'
       for key of documentSets
-        documentSet.push index
-        documentSet[index] =
-          id: key
-          score: documentSets[key]
-        index++
+        if documentSets[key] >= threshold
+          documentSet.push
+            id: key
+            score: documentSets[key]
 
       documentSet.sort (a, b) ->
         b.score - a.score
 
       self.logTimer 'Finish - Sorting'
+
       # loop over limited return set and augment with meta
       results = documentSet.slice offset, numResults
       resultSet = (results.map (result, i, results) ->
