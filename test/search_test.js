@@ -58,6 +58,84 @@ test('return correct results - modified options', function () {
   }, options);
 })
 
+test('returning the correct results - 2 rows', function () {
+  var options = {"howMany":2, "boostPrefix":false, "scoreThreshold":0};
+  this.idx.search('green plant', function(results) {
+    equal(results.length, 2)
+    equal(results[0].id, 'b')
+    equal(results[1].id, 'c')
+    equal(results[0].title, 'Plumb waters plant')
+    equal(results[0].wordCount, '9')
+    equal(results[1].title, 'Scarlett helps Professor')
+  }, options);
+})
+
+test('returning the correct results - with boost rows', function () {
+  var options = {"boostPrefix":true, "scoreThreshold":0};
+  this.idx.search('hand', function(results) {
+    equal(results.length, 3)
+    equal(results[0].id, 'e')
+    equal(results[1].id, 'd')
+    equal(results[2].id, 'a')
+    equal(results[0].score, '14')
+    equal(results[1].score, '11')
+    equal(results[2].score, '3')
+  }, options);
+  options = {"boostPrefix":false, "scoreThreshold":0};
+  this.idx.search('hand', function(results) {
+    equal(results.length, 3)
+    equal(results[0].id, 'e')
+    equal(results[1].id, 'd')
+    equal(results[2].id, 'a')
+    equal(results[0].score, '12')
+    equal(results[1].score, '9')
+    equal(results[2].score, '3')
+  }, options);
+})
+
+test('returning the correct results - with boost rows', function () {
+  var options = {"boostPrefix":true, "scoreThreshold":0};
+  this.idx.search('hand', function(results) {
+    equal(results.length, 3)
+    equal(results[0].id, 'e')
+    equal(results[1].id, 'd')
+    equal(results[2].id, 'a')
+    equal(results[0].score, '14')
+    equal(results[1].score, '11')
+    equal(results[2].score, '3')
+  }, options);
+  options = {"boostPrefix":false, "scoreThreshold":0};
+  this.idx.search('hand', function(results) {
+    equal(results.length, 3)
+    equal(results[0].id, 'e')
+    equal(results[1].id, 'd')
+    equal(results[2].id, 'a')
+    equal(results[0].score, '12')
+    equal(results[1].score, '9')
+    equal(results[2].score, '3')
+  }, options);
+})
+
+test('returning the correct results - with boost rows', function () {
+  var options = {"boostPrefix":true, "scoreThreshold":0};
+  this.idx.search('hand', function(results) {
+    equal(results.length, 3)
+    equal(results[0].id, 'e')
+    equal(results[1].id, 'd')
+    equal(results[2].id, 'a')
+    equal(results[0].score, '14')
+    equal(results[1].score, '11')
+    equal(results[2].score, '3')
+  }, options);
+  options = {"boostPrefix":true, "scoreThreshold":.75};
+  this.idx.search('hand', function(results) {
+    equal(results.length, 2)
+    equal(results[0].id, 'e')
+    equal(results[1].id, 'd')
+    equal(results[0].score, '14')
+    equal(results[1].score, '11')
+  }, options);
+})
 test('no search tokens in the index', 0, function () {
   var options = {"howMany":10, "boostPrefix":false, "scoreThreshold":0};
   this.idx.search('zoo', function (results) {
