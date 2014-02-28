@@ -12,9 +12,7 @@
 
   $(document).ready(function () {
     $.ajaxSetup({ cache: false })
-
-    $("#searchTerm").keyup(searchText)
-
+    $("#searchTerm").keyup(searchText).focus()
     console.time("load")
     $.getJSON('examples/coffee-repl/idx-countries.json')
     .success(function (indexData) {
@@ -25,20 +23,17 @@
 </script>
 <script type="text/javascript" charset="utf-8">
   function searchText() {
-
     $("#matchResultsList").empty();
     var searchTerm = $("#searchTerm").val().trim();
     if (!searchTerm) {
       return;
     }
-
     console.time('search')
     idx.search(searchTerm, showResults)
     console.timeEnd('search')
   }
 
   function showResults(results) {
-
     var frag = document.createDocumentFragment();
 
     $.each(results, function( i, val ) {
@@ -46,7 +41,6 @@
       li.innerHTML = val.name + " -> " + val.lat + "&deg; latitude / " + val.long + "&deg; longitude";
       frag.appendChild(li);
     });
-
     $("#matchResultsList").append(frag);
   }
 </script>
