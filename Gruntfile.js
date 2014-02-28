@@ -79,6 +79,13 @@ module.exports = function(grunt) {
            stderr: true
          },
         command: 'PATH="node_modules/.bin:${PATH}" doc-n-toc docs/intro.md docs/examples.md docs/contribute.md --css docs/my.less --title "Hummingbird v<%= pkg.version %>" > build/index.html'
+      },
+      npm: {
+         options: {
+           stdout: false,
+           stderr: true
+         },
+        command: 'git commit -am "publish new version to npmjs.org"; git push origin master; npm publish ./; git checkout gh-pages; git merge master; git push origin gh-pages; git checkout master'
       }
     },
     qunit: {
@@ -106,4 +113,5 @@ module.exports = function(grunt) {
   grunt.registerTask('test', ['default',  'connect:dev', 'qunit', 'watch']);
   grunt.registerTask('docs', ['shell:docs', 'includereplace:post']);
   grunt.registerTask('serve', ['connect:dev', 'watch']);
+  grunt.registerTask('publish', ['default','shell:npm']);
 };

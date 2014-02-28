@@ -8,7 +8,7 @@ hummingbird = function() {
 
 hummingbird.loggingOn = false;
 
-hummingbird.version = "0.3.0";
+hummingbird.version = "0.3.1";
 
 hummingbird.index_version = "2.0";
 
