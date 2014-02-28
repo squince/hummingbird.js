@@ -4,6 +4,7 @@ module.exports = function(grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     example: grunt.file.read('examples/html-script/example.html'),
+    nav: grunt.file.read('docs/nav.html'),
     banner: '/*! <%= pkg.title || pkg.name %> - v<%= pkg.version %> - ' +
       '<%= grunt.template.today("yyyy-mm-dd") %>\n' +
       '<%= pkg.homepage ? "* " + pkg.homepage + "\\n" : "" %>' +
@@ -24,7 +25,8 @@ module.exports = function(grunt) {
       post: {
         options: {
           globals: {
-            EXAMPLE: '<%= example %>'
+            EXAMPLE: '<%= example %>',
+            NAVIGATION: '<%= nav %>'
           }
         },
         src: 'build/index.html',
