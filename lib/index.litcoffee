@@ -42,10 +42,8 @@ than what is now supported by this version of hummingbird
 ### ::add
 Add a name to the index (i.e., the tokenStore and its associated metadata to the metaStore)
 Takes an Object as an argument that must have at least 2 properties:
-
-_doc.id_ = must be a unique reference to the document as it is used to map to associated meta data
-
-_doc.name_ = the string to be indexed for autocompletion
+* _doc.id_ = must be a unique reference to the document as it is used to map to associated meta data
+* _doc.name_ = the string to be indexed for autocompletion
 
 Optionally includes additional arbitrary name-value pairs to be stored, but not indexed
 
@@ -92,15 +90,17 @@ This method is just a wrapper around `remove` and `add`
       return
 
 ### ::search
-Finds matching names and returns them in order of best match
-Takes a callback function that has the resultSet array as its only argument
+Takes a callback function that has the resultSet array as its only argument.  
 Optionally, takes an options object with the following possible properties
+* _howMany_ - the maximum number of results to be returned (_default=10_)
+* _startPos_ - how far into the sorted matched set should the returned resultset start (_default=0_)
+* _scoreThreshold_ - (number between 0,1 inclusive) only matches with a score equal to or greater
+  than this fraction of the maximum theoretical score will be returned in the result set (_default=0.5_, 
+  includes all matches)
+* _boostPrefix_ - (boolean) if _true_ provides an additional boost to results that start with the first 
+  query token (_default=true_)
 
-* howMany - the maximum number of results to be returned (_default=10_)
-* startPos - how far into the sorted matched set should the returned resultset start (_default=0_)
-* scoreThreshold - (number between 0,1 inclusive) only matches with a score equal to or greater
-  than this fraction of the maximum theoretical score will be returned in the result set (_default=0.5_, includes all matches)
-* boostPrefix - (boolean) if _true_ provides an additional boost to results that start with the first query token (_default=true_)
+Finds matching names and returns them in order of best match.
 
     hummingbird.Index::search = (query, callback, options) ->
       if (not query? or query.length < (@tokenizer.min - 1)) then return []
