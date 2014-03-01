@@ -1,14 +1,18 @@
 ## Examples
 
 ### TLDR
-You can index any JavaScript object you like, and hummingbird.js will
-merrily make it searchable. No schema needed, it just matches all the
-things.
+You can index any JavaScript object you like with `id` and `name`, and
+hummingbird.js will merrily make it searchable. No schema needed, it
+just matches against `name` and returns the document.
+
+`id` serves as the key, this needs to be unique in an index.
+`name` is the indexed text, just build up a property.
+Any other properties are just carried along, but are not indexed.
 
 ```javascript
 var idx = new hummingbird.Index();
-idx.add({id: 1, name: 'Hi Mom'});
-idx.add({id: 2, name: 'Sup Dad'});
+idx.add({id: 1, name: 'Hi Mom', female: true});
+idx.add({id: 2, name: 'Sup Dad', male: true});
 idx.search('Dad', function(results){
   results.forEach(function(doc){
    console.log(doc);
