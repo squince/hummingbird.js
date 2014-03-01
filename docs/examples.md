@@ -1,12 +1,12 @@
 ## Examples
 
 ### TLDR
-You can index any JavaScript object you like with `id` and `name`, and
+You can index any JavaScript object you like with _id_ and _name_, and
 hummingbird.js will merrily make it searchable. No schema needed, it
-just matches against `name` and returns the document.
+just matches against _name_ and returns the document.
 
-`id` serves as the key, this needs to be unique in an index.
-`name` is the indexed text, just build up a property.
+_id_ serves as the key, this needs to be unique in an index.
+_name_ is the indexed text, just build up a property.
 Any other properties are just carried along, but are not indexed.
 
 ```javascript
