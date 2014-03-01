@@ -24,4 +24,7 @@ Version of the hummingbird code base
 Version of the index data structure
 
     hummingbird.index_version = "@@INDEX_VERSION"
-    module.exports = hummingbird  if typeof module isnt 'undefined'
+    if typeof module isnt 'undefined' and module isnt null
+      module.exports = hummingbird
+    else
+      return undefined

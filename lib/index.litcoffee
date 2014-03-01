@@ -41,16 +41,23 @@ than what is now supported by this version of hummingbird
 
 ### ::add
 Add a name to the index (i.e., the tokenStore and its associated metadata to the metaStore)
-Takes an Object as an argument that must have at least 2 properties:
-* _doc.id_ = must be a unique reference to the document as it is used to map to associated meta data
-* _doc.name_ = the string to be indexed for autocompletion
+Takes an Object as an argument.
+* _doc.id_ = must be a unique identifier within a given index
+
+Then, there are two options in order to have something to search:
+* _doc.name_ = this string will be indexed
+* _indexCallback_ = this function if provided will be called on _doc_ and must return
+  the string to be indexed
 
 Optionally includes additional arbitrary name-value pairs to be stored, but not indexed
 
-    hummingbird.Index::add = (doc, emitEvent) ->
+    hummingbird.Index::add = (doc, emitEvent, indexCallback) ->
       allDocumentTokens = {}
       emitEvent = (if emitEvent is `undefined` then true else emitEvent)
-      tokens = @tokenizer.tokenize(doc['name'])
+      if indexCallback
+        tokens = @tokenizer.tokenize "#{indexCallback doc}"
+      else
+        tokens = @tokenizer.tokenize doc['name']
       for i of tokens
         token = tokens[i]
         allDocumentTokens[token] = token.length
