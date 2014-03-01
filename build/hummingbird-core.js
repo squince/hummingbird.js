@@ -8,12 +8,14 @@ hummingbird = function() {
 
 hummingbird.loggingOn = false;
 
-hummingbird.version = "0.3.1";
+hummingbird.version = "0.3.2";
 
 hummingbird.index_version = "2.0";
 
-if (typeof module !== 'undefined') {
+if (typeof module !== 'undefined' && module !== null) {
   module.exports = hummingbird;
+} else {
+  return void 0;
 }
 
 hummingbird.EventEmitter = function() {
@@ -92,11 +94,15 @@ hummingbird.Index.load = function(serializedData) {
   return idx;
 };
 
-hummingbird.Index.prototype.add = function(doc, emitEvent) {
+hummingbird.Index.prototype.add = function(doc, emitEvent, indexCallback) {
   var allDocumentTokens, i, token, tokens;
   allDocumentTokens = {};
   emitEvent = (emitEvent === undefined ? true : emitEvent);
-  tokens = this.tokenizer.tokenize(doc['name']);
+  if (indexCallback) {
+    tokens = this.tokenizer.tokenize("" + (indexCallback(doc)));
+  } else {
+    tokens = this.tokenizer.tokenize(doc['name']);
+  }
   for (i in tokens) {
     token = tokens[i];
     allDocumentTokens[token] = token.length;

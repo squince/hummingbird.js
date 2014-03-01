@@ -60,7 +60,7 @@ module.exports = function(grunt) {
     },
     watch: {
       dev: {
-        files: ["lib/*", "!lib/hummingbird.litcoffee", "docs/*"],
+        files: ["lib/*", "docs/*"],
         tasks: ['default'],
         options: {
           interrupt: true
@@ -92,7 +92,7 @@ module.exports = function(grunt) {
       all: {
         options: {
           urls: [
-            'http://localhost:8100/test',
+            'http://localhost:8100/test/index.html',
           ]
         }
       }
