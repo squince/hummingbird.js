@@ -1,10 +1,32 @@
 ## Examples
-Special thanks to [socrata.com](https://opendata.socrata.com/) for
-making a wide range of interesting data available
+
+### TLDR
+You can index any JavaScript object you like with `id` and `name`, and
+hummingbird.js will merrily make it searchable. No schema needed, it
+just matches against `name` and returns the document.
+
+`id` serves as the key, this needs to be unique in an index.
+`name` is the indexed text, just build up a property.
+Any other properties are just carried along, but are not indexed.
+
+```javascript
+var idx = new hummingbird.Index();
+idx.add({id: 1, name: 'Hi Mom', female: true});
+idx.add({id: 2, name: 'Sup Dad', male: true});
+idx.search('Dad', function(results){
+  results.forEach(function(doc){
+   console.log(doc);
+  });
+});
+```
+
 
 ### html script
 The most obvious way to use hummingbird.js is from within an html page.
 See a working example of [typeahead here](http://glg.github.io/hummingbird.js/examples/html-script/index.html)
+
+Special thanks to [socrata.com](https://opendata.socrata.com/) for
+making a wide range of interesting data available
 
 ### coffee repl
 Yep, you can even run this from the command-line.  This can be useful if
