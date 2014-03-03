@@ -33,12 +33,13 @@ tightly match than a similar series of characters elsewhere in sought terms.
 
       while n <= @max
         buffer = []
-        if normalized_name.length <= n
+        if normalized_name.length <= n and buffer.indexOf(normalized_name) is -1
           buffer.push normalized_name
         else
           i = 0
           while i <= normalized_name.length - n
-            buffer.push normalized_name.slice(i, i + n)
+            token = normalized_name.slice(i, i + n)
+            buffer.push token if buffer.indexOf(token) is -1
             i++
         alltokens = alltokens.concat(buffer)
         n++

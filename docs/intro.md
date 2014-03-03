@@ -8,7 +8,7 @@ Look!...  there..., in the sky...
 
 It's **Hummingbird**.js
 
-Impossibly quick, precise, and beautiful to behold (day _or_ night)
+Impossibly quick, precise, and beautiful to behold (day _and_ night)
 
 @@EXAMPLE
 

@@ -1,10 +1,9 @@
 ## Examples
-
 ### TLDR
 You can index any JavaScript object you like with _id_ and _name_, and
 hummingbird.js will merrily make it searchable. No schema needed, it
 just matches against _name_ and returns the document.
-
+-
 _id_ serves as the key, this needs to be unique in an index.
 _name_ is the indexed text, just build up a property.
 Any other properties are just carried along, but are not indexed.
@@ -20,10 +19,9 @@ idx.search('Dad', function(results){
 });
 ```
 
-
 ### html script
-The most obvious way to use hummingbird.js is from within an html page.
-See a working example of [typeahead here](http://glg.github.io/hummingbird.js/examples/html-script/index.html)
+The most obvious way to use hummingbird.js is from within an html page.  
+See a working example of [typeahead here](examples/html-script/index.html)
 
 Special thanks to [socrata.com](https://opendata.socrata.com/) for
 making a wide range of interesting data available

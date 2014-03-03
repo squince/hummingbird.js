@@ -17,16 +17,16 @@
       });
       console.timeEnd("load");
     });
-  </script>
-  <script type="text/javascript" charset="utf-8">
+
     function searchText() {
       $("#matchResultsList").empty();
       var searchTerm = $("#searchTerm").val().trim();
       if (!searchTerm || searchTerm.length < 2) {
         return;
       };
+      options = {'boostPrefix': false}
       console.time('search');
-      idx.search(searchTerm, showResults);
+      idx.search(searchTerm, showResults, options);
       console.timeEnd('search');
     }
 
@@ -59,7 +59,7 @@
 </head>
 <body>
   <h1>Hummingbird.js</h1>
-  <h3>Impossibly quick, precise, and beautiful to behold day _or_ night</h3>
+  <h3>Impossibly quick, precise, and beautiful to behold day _and_ night</h3>
   <div>
     <p>Before you finished reading, the data was loaded, indexed, and ready for quering.</p>
     <p>This is a super simple example using trigrams of countries with avg latitude/longitude meta data.</p>

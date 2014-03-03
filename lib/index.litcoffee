@@ -6,6 +6,13 @@ found in each name in the corpus, associated meta data, and methods
 for interacting with the data
 
 ### constructor
+Set _hummingbird.Index.tokenizer_ to any javascript object that has 
+a method _tokenize_ that takes a string and returns an array of values 
+that will be used to find this string when the index is searched.
+
+Example:
+
+_hummingbird.Index.tokenizer = new hummingbird.tokenizer(2,3)_
 
     hummingbird.Index = ->
       @tokenStore = new hummingbird.TokenStore

@@ -78,7 +78,7 @@ module.exports = function(grunt) {
            stdout: false,
            stderr: true
          },
-        command: 'PATH="node_modules/.bin:${PATH}" doc-n-toc docs/intro.md docs/examples.md docs/contribute.md --css docs/my.less --title "Hummingbird v<%= pkg.version %>" > build/index.html'
+        command: 'PATH="node_modules/.bin:${PATH}" doc-n-toc docs/intro.md docs/examples.md docs/features.md docs/contribute.md --css docs/my.less --title "Hummingbird v<%= pkg.version %>" > build/index.html'
       },
       npm: {
          options: {
@@ -92,7 +92,7 @@ module.exports = function(grunt) {
       all: {
         options: {
           urls: [
-            'http://localhost:8100/test/index.html',
+            'http://localhost:8100/test',
           ]
         }
       }
