@@ -1,18 +1,7 @@
-@@NAVIGATION
-# Hummingbird
-Look!...  there..., in the sky...
-
-...it's _not_ [Lucene](https://lucene.apache.org/) _nor_ [ElasticSearch](http://www.elasticsearch.org/),
-
-...it's _not_ [Solr](https://lucene.apache.org/solr/) _nor_ [Lunr](http://lunrjs.com/),
-
-It's **Hummingbird**.js
-
-Impossibly quick, precise, and beautiful to behold (day _and_ night)
 
 @@EXAMPLE
 
-## Overview
+## Inspiration
 Inspired by the desire to help folks _get to_ what they're looking for
 without having to leave what they're doing.  Heavily influenced by
 popular open source search solutions as well as GLG's
