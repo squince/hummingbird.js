@@ -26,5 +26,3 @@ Version of the index data structure
     hummingbird.index_version = "2.0"
     if typeof module isnt 'undefined' and module isnt null
       module.exports = hummingbird
-    else
-      return undefined

@@ -14,8 +14,6 @@ hummingbird.index_version = "2.0";
 
 if (typeof module !== 'undefined' && module !== null) {
   module.exports = hummingbird;
-} else {
-  return void 0;
 }
 
 hummingbird.EventEmitter = function() {
