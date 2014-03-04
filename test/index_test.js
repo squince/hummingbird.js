@@ -29,12 +29,12 @@ test('triggering add events', function () {
 
 test('Adding to index with callback', function () {
   var idx = new hummingbird.Index,
-      doc = {id: 1, name: 'this is a test', notname: 'this is metadata'},
+      doc = {id: 1, indexfield: 'this is a test', notname: 'this is metadata'},
       callbackCalled = false
 
   idx.add(doc, true, function (doc, index) {
     callbackCalled = true
-    return doc.name
+    return doc.indexfield
   })
 
   ok(callbackCalled)
