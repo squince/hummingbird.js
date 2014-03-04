@@ -19,8 +19,10 @@ module.exports = function(grunt) {
             EXAMPLE: '<%= example %>'
           }
         },
-        src: 'lib/hummingbird.litcoffee',
-        dest: 'build/hummingbird.litcoffee'
+        files: [
+          {src: 'lib/hummingbird.litcoffee', dest: 'build/hummingbird.litcoffee'},
+          {src: 'docs/readme.md', dest: 'README.md'}
+        ]
       },
       post: {
         options: {
@@ -69,7 +71,7 @@ module.exports = function(grunt) {
     },
     clean: {
       dist: {
-        src: ['hummingbird.js', 'build/*', 'build/index.html']
+        src: ['hummingbird.js', 'README.md', 'build/*', 'build/index.html']
       }
     },
     shell: {
@@ -78,7 +80,7 @@ module.exports = function(grunt) {
            stdout: false,
            stderr: true
          },
-        command: 'PATH="node_modules/.bin:${PATH}" doc-n-toc docs/intro.md docs/examples.md docs/features.md docs/contribute.md --css docs/my.less --title "Hummingbird v<%= pkg.version %>" > build/index.html'
+        command: 'PATH="node_modules/.bin:${PATH}" doc-n-toc docs/header.md docs/readme.md docs/intro.md docs/examples.md docs/features.md docs/contribute.md --css docs/my.less --title "Hummingbird v<%= pkg.version %>" > build/index.html'
       },
       npm: {
          options: {
@@ -111,7 +113,7 @@ module.exports = function(grunt) {
   grunt.registerTask('default', ['clean', 'includereplace:pre', 'browserify', 'coffee', 'concat', 'shell:docs', 'includereplace:post']);
   grunt.registerTask('dev', ['default',  'connect:dev', 'watch']);
   grunt.registerTask('test', ['default',  'connect:dev', 'qunit', 'watch']);
-  grunt.registerTask('docs', ['shell:docs', 'includereplace:post']);
+  grunt.registerTask('docs', ['includereplace:pre', 'shell:docs', 'includereplace:post']);
   grunt.registerTask('serve', ['connect:dev', 'watch']);
   grunt.registerTask('publish', ['default','shell:npm']);
 };
