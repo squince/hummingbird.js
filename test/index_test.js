@@ -27,6 +27,20 @@ test('triggering add events', function () {
   deepEqual(callbackArgs[1], idx)
 })
 
+test('Adding to index with callback', function () {
+  var idx = new hummingbird.Index,
+      doc = {id: 1, name: 'this is a test', notname: 'this is metadata'},
+      callbackCalled = false
+
+  idx.add(doc, true, function (doc, index) {
+    callbackCalled = true
+    return doc.name
+  })
+
+  ok(callbackCalled)
+  equal(idx.tokenStore.get('tes')[0], 1)
+})
+
 test('silencing add events', function () {
   var idx = new hummingbird.Index,
       doc = {id: 1, name: 'this is a test'},
