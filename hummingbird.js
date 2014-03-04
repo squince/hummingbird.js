@@ -326,7 +326,7 @@ hummingbird = function() {
 
 hummingbird.loggingOn = false;
 
-hummingbird.version = "0.3.2";
+hummingbird.version = "0.4.0";
 
 hummingbird.index_version = "2.0";
 
@@ -652,7 +652,7 @@ hummingbird.tokenizer = function(min, max) {
 };
 
 hummingbird.tokenizer.prototype.tokenize = function(obj) {
-  var alltokens, buffer, i, n, normalized_name;
+  var alltokens, buffer, i, n, normalized_name, token;
   if (!arguments.length || (obj == null) || obj === undefined) {
     return [];
   }
@@ -661,12 +661,15 @@ hummingbird.tokenizer.prototype.tokenize = function(obj) {
   n = this.min;
   while (n <= this.max) {
     buffer = [];
-    if (normalized_name.length <= n) {
+    if (normalized_name.length <= n && buffer.indexOf(normalized_name) === -1) {
       buffer.push(normalized_name);
     } else {
       i = 0;
       while (i <= normalized_name.length - n) {
-        buffer.push(normalized_name.slice(i, i + n));
+        token = normalized_name.slice(i, i + n);
+        if (buffer.indexOf(token) === -1) {
+          buffer.push(token);
+        }
         i++;
       }
     }
