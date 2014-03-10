@@ -118,7 +118,7 @@ Optionally, takes an options object with the following possible properties
 Finds matching names and returns them in order of best match.
 
     hummingbird.Index::search = (query, callback, options) ->
-      if (not query? or query.length < (@tokenizer.min - 1)) then return []
+      if (not query? or query.length < (@tokenizer.min - 1)) then callback []
 
       queryTokens = @tokenizer.tokenize(query)
       numResults = if (options?.howMany is `undefined`) then 10 else Math.floor(options.howMany)
