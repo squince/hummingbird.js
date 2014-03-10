@@ -8,7 +8,7 @@ hummingbird = function() {
 
 hummingbird.loggingOn = false;
 
-hummingbird.version = "0.4.0";
+hummingbird.version = "0.4.1";
 
 hummingbird.index_version = "2.0";
 
@@ -139,7 +139,7 @@ hummingbird.Index.prototype.update = function(doc, emitEvent) {
 hummingbird.Index.prototype.search = function(query, callback, options) {
   var boost, documentSet, documentSets, hasSomeToken, key, maxScore, numResults, offset, queryTokens, resultSet, results, self, threshold;
   if ((query == null) || query.length < (this.tokenizer.min - 1)) {
-    return [];
+    callback([]);
   }
   queryTokens = this.tokenizer.tokenize(query);
   numResults = (options != null ? options.howMany : void 0) === undefined ? 10 : Math.floor(options.howMany);
