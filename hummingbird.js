@@ -439,6 +439,7 @@ hummingbird.Index.prototype.remove = function(doc, emitEvent) {
   Object.keys(this.tokenStore).forEach((function(token) {
     this.tokenStore.remove(token, docRef);
   }), this);
+  this.metaStore.remove(doc['id']);
   if (emitEvent) {
     this.eventEmitter.emit('remove', doc, this);
   }

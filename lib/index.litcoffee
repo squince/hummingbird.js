@@ -87,6 +87,7 @@ Removes the document from the index that is referenced by the 'id' property
         return
       ), this
 
+      @metaStore.remove doc['id']
       @eventEmitter.emit 'remove', doc, this  if emitEvent
       return
 
