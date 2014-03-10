@@ -18,7 +18,8 @@ data you are indexing or configuration parameters.
     
 1. _$ npm install_
 
-    from inside the ./coffee-repl subdirectory
+    from inside the ./coffee-repl subdirectory in order to get
+    additional dependencies like _prompt_
 
 1. _$ coffee repl.coffee_
 
