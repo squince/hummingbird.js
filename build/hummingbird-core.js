@@ -410,20 +410,15 @@ hummingbird.tokenizer.prototype.tokenize = function(norm_name) {
 hummingbird.VariantStore = function(variantsObj) {
   var name, norm_name;
   this.variants = {};
-  this.invertedVariants = {};
   this.utils = new hummingbird.Utils;
   if (variantsObj != null) {
     for (name in variantsObj) {
       norm_name = this.utils.normalizeString(name);
       this.variants[norm_name] = [];
       variantsObj[name].forEach((function(variant, i, variants) {
-        var normVariant, _base;
+        var normVariant;
         normVariant = this.utils.normalizeString(variant);
-        this.variants[norm_name].push(normVariant);
-        if ((_base = this.invertedVariants)[normVariant] == null) {
-          _base[normVariant] = [];
-        }
-        return this.invertedVariants[normVariant].push(norm_name);
+        return this.variants[norm_name].push(normVariant);
       }), this);
     }
   }
@@ -433,14 +428,12 @@ hummingbird.VariantStore.load = function(serializedData) {
   var store;
   store = new this;
   store.variants = serializedData.hasOwnProperty('variants') ? serializedData.variants : void 0;
-  store.invertedVariants = serializedData.hasOwnProperty('invertedVariants') ? serializedData.invertedVariants : void 0;
   return store;
 };
 
 hummingbird.VariantStore.prototype.toJSON = function() {
   return {
-    variants: this.variants,
-    invertedVariants: this.invertedVariants
+    variants: this.variants
   };
 };
 

@@ -3,11 +3,9 @@ A collection of objects and methods for working with names and their variants (i
 
 ### constructor
 * _@variants_ - key is name, value is array of nicknames/variants
-* _@invertedVariants_ - key is variant, value is array of names to which this variant applies
 
     hummingbird.VariantStore = (variantsObj) ->
       @variants = {}
-      @invertedVariants = {}
       @utils = new hummingbird.Utils
       if variantsObj?
         for name of variantsObj
@@ -16,8 +14,6 @@ A collection of objects and methods for working with names and their variants (i
           variantsObj[name].forEach ((variant, i, variants) ->
             normVariant = @utils.normalizeString(variant)
             @variants[norm_name].push normVariant
-            @invertedVariants[normVariant] ?= []
-            @invertedVariants[normVariant].push norm_name
           ), this
       return
 
@@ -27,7 +23,6 @@ Loads a previously serialized variant store
     hummingbird.VariantStore.load = (serializedData) ->
       store = new this
       store.variants = if serializedData.hasOwnProperty 'variants' then serializedData.variants
-      store.invertedVariants = if serializedData.hasOwnProperty 'invertedVariants' then serializedData.invertedVariants
       store
 
 ### ::toJSON
@@ -35,7 +30,6 @@ Returns a representation of the variant store ready for serialization.
 
     hummingbird.VariantStore::toJSON = ->
       variants: @variants
-      invertedVariants: @invertedVariants
 
 ### ::getVariantTokens
 Returns tokens associated with variants of the provided name
