@@ -506,10 +506,10 @@ hummingbird.Index.prototype.search = function(query, callback, options) {
   numResults = (options != null ? options.howMany : void 0) === undefined ? 10 : Math.floor(options.howMany);
   offset = (options != null ? options.startPos : void 0) === undefined ? 0 : Math.floor(options.startPos);
   boost = ((options != null ? options.boostPrefix : void 0) == null) || (options != null ? options.boostPrefix : void 0) ? true : false;
-  maxScore = this.utils.maxScore(query, this.tokenizer, boost);
   docSetHash = {};
   docSetArray = [];
   norm_query = this.utils.normalizeString(query);
+  maxScore = this.utils.maxScore(norm_query, this.tokenizer, boost);
   queryTokens = this.tokenizer.tokenize(norm_query);
   hasSomeToken = queryTokens.some(function(token) {
     return this.tokenStore.has(token);

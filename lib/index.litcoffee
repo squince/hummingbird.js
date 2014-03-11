@@ -135,7 +135,6 @@ Finds matching names and returns them in order of best match.
       numResults = if (options?.howMany is `undefined`) then 10 else Math.floor(options.howMany)
       offset = if (options?.startPos is `undefined`) then 0 else Math.floor(options.startPos)
       boost = if not options?.boostPrefix? or options?.boostPrefix then true else false
-      maxScore = @utils.maxScore(query, @tokenizer, boost)
 
       # initialize result set vars
       docSetHash = {}
@@ -143,7 +142,9 @@ Finds matching names and returns them in order of best match.
 
       # normalize the query
       norm_query = @utils.normalizeString(query)
+      maxScore = @utils.maxScore(norm_query, @tokenizer, boost)
       queryTokens = @tokenizer.tokenize(norm_query)
+
       hasSomeToken = queryTokens.some((token) ->
         @tokenStore.has token
       , this)
