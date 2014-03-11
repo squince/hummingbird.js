@@ -46,7 +46,7 @@ module.exports = function(grunt) {
     coffee:{
       dist: {
         files: {
-          'build/hummingbird-core.js' : ['build/hummingbird.litcoffee', 'lib/*.litcoffee', '!lib/hummingbird.litcoffee']
+          'build/hummingbird-core.js' : ['build/hummingbird.litcoffee', 'lib/utils.litcoffee', 'lib/*.litcoffee', '!lib/hummingbird.litcoffee']
         },
         options: {
           bare: true,

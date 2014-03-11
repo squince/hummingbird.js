@@ -36,8 +36,24 @@ search = (err, arg) ->
   prompt.get ['q'], search
 
 # Build & Serialize Index
-hummingbird.loggingOn = false
-index = new hummingbird
+hummingbird.loggingOn = true
+
+variants =
+  'great britain': ['united kingdom', 'britain', 'uk', 'u.k.', 'england']
+  'britain':['united kingdom','great britain','uk','england']
+  'united kingdom':['britain','great britain','uk','england']
+  'uk':['united kingdom','britain','great britain','england']
+  'england':['united kingdom','britain','great britain','uk']
+  'United States': ['america', 'usa']
+  'usa': ['United States', 'america']
+  'america': ['united states', 'usa', 'america']
+  'russia': ['russian federation', 'soviet union', 'ussr']
+  'russian federation': ['russia', 'soviet union', 'ussr']
+  'ussr': ['russian federation', 'soviet union', 'russia']
+  'soviet union': ['russian federation', 'ussr', 'russia']
+
+index = new hummingbird variants
+
 index.tokenizer = new hummingbird.tokenizer(3)
 buildIndex(countries)
 

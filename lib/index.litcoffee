@@ -11,15 +11,22 @@ a method _tokenize_ that takes a string and returns an array of values
 that will be used to find this string when the index is searched.
 
 Example:
+```javascript
+idx = new hummingbird.index();
+idx.tokenizer = new hummingbird.tokenizer(2,3)
+idx.variantStore.variants = {'steve': ['steven', 'stephen', 'stefan']}
+```
 
-_hummingbird.Index.tokenizer = new hummingbird.tokenizer(2,3)_
-
-    hummingbird.Index = ->
+    hummingbird.Index = (variantsObj) ->
       @tokenStore = new hummingbird.TokenStore
       @metaStore = new hummingbird.MetaStore
+      if variantsObj?
+        @variantStore = new hummingbird.VariantStore variantsObj
+      else
+        @variantStore = new hummingbird.VariantStore
       @eventEmitter = new hummingbird.EventEmitter
       @tokenizer = new hummingbird.tokenizer
-      @logTimer = hummingbird.utils.logTiming
+      @utils = new hummingbird.Utils
       return
 
 ### ::on
@@ -40,10 +47,11 @@ Loads serialized index and issues a warning if the index being imported is in a 
 than what is now supported by this version of hummingbird
 
     hummingbird.Index.load = (serializedData) ->
-      hummingbird.utils.warn 'version mismatch: current ' + hummingbird.index_version + ' importing ' + serializedData.index_version  if serializedData.index_version isnt hummingbird.index_version
       idx = new this
+      idx.utils.warn 'version mismatch: current ' + hummingbird.index_version + ' importing ' + serializedData.index_version  if serializedData.index_version isnt hummingbird.index_version
       idx.tokenStore = hummingbird.TokenStore.load(serializedData.tokenStore)
-      idx.metaStore = hummingbird.MetaStore.load(serializedData.metaStore)
+      idx.metaStore = if serializedData.hasOwnProperty 'metaStore' then hummingbird.MetaStore.load(serializedData.metaStore) else `undefined`
+      idx.variantStore = if serializedData.hasOwnProperty 'variantStore' then hummingbird.VariantStore.load(serializedData.variantStore) else `undefined`
       idx
 
 ### ::add
@@ -79,15 +87,12 @@ Optionally includes additional arbitrary name-value pairs to be stored, but not 
 ### ::remove
 Removes the document from the index that is referenced by the 'id' property
 
-    hummingbird.Index::remove = (doc, emitEvent) ->
-      docRef = doc['id']
+    hummingbird.Index::remove = (docRef, emitEvent) ->
       emitEvent = (if emitEvent is `undefined` then true else emitEvent)
-      Object.keys(@tokenStore).forEach ((token) ->
-        @tokenStore.remove token, docRef
-        return
-      ), this
 
-      @metaStore.remove doc['id']
+      @variantStore.remove docRef
+      @metaStore.remove docRef
+      @tokenStore.remove docRef
       @eventEmitter.emit 'remove', doc, this  if emitEvent
       return
 
@@ -96,11 +101,10 @@ Updates the document from the index that is referenced by the 'id' property
 This method is just a wrapper around `remove` and `add`
 
     hummingbird.Index::update = (doc, emitEvent) ->
-
       emitEvent = (if emitEvent is `undefined` then true else emitEvent)
+
       @remove doc, false
       @add doc, false
-
       @eventEmitter.emit 'update', doc, this  if emitEvent
       return
 
@@ -120,38 +124,37 @@ Finds matching names and returns them in order of best match.
     hummingbird.Index::search = (query, callback, options) ->
       if (not query? or query.length < (@tokenizer.min - 1)) then callback []
 
-      queryTokens = @tokenizer.tokenize(query)
+      # search options
       numResults = if (options?.howMany is `undefined`) then 10 else Math.floor(options.howMany)
       offset = if (options?.startPos is `undefined`) then 0 else Math.floor(options.startPos)
-      documentSets = {}
-      documentSet = []
-      self = this
-      maxScore = 0
       boost = if not options?.boostPrefix? or options?.boostPrefix then true else false
+      maxScore = @utils.maxScore(query, @tokenizer, boost)
 
+      # initialize result set vars
+      docSetHash = {}
+      docSetArray = []
+
+      # normalize the query
+      norm_query = @utils.normalizeString(query)
+      queryTokens = @tokenizer.tokenize(norm_query)
       hasSomeToken = queryTokens.some((token) ->
         @tokenStore.has token
       , this)
       return []  unless hasSomeToken
 
-      self.logTimer 'Start - Find all docs that match each query token and score'
+      @utils.logTiming 'find matching docs * start'
       queryTokens.forEach ((token, i, tokens) ->
-        self = this
-        localToken = token
-        len = localToken.length
-        maxScore += if boost and localToken.substring(0,1) is '\u0002' then len + 2 else len
-        self.tokenStore.get(token).forEach (docRef, i, documents) ->
-
-          docScore = if boost and localToken.substring(0,1) is '\u0002' then len + 2 else len
-          if docRef of documentSets
-            documentSets[docRef] += docScore
+        @tokenStore.get(token).forEach ((docRef, i, documents) ->
+          docScore = @utils.tokenScore(token, options)
+          if docRef of docSetHash
+            docSetHash[docRef] += docScore
           else
-            documentSets[docRef] = docScore
+            docSetHash[docRef] = docScore
           return
-
+        ), this
         return
       ), this
-      self.logTimer 'Finish - Find all docs that match each query token and score'
+      @utils.logTiming 'find matching docs * finish'
 
       if not options?.scoreThreshold?
         threshold = 0.5 * maxScore
@@ -164,26 +167,31 @@ Finds matching names and returns them in order of best match.
 
       # convert hash to array of hashes for sorting
       # filter out results below the threshold
-      self.logTimer 'Start - Sorting'
-      for key of documentSets
-        if documentSets[key] >= threshold
-          documentSet.push
+      @utils.logTiming 'hash to array * start'
+      for key of docSetHash
+        if docSetHash[key] >= threshold
+          docSetArray.push
             id: key
-            score: documentSets[key]
+            score: docSetHash[key]
+      @utils.logTiming 'hash to array * finish'
+      @utils.logTiming 'array size = ' + docSetArray.length
 
-      documentSet.sort (a, b) ->
+      @utils.logTiming 'sort * start'
+      docSetArray.sort (a, b) ->
         b.score - a.score
-
-      self.logTimer 'Finish - Sorting'
+      @utils.logTiming 'sort * finish'
 
       # loop over limited return set and augment with meta
-      results = documentSet.slice offset, numResults
+      @utils.logTiming 'add meta * start'
+      results = docSetArray.slice offset, numResults
       resultSet = (results.map (result, i, results) ->
         result = @metaStore.get result.id
         result.score = results[i].score
+        @utils.logTiming "id: #{result.id}, score: #{result.score}"
         return result
       , this)
       callback resultSet
+      @utils.logTiming 'add meta * finish'
 
 
 ### ::toJSON
@@ -194,3 +202,4 @@ Returns a representation of the index ready for serialization.
       index_version: hummingbird.index_version
       tokenStore: @tokenStore.toJSON()
       metaStore: @metaStore.toJSON()
+      variantStore: @variantStore.toJSON()

@@ -83,7 +83,7 @@ test('removing a document from the token store', function () {
   store.add('foo', doc)
   deepEqual(store.get('foo'), ['123'])
 
-  store.remove('foo', '123')
+  store.remove(doc)
   deepEqual(store.get('foo'), [])
   equal(store.has('foo'), false)
 })
@@ -95,7 +95,7 @@ test('removing a document that is not in the store', function () {
 
   store.add('foo', doc1)
   store.add('bar', doc2)
-  store.remove('foo', '456')
+  store.remove('456')
 
   deepEqual(store.get('foo'), ['123'])
 })
@@ -103,7 +103,7 @@ test('removing a document that is not in the store', function () {
 test('removing a document from a key that does not exist', function () {
   var store = new hummingbird.TokenStore
 
-  store.remove('foo', 123)
+  store.remove('123')
   ok(!store.has('foo'))
 })
 

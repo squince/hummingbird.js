@@ -5,8 +5,8 @@
 ### constructor
 Convenience function for instantiating a hummingbird index
 
-    hummingbird = ->
-      idx = new hummingbird.Index
+    hummingbird = (variantsObj) ->
+      idx = new hummingbird.Index variantsObj
       idx
 
 ### .loggingOn
@@ -18,11 +18,11 @@ Defaults to false
 ### .version
 Version of the hummingbird code base
 
-    hummingbird.version = "0.4.1"
+    hummingbird.version = "0.5.0"
 
 ### .index_version
 Version of the index data structure
 
-    hummingbird.index_version = "2.0"
+    hummingbird.index_version = "3.0"
     if typeof module isnt 'undefined' and module isnt null
       module.exports = hummingbird

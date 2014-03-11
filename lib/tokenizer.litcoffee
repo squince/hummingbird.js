@@ -5,6 +5,7 @@ for substrings suitable for autocomplete indexing and fuzzy name matching
 ### constructor
 
     hummingbird.tokenizer = (min, max) ->
+      @utils = new hummingbird.Utils
       if not arguments.length or not min? or typeof min isnt 'number' or min < 1
         @min = 3
       else
@@ -26,7 +27,7 @@ tightly match than a similar series of characters elsewhere in sought terms.
 
     hummingbird.tokenizer::tokenize = (obj) ->
       return []  if not arguments.length or not obj? or obj is `undefined`
-      normalized_name = '\u0002' + diacritics.remove(obj.toString()).toLowerCase() + '\u0003'
+      normalized_name = '\u0002' + @utils.normalizeString(obj) + '\u0003'
 
       alltokens = []
       n = @min
@@ -44,14 +45,3 @@ tightly match than a similar series of characters elsewhere in sought terms.
         alltokens = alltokens.concat(buffer)
         n++
       alltokens
-
-
-### .bigramtokenizer
-A tokenizer that indexes on character bigrams.
-
-    hummingbird.bigramtokenizer = new hummingbird.tokenizer(2)
-
-### .trigramtokenizer
-A tokenizer that indexes on character trigrams.
-
-    hummingbird.trigramtokenizer = new hummingbird.tokenizer(3)

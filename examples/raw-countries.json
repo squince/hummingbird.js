@@ -1826,6 +1826,14 @@
   "longitude_average" : "-97",
   "latitude_average" : "38",
   "alpha_2_code" : "US",
+  "numeric_code" : "9999",
+  "alpha_3_code" : "USA",
+  "country" : "USA"
+}
+, {
+  "longitude_average" : "-97",
+  "latitude_average" : "38",
+  "alpha_2_code" : "US",
   "numeric_code" : "840",
   "alpha_3_code" : "USA",
   "country" : "United States"

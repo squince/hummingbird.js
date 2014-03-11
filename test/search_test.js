@@ -1,6 +1,7 @@
 module('search', {
   setup: function () {
-    var idx = new hummingbird.Index
+    var variants = {'scarlett': ['scar', 'scary']}
+    var idx = new hummingbird.Index(variants)
     idx.tokenizer = new hummingbird.tokenizer(3)
 
     ;([{
@@ -15,8 +16,8 @@ module('search', {
       wordCount: 9
     },{
       id: 'c',
-      name: 'Miss Scarlett watered Professor Plumbs green plant while he was away from his office last week.',
-      title: 'Scarlett helps Professor',
+      name: 'Miss Scary watered Professor Plumbs green plant while he was away from his office last week.',
+      title: 'Scary helps Professor',
       wordCount: 16
     },{
       id: 'd',
@@ -33,6 +34,14 @@ module('search', {
   }
 })
 
+test('return correct results - with variant in search', function () {
+  this.idx.search('scarlett watered a green plant', function(results) {
+    equal(results.length, 1)
+    equal(results[0].id, 'c')
+    equal(results[0].title, 'Scary helps Professor')
+  });
+})
+
 test('return correct results - default options', function () {
   this.idx.search('green plant', function(results) {
     equal(results.length, 2)
@@ -40,7 +49,7 @@ test('return correct results - default options', function () {
     equal(results[1].id, 'c')
     equal(results[0].title, 'Plumb waters plant')
     equal(results[0].wordCount, '9')
-    equal(results[1].title, 'Scarlett helps Professor')
+    equal(results[1].title, 'Scary helps Professor')
   });
 })
 
@@ -53,7 +62,7 @@ test('return correct results - modified options', function () {
     equal(results[2].id, 'a')
     equal(results[0].title, 'Plumb waters plant')
     equal(results[0].wordCount, '9')
-    equal(results[1].title, 'Scarlett helps Professor')
+    equal(results[1].title, 'Scary helps Professor')
     equal(results[2].title, 'Mr. Green kills Colonel Mustard')
   }, options);
 })
@@ -66,7 +75,7 @@ test('returning the correct results - 2 rows', function () {
     equal(results[1].id, 'c')
     equal(results[0].title, 'Plumb waters plant')
     equal(results[0].wordCount, '9')
-    equal(results[1].title, 'Scarlett helps Professor')
+    equal(results[1].title, 'Scary helps Professor')
   }, options);
 })
 

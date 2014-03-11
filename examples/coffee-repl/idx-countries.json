@@ -1,6 +1,6 @@
 {
-	"version": "0.2.0",
-	"index_version": "2.0",
+	"version": "0.5.0",
+	"index_version": "3.0",
 	"tokenStore": {
 		"root": {
 			"\u0002al": [
@@ -5157,6 +5157,15 @@
 			"om\u0003": [
 				"826"
 			],
+			"\u0002us": [
+				"9999"
+			],
+			"usa": [
+				"9999"
+			],
+			"sa\u0003": [
+				"9999"
+			],
 			"s m": [
 				"581"
 			],
@@ -7327,7 +7336,228 @@
 				"code3": "ZMB",
 				"lat": "-15",
 				"long": "30"
+			},
+			"9999": {
+				"id": "9999",
+				"name": "USA",
+				"code2": "US",
+				"code3": "USA",
+				"lat": "38",
+				"long": "-97"
 			}
+		}
+	},
+	"variantStore": {
+		"root": {
+			"russian federation": {
+				"score": 54,
+				"docs": [
+					"643"
+				]
+			},
+			"russia": {
+				"score": 54,
+				"docs": [
+					"643"
+				]
+			},
+			"ussr": {
+				"score": 54,
+				"docs": [
+					"643"
+				]
+			},
+			"soviet union": {
+				"score": 54,
+				"docs": [
+					"643"
+				]
+			},
+			"united kingdom": {
+				"score": 42,
+				"docs": [
+					"826"
+				]
+			},
+			"great britain": {
+				"score": 42,
+				"docs": [
+					"826"
+				]
+			},
+			"britain": {
+				"score": 42,
+				"docs": [
+					"826"
+				]
+			},
+			"uk": {
+				"score": 42,
+				"docs": [
+					"826"
+				]
+			},
+			"england": {
+				"score": 42,
+				"docs": [
+					"826"
+				]
+			},
+			"usa": {
+				"score": 9,
+				"docs": [
+					"9999",
+					"840"
+				]
+			},
+			"united states": {
+				"score": 9,
+				"docs": [
+					"9999",
+					"840"
+				]
+			},
+			"america": {
+				"score": 9,
+				"docs": [
+					"9999",
+					"840"
+				]
+			}
+		},
+		"variants": {
+			"great britain": [
+				"united kingdom",
+				"britain",
+				"uk",
+				"u.k.",
+				"england"
+			],
+			"britain": [
+				"united kingdom",
+				"great britain",
+				"uk",
+				"england"
+			],
+			"united kingdom": [
+				"britain",
+				"great britain",
+				"uk",
+				"england"
+			],
+			"uk": [
+				"united kingdom",
+				"britain",
+				"great britain",
+				"england"
+			],
+			"england": [
+				"united kingdom",
+				"britain",
+				"great britain",
+				"uk"
+			],
+			"united states": [
+				"america",
+				"usa"
+			],
+			"usa": [
+				"united states",
+				"america"
+			],
+			"america": [
+				"united states",
+				"usa",
+				"america"
+			],
+			"russia": [
+				"russian federation",
+				"soviet union",
+				"ussr"
+			],
+			"russian federation": [
+				"russia",
+				"soviet union",
+				"ussr"
+			],
+			"ussr": [
+				"russian federation",
+				"soviet union",
+				"russia"
+			],
+			"soviet union": [
+				"russian federation",
+				"ussr",
+				"russia"
+			]
+		},
+		"invertedVariants": {
+			"united kingdom": [
+				"great britain",
+				"britain",
+				"uk",
+				"england"
+			],
+			"britain": [
+				"great britain",
+				"united kingdom",
+				"uk",
+				"england"
+			],
+			"uk": [
+				"great britain",
+				"britain",
+				"united kingdom",
+				"england"
+			],
+			"u.k.": [
+				"great britain"
+			],
+			"england": [
+				"great britain",
+				"britain",
+				"united kingdom",
+				"uk"
+			],
+			"great britain": [
+				"britain",
+				"united kingdom",
+				"uk",
+				"england"
+			],
+			"america": [
+				"united states",
+				"usa",
+				"america"
+			],
+			"usa": [
+				"united states",
+				"america"
+			],
+			"united states": [
+				"usa",
+				"america"
+			],
+			"russian federation": [
+				"russia",
+				"ussr",
+				"soviet union"
+			],
+			"soviet union": [
+				"russia",
+				"russian federation",
+				"ussr"
+			],
+			"ussr": [
+				"russia",
+				"russian federation",
+				"soviet union"
+			],
+			"russia": [
+				"russian federation",
+				"ussr",
+				"soviet union"
+			]
 		}
 	}
 }

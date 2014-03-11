@@ -58,10 +58,11 @@ Number of documents associated with the given token
 ### ::remove
 Remove the document identified by docId from the token in the store
 
-    hummingbird.TokenStore::remove = (token, docId) ->
-      return  if not token or not @root[token]
-      loc = @root[token].indexOf(docId)
-      return  if loc is -1
-      @root[token].splice loc, 1
-      delete @root[token]  if @root[token].length is 0
-      return
+    hummingbird.TokenStore::remove = (docRef) ->
+      Object.keys(this.root).forEach ((token) ->
+        loc = @root[token].indexOf(docRef)
+        return  if loc is -1
+        @root[token].splice loc, 1
+        delete @root[token]  if @root[token].length is 0
+        return
+      ), this

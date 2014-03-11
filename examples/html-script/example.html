@@ -6,6 +6,7 @@
     $.ajaxSetup({ cache: false })
     $("#searchTerm").keyup(searchText).focus()
     console.time("load")
+    hummingbird.loggingOn = true;
     $.getJSON('examples/coffee-repl/idx-countries.json')
     .success(function (indexData) {
       idx = hummingbird.Index.load(indexData)
