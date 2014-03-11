@@ -23,7 +23,7 @@ logs a message to the console preceded by time of day
 takes a string and normalizes it for case and diacritics
 
     hummingbird.Utils::normalizeString = (str) ->
-      return diacritics.remove (str.toString()).toLowerCase()
+      return ('\u0002' + diacritics.remove((str.toString()).toLowerCase()) + '\u0003')
 
 ### .maxScore
 Returns the max score for a given string

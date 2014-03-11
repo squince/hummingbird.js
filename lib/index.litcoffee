@@ -69,10 +69,18 @@ Optionally includes additional arbitrary name-value pairs to be stored, but not 
     hummingbird.Index::add = (doc, emitEvent, indexCallback) ->
       allDocumentTokens = {}
       emitEvent = (if emitEvent is `undefined` then true else emitEvent)
+
+      # normalize string to be tokenized
       if indexCallback
-        tokens = @tokenizer.tokenize "#{indexCallback doc}"
+        normalized_name = @utils.normalizeString("#{indexCallback doc}")
       else
-        tokens = @tokenizer.tokenize doc['name']
+        normalized_name = @utils.normalizeString(doc['name'])
+
+      # tokenize the doc
+      tokens = @tokenizer.tokenize normalized_name
+      tokens = tokens.concat @variantStore.getVariantTokens(normalized_name, @tokenizer, tokens)
+
+      # add the tokens to the tokenStore
       for i of tokens
         token = tokens[i]
         allDocumentTokens[token] = token.length
