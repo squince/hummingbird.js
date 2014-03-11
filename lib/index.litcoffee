@@ -90,10 +90,9 @@ Removes the document from the index that is referenced by the 'id' property
     hummingbird.Index::remove = (docRef, emitEvent) ->
       emitEvent = (if emitEvent is `undefined` then true else emitEvent)
 
-      @variantStore.remove docRef
       @metaStore.remove docRef
       @tokenStore.remove docRef
-      @eventEmitter.emit 'remove', doc, this  if emitEvent
+      @eventEmitter.emit 'remove', docRef, this  if emitEvent
       return
 
 ### ::update

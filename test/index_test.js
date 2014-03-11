@@ -84,11 +84,11 @@ test('triggering remove events', function () {
   })
 
   idx.add(doc)
-  idx.remove(doc)
+  idx.remove(doc.id)
 
   ok(callbackCalled)
   equal(callbackArgs.length, 2)
-  deepEqual(callbackArgs[0], doc)
+  deepEqual(callbackArgs[0], doc.id)
   deepEqual(callbackArgs[1], idx)
 })
 
