@@ -35,7 +35,7 @@ hummingbird.Utils.prototype.logTiming = function(msg) {
 };
 
 hummingbird.Utils.prototype.normalizeString = function(str) {
-  return diacritics.remove((str.toString()).toLowerCase());
+  return '\u0002' + diacritics.remove((str.toString()).toLowerCase()) + '\u0003';
 };
 
 hummingbird.Utils.prototype.maxScore = function(phrase, tokenizer, boost) {
@@ -139,14 +139,16 @@ hummingbird.Index.load = function(serializedData) {
 };
 
 hummingbird.Index.prototype.add = function(doc, emitEvent, indexCallback) {
-  var allDocumentTokens, i, token, tokens;
+  var allDocumentTokens, i, normalized_name, token, tokens;
   allDocumentTokens = {};
   emitEvent = (emitEvent === undefined ? true : emitEvent);
   if (indexCallback) {
-    tokens = this.tokenizer.tokenize("" + (indexCallback(doc)));
+    normalized_name = this.utils.normalizeString("" + (indexCallback(doc)));
   } else {
-    tokens = this.tokenizer.tokenize(doc['name']);
+    normalized_name = this.utils.normalizeString(doc['name']);
   }
+  tokens = this.tokenizer.tokenize(normalized_name);
+  tokens = tokens.concat(this.variantStore.getVariantTokens(normalized_name, this.tokenizer, tokens));
   for (i in tokens) {
     token = tokens[i];
     allDocumentTokens[token] = token.length;
@@ -378,22 +380,21 @@ hummingbird.tokenizer = function(min, max) {
   }
 };
 
-hummingbird.tokenizer.prototype.tokenize = function(obj) {
-  var alltokens, buffer, i, n, normalized_name, token;
-  if (!arguments.length || (obj == null) || obj === undefined) {
+hummingbird.tokenizer.prototype.tokenize = function(norm_name) {
+  var alltokens, buffer, i, n, token;
+  if (!arguments.length || (norm_name == null) || norm_name === undefined) {
     return [];
   }
-  normalized_name = '\u0002' + this.utils.normalizeString(obj) + '\u0003';
   alltokens = [];
   n = this.min;
   while (n <= this.max) {
     buffer = [];
-    if (normalized_name.length <= n && buffer.indexOf(normalized_name) === -1) {
-      buffer.push(normalized_name);
+    if (norm_name.length <= n && buffer.indexOf(norm_name) === -1) {
+      buffer.push(norm_name);
     } else {
       i = 0;
-      while (i <= normalized_name.length - n) {
-        token = normalized_name.slice(i, i + n);
+      while (i <= norm_name.length - n) {
+        token = norm_name.slice(i, i + n);
         if (buffer.indexOf(token) === -1) {
           buffer.push(token);
         }
@@ -407,22 +408,22 @@ hummingbird.tokenizer.prototype.tokenize = function(obj) {
 };
 
 hummingbird.VariantStore = function(variantsObj) {
-  var key, normKey;
+  var name, norm_name;
   this.variants = {};
   this.invertedVariants = {};
   this.utils = new hummingbird.Utils;
   if (variantsObj != null) {
-    for (key in variantsObj) {
-      normKey = this.utils.normalizeString(key);
-      this.variants[normKey] = [];
-      variantsObj[key].forEach((function(variant, i, variants) {
+    for (name in variantsObj) {
+      norm_name = this.utils.normalizeString(name);
+      this.variants[norm_name] = [];
+      variantsObj[name].forEach((function(variant, i, variants) {
         var normVariant, _base;
         normVariant = this.utils.normalizeString(variant);
-        this.variants[normKey].push(normVariant);
+        this.variants[norm_name].push(normVariant);
         if ((_base = this.invertedVariants)[normVariant] == null) {
           _base[normVariant] = [];
         }
-        return this.invertedVariants[normVariant].push(normKey);
+        return this.invertedVariants[normVariant].push(norm_name);
       }), this);
     }
   }
@@ -443,91 +444,48 @@ hummingbird.VariantStore.prototype.toJSON = function() {
   };
 };
 
-
-/* ::add
-Adds a new variant, document 'id' pair to the store
-NO LONGER NECESSARY - ALL VARIANTS TOKENIZED AND STORED IN TOKENSTORE
-
-hummingbird.VariantStore::add = (full_name, score, docId) ->
-  norm_name = @utils.normalizeString full_name
-   * first check to see if the norm_name has variants
-  if @variants.hasOwnProperty norm_name
-    @root[norm_name] ?=
-      score: score
-      docs: []
-    @root[norm_name].docs.push docId
-
-  if @invertedVariants.hasOwnProperty norm_name
-     * associate the documents for each variant with the original norm_name
-    @invertedVariants[norm_name].forEach ((variant, i, variantsArray) ->
-      @root[variant] ?=
-        score: score
-        docs: []
-      @root[variant].docs.push docId
-    ), this
-
-   * then split the full name on word boundaries and check each name part
-  unless norm_name is norm_name.split(/\s+/)[0]
-    norm_name.split(/\s+/).forEach ((name) ->
-       * check to see if each name word has any nicknames/variants
-      if @variants.hasOwnProperty name
-        @root[name] ?=
-          score: score
-          docs: []
-        @root[name].docs.push docId
-      if @invertedVariants.hasOwnProperty name
-         * associate the documents for each variant with the original norm_name
-        @invertedVariants[name].forEach ((variant, i, variantsArray) ->
-          @root[variant] ?=
-            score: score
-            docs: []
-          @root[variant].docs.push docId
-        ), this
-    ), this
-  return
- */
-
-
-/* ::has
-Checks whether this key is contained within this hummingbird.VariantStore.
-
-hummingbird.VariantStore::has = (variant) ->
-  norm_variant = @utils.normalizeString variant
-  return false  unless norm_variant
-  if norm_variant of @root
-    return true
-  else
-    return false
-  return
- */
-
-
-/* ::get
-Retrieve the documents for the given variant
-
-hummingbird.VariantStore::get = (variant) ->
-  @root[variant].docs or []
- */
-
-
-/* ::count
-Number of documents associated with the given variant
-
-hummingbird.VariantStore::count = (variant) ->
-  return 0  if not variant or not @root[variant]
-  @root[variant].docs.length
- */
-
-
-/* ::remove
-Remove the document identified by docId from the variant in the store
-
-hummingbird.VariantStore::remove = (docRef) ->
-  Object.keys(this.root).forEach ((variant) ->
-    loc = @root[variant].indexOf(docRef)
-    return  if loc is -1
-    @root[variant].splice loc, 1
-    delete @root[variant]  if @root[variant].length is 0
-    return
-  ), this
- */
+hummingbird.VariantStore.prototype.getVariantTokens = function(norm_name, tokenizer, tokens) {
+  var matched_variants, variant_tokens;
+  matched_variants = [];
+  variant_tokens = {};
+  if ((norm_name == null) || norm_name === undefined) {
+    return variant_tokens;
+  }
+  if (this.variants.hasOwnProperty(norm_name)) {
+    this.variants[norm_name].forEach((function(variant, i, variants) {
+      var token, _i, _len, _ref, _results;
+      _ref = tokenizer.tokenize(variant);
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        token = _ref[_i];
+        if (tokens.indexOf(token) === -1) {
+          _results.push(variant_tokens[token] = null);
+        } else {
+          _results.push(void 0);
+        }
+      }
+      return _results;
+    }), this);
+  }
+  if (norm_name !== norm_name.split(/\s+/)[0]) {
+    norm_name.split(/\s+/).forEach((function(name, j, names) {
+      if (this.variants.hasOwnProperty(name)) {
+        return this.variants[name].forEach((function(variant, i, variants) {
+          var token, _i, _len, _ref, _results;
+          _ref = tokenizer.tokenize(variant);
+          _results = [];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            token = _ref[_i];
+            if (tokens.indexOf(token) === -1) {
+              _results.push(variant_tokens[token] = null);
+            } else {
+              _results.push(void 0);
+            }
+          }
+          return _results;
+        }), this);
+      }
+    }), this);
+  }
+  return Object.keys(variant_tokens);
+};
