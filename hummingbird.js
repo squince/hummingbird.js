@@ -463,16 +463,16 @@ hummingbird.Index.load = function(serializedData) {
 };
 
 hummingbird.Index.prototype.add = function(doc, emitEvent, indexCallback) {
-  var allDocumentTokens, i, normalized_name, token, tokens;
+  var allDocumentTokens, i, name, token, tokens;
   allDocumentTokens = {};
   emitEvent = (emitEvent === undefined ? true : emitEvent);
   if (indexCallback) {
-    normalized_name = this.utils.normalizeString("" + (indexCallback(doc)));
+    name = "" + (indexCallback(doc));
   } else {
-    normalized_name = this.utils.normalizeString(doc['name']);
+    name = doc['name'];
   }
-  tokens = this.tokenizer.tokenize(normalized_name);
-  tokens = tokens.concat(this.variantStore.getVariantTokens(normalized_name, this.tokenizer, tokens));
+  tokens = this.tokenizer.tokenize(name);
+  tokens = tokens.concat(this.variantStore.getVariantTokens(name, this.tokenizer, tokens));
   for (i in tokens) {
     token = tokens[i];
     allDocumentTokens[token] = token.length;
@@ -505,7 +505,7 @@ hummingbird.Index.prototype.update = function(doc, emitEvent) {
 };
 
 hummingbird.Index.prototype.search = function(query, callback, options) {
-  var boost, docSetArray, docSetHash, hasSomeToken, key, maxScore, norm_query, numResults, offset, queryTokens, resultSet, results, threshold;
+  var boost, docSetArray, docSetHash, hasSomeToken, key, maxScore, numResults, offset, queryTokens, resultSet, results, threshold;
   if ((query == null) || query.length < (this.tokenizer.min - 1)) {
     callback([]);
   }
@@ -514,9 +514,8 @@ hummingbird.Index.prototype.search = function(query, callback, options) {
   boost = ((options != null ? options.boostPrefix : void 0) == null) || (options != null ? options.boostPrefix : void 0) ? true : false;
   docSetHash = {};
   docSetArray = [];
-  norm_query = this.utils.normalizeString(query);
-  maxScore = this.utils.maxScore(norm_query, this.tokenizer, boost);
-  queryTokens = this.tokenizer.tokenize(norm_query);
+  maxScore = this.utils.maxScore(query, this.tokenizer, boost);
+  queryTokens = this.tokenizer.tokenize(query);
   hasSomeToken = queryTokens.some(function(token) {
     return this.tokenStore.has(token);
   }, this);
@@ -704,8 +703,9 @@ hummingbird.tokenizer = function(min, max) {
   }
 };
 
-hummingbird.tokenizer.prototype.tokenize = function(norm_name) {
-  var alltokens, buffer, i, n, token;
+hummingbird.tokenizer.prototype.tokenize = function(name) {
+  var alltokens, buffer, i, n, norm_name, token;
+  norm_name = this.utils.normalizeString(name);
   if (!arguments.length || (norm_name == null) || norm_name === undefined) {
     return [];
   }

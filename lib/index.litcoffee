@@ -72,13 +72,15 @@ Optionally includes additional arbitrary name-value pairs to be stored, but not 
 
       # normalize string to be tokenized
       if indexCallback
-        normalized_name = @utils.normalizeString("#{indexCallback doc}")
+        #normalized_name = @utils.normalizeString("#{indexCallback doc}")
+        name = "#{indexCallback doc}"
       else
-        normalized_name = @utils.normalizeString(doc['name'])
+        #normalized_name = @utils.normalizeString(doc['name'])
+        name = doc['name']
 
       # tokenize the doc
-      tokens = @tokenizer.tokenize normalized_name
-      tokens = tokens.concat @variantStore.getVariantTokens(normalized_name, @tokenizer, tokens)
+      tokens = @tokenizer.tokenize name
+      tokens = tokens.concat @variantStore.getVariantTokens(name, @tokenizer, tokens)
 
       # add the tokens to the tokenStore
       for i of tokens
@@ -141,9 +143,9 @@ Finds matching names and returns them in order of best match.
       docSetArray = []
 
       # normalize the query
-      norm_query = @utils.normalizeString(query)
-      maxScore = @utils.maxScore(norm_query, @tokenizer, boost)
-      queryTokens = @tokenizer.tokenize(norm_query)
+      #norm_query = @utils.normalizeString(query)
+      maxScore = @utils.maxScore(query, @tokenizer, boost)
+      queryTokens = @tokenizer.tokenize(query)
 
       hasSomeToken = queryTokens.some((token) ->
         @tokenStore.has token

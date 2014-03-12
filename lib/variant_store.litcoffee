@@ -35,9 +35,10 @@ Returns a representation of the variant store ready for serialization.
 Returns tokens associated with variants of the provided name
 that would not otherwise be associated with the provided name.
 
-    hummingbird.VariantStore::getVariantTokens = (norm_name, tokenizer, tokens) ->
+    hummingbird.VariantStore::getVariantTokens = (name, tokenizer, tokens) ->
       matched_variants = []
       variant_tokens = {}
+      norm_name = @utils.normalizeString name
 
       return variant_tokens if not norm_name? or norm_name is `undefined`
 

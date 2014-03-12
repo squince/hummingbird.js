@@ -25,7 +25,10 @@ are wrapped around the string and used in the ngrams. This causes a sequence
 of characters at the start of both a search query and a sought term to more
 tightly match than a similar series of characters elsewhere in sought terms.
 
-    hummingbird.tokenizer::tokenize = (norm_name) ->
+See utils.normalizeString()
+
+    hummingbird.tokenizer::tokenize = (name) ->
+      norm_name = @utils.normalizeString name
       return []  if not arguments.length or not norm_name? or norm_name is `undefined`
 
       alltokens = []
