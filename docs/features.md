@@ -16,7 +16,6 @@ _howMany_ - the maximum number of results to be returned (_default=10_)
 
 _startPos_ - how far into the sorted matched set should the returned resultset start (_default=0_)
 
-Example:
 ```javascript
 // example
 var options = {
@@ -62,3 +61,21 @@ or a project (or both).  You can merge results into a single list or
 denote them as different types of things.  You have all the
 flexibility you need to provide the users what they need to streamline
 their workflow.
+
+### Name Variants
+It is possible to supply a set of name variants (aka, nicknames; aka, synonyms)
+for each index individually.  If a set of name variants is provided, searches for
+alternate names will be displayed where appropriate.  The examples
+include name variants for countries (e.g., _America_ as a variant for
+_United States_).
+
+```javascript
+// example
+var variants = {"United States": ["America", "USA", "U.S.A."]}
+var idx = new hummingbird.Index(variants);
+```
+
+**Caution** - name variants are implemented in such a 
+way that the memory footprint for that particularly index is increased
+(mileage will vary) and you may begin to cross memory allocation thresholds 
+for particularly large indexes, where large is ~ million entries.
