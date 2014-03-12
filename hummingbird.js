@@ -326,7 +326,7 @@ hummingbird = function(variantsObj) {
 
 hummingbird.loggingOn = false;
 
-hummingbird.version = "0.5.0";
+hummingbird.version = "0.5.1";
 
 hummingbird.index_version = "3.0";
 
@@ -353,7 +353,13 @@ hummingbird.Utils.prototype.logTiming = function(msg) {
 };
 
 hummingbird.Utils.prototype.normalizeString = function(str) {
-  return '\u0002' + diacritics.remove((str.toString()).toLowerCase()) + '\u0003';
+  var re_end, re_start;
+  re_start = /^\u0002/;
+  re_end = /\u0003$/;
+  str = diacritics.remove((str.toString()).toLowerCase());
+  str = str.replace(re_start, '');
+  str = str.replace(re_end, '');
+  return '\u0002' + str + '\u0003';
 };
 
 hummingbird.Utils.prototype.maxScore = function(phrase, tokenizer, boost) {
@@ -779,9 +785,11 @@ hummingbird.VariantStore.prototype.getVariantTokens = function(norm_name, tokeni
     }), this);
   }
   if (norm_name !== norm_name.split(/\s+/)[0]) {
-    norm_name.split(/\s+/).forEach((function(name, j, names) {
-      if (this.variants.hasOwnProperty(name)) {
-        return this.variants[name].forEach((function(variant, i, variants) {
+    norm_name.split(/\s+/).forEach((function(name_part, j, names) {
+      var renorm_name_part;
+      renorm_name_part = this.utils.normalizeString(name_part);
+      if (this.variants.hasOwnProperty(renorm_name_part)) {
+        return this.variants[renorm_name_part].forEach((function(variant, i, variants) {
           var token, _i, _len, _ref, _results;
           _ref = tokenizer.tokenize(variant);
           _results = [];
