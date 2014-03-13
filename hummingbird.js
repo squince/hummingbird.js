@@ -511,7 +511,7 @@ hummingbird.Index.prototype.search = function(query, callback, options) {
   }
   numResults = (options != null ? options.howMany : void 0) === undefined ? 10 : Math.floor(options.howMany);
   offset = (options != null ? options.startPos : void 0) === undefined ? 0 : Math.floor(options.startPos);
-  boost = ((options != null ? options.boostPrefix : void 0) == null) || (options != null ? options.boostPrefix : void 0) ? true : false;
+  boost = ((options != null ? options.boostPrefix : void 0) == null) || options.boostPrefix === true ? true : false;
   docSetHash = {};
   docSetArray = [];
   maxScore = this.utils.maxScore(query, this.tokenizer, boost);
@@ -520,13 +520,13 @@ hummingbird.Index.prototype.search = function(query, callback, options) {
     return this.tokenStore.has(token);
   }, this);
   if (!hasSomeToken) {
-    return [];
+    callback([]);
   }
   this.utils.logTiming('find matching docs * start');
   queryTokens.forEach((function(token, i, tokens) {
     this.tokenStore.get(token).forEach((function(docRef, i, documents) {
       var docScore;
-      docScore = this.utils.tokenScore(token, options);
+      docScore = this.utils.tokenScore(token, boost);
       if (docRef in docSetHash) {
         docSetHash[docRef] += docScore;
       } else {
@@ -761,10 +761,11 @@ hummingbird.VariantStore.prototype.toJSON = function() {
   };
 };
 
-hummingbird.VariantStore.prototype.getVariantTokens = function(norm_name, tokenizer, tokens) {
-  var matched_variants, variant_tokens;
+hummingbird.VariantStore.prototype.getVariantTokens = function(name, tokenizer, tokens) {
+  var matched_variants, norm_name, variant_tokens;
   matched_variants = [];
   variant_tokens = {};
+  norm_name = this.utils.normalizeString(name);
   if ((norm_name == null) || norm_name === undefined) {
     return variant_tokens;
   }

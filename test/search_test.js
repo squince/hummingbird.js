@@ -34,7 +34,7 @@ module('search', {
   }
 })
 
-test('return correct results - with variant in search', function () {
+test('return correct results - with variant', function () {
   this.idx.search('scarlett watered a green plant', function(results) {
     equal(results.length, 1)
     equal(results[0].id, 'c')
@@ -53,7 +53,7 @@ test('return correct results - default options', function () {
   });
 })
 
-test('return correct results - modified options', function () {
+test('return correct results - no boost, no threshold', function () {
   var options = {"howMany":10, "boostPrefix":false, "scoreThreshold":0};
   this.idx.search('green plant', function(results) {
     equal(results.length, 3)
@@ -67,7 +67,7 @@ test('return correct results - modified options', function () {
   }, options);
 })
 
-test('returning the correct results - 2 rows', function () {
+test('return correct results - howMany, no boost, no threshold', function () {
   var options = {"howMany":2, "boostPrefix":false, "scoreThreshold":0};
   this.idx.search('green plant', function(results) {
     equal(results.length, 2)
@@ -79,7 +79,7 @@ test('returning the correct results - 2 rows', function () {
   }, options);
 })
 
-test('returning the correct results - with boost rows', function () {
+test('return correct results - with boost, no threshold', function () {
   var options = {"boostPrefix":true, "scoreThreshold":0};
   this.idx.search('hand', function(results) {
     equal(results.length, 3)
@@ -88,54 +88,11 @@ test('returning the correct results - with boost rows', function () {
     equal(results[2].id, 'a')
     equal(results[0].score, '14')
     equal(results[1].score, '11')
-    equal(results[2].score, '3')
-  }, options);
-  options = {"boostPrefix":false, "scoreThreshold":0};
-  this.idx.search('hand', function(results) {
-    equal(results.length, 3)
-    equal(results[0].id, 'e')
-    equal(results[1].id, 'd')
-    equal(results[2].id, 'a')
-    equal(results[0].score, '12')
-    equal(results[1].score, '9')
     equal(results[2].score, '3')
   }, options);
 })
 
-test('returning the correct results - with boost rows', function () {
-  var options = {"boostPrefix":true, "scoreThreshold":0};
-  this.idx.search('hand', function(results) {
-    equal(results.length, 3)
-    equal(results[0].id, 'e')
-    equal(results[1].id, 'd')
-    equal(results[2].id, 'a')
-    equal(results[0].score, '14')
-    equal(results[1].score, '11')
-    equal(results[2].score, '3')
-  }, options);
-  options = {"boostPrefix":false, "scoreThreshold":0};
-  this.idx.search('hand', function(results) {
-    equal(results.length, 3)
-    equal(results[0].id, 'e')
-    equal(results[1].id, 'd')
-    equal(results[2].id, 'a')
-    equal(results[0].score, '12')
-    equal(results[1].score, '9')
-    equal(results[2].score, '3')
-  }, options);
-})
-
-test('returning the correct results - with boost rows', function () {
-  var options = {"boostPrefix":true, "scoreThreshold":0};
-  this.idx.search('hand', function(results) {
-    equal(results.length, 3)
-    equal(results[0].id, 'e')
-    equal(results[1].id, 'd')
-    equal(results[2].id, 'a')
-    equal(results[0].score, '14')
-    equal(results[1].score, '11')
-    equal(results[2].score, '3')
-  }, options);
+test('return the correct results - with boost, with threshold', function () {
   options = {"boostPrefix":true, "scoreThreshold":.75};
   this.idx.search('hand', function(results) {
     equal(results.length, 2)
@@ -145,6 +102,7 @@ test('returning the correct results - with boost rows', function () {
     equal(results[1].score, '11')
   }, options);
 })
+
 test('no search tokens in the index', 0, function () {
   var options = {"howMany":10, "boostPrefix":false, "scoreThreshold":0};
   this.idx.search('zoo', function (results) {

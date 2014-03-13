@@ -136,7 +136,7 @@ Finds matching names and returns them in order of best match.
       # search options
       numResults = if (options?.howMany is `undefined`) then 10 else Math.floor(options.howMany)
       offset = if (options?.startPos is `undefined`) then 0 else Math.floor(options.startPos)
-      boost = if not options?.boostPrefix? or options?.boostPrefix then true else false
+      boost = if(not options?.boostPrefix? or options.boostPrefix == true) then true else false
 
       # initialize result set vars
       docSetHash = {}
@@ -155,7 +155,7 @@ Finds matching names and returns them in order of best match.
       @utils.logTiming 'find matching docs * start'
       queryTokens.forEach ((token, i, tokens) ->
         @tokenStore.get(token).forEach ((docRef, i, documents) ->
-          docScore = @utils.tokenScore(token, options)
+          docScore = @utils.tokenScore(token, boost)
           if docRef of docSetHash
             docSetHash[docRef] += docScore
           else
