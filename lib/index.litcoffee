@@ -70,12 +70,9 @@ Optionally includes additional arbitrary name-value pairs to be stored, but not 
       allDocumentTokens = {}
       emitEvent = (if emitEvent is `undefined` then true else emitEvent)
 
-      # normalize string to be tokenized
       if indexCallback
-        #normalized_name = @utils.normalizeString("#{indexCallback doc}")
         name = "#{indexCallback doc}"
       else
-        #normalized_name = @utils.normalizeString(doc['name'])
         name = doc['name']
 
       # tokenize the doc
@@ -141,9 +138,6 @@ Finds matching names and returns them in order of best match.
       # initialize result set vars
       docSetHash = {}
       docSetArray = []
-
-      # normalize the query
-      #norm_query = @utils.normalizeString(query)
       maxScore = @utils.maxScore(query, @tokenizer, boost)
       queryTokens = @tokenizer.tokenize(query)
 
