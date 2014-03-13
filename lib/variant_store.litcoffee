@@ -2,7 +2,7 @@
 A collection of objects and methods for working with names and their variants (i.e., nicknames)
 
 ### constructor
-* _@variants_ - key is name, value is array of nicknames/variants
+_@variants_ - key is name, value is array of nicknames/variants
 
     hummingbird.VariantStore = (variantsObj) ->
       @variants = {}
