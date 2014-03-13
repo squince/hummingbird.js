@@ -150,7 +150,7 @@ Finds matching names and returns them in order of best match.
       hasSomeToken = queryTokens.some((token) ->
         @tokenStore.has token
       , this)
-      return []  unless hasSomeToken
+      callback []  unless hasSomeToken
 
       @utils.logTiming 'find matching docs * start'
       queryTokens.forEach ((token, i, tokens) ->
