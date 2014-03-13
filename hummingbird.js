@@ -466,6 +466,11 @@ hummingbird.Index.prototype.add = function(doc, emitEvent, indexCallback) {
   var allDocumentTokens, i, name, token, tokens;
   allDocumentTokens = {};
   emitEvent = (emitEvent === undefined ? true : emitEvent);
+  if (this.metaStore.has(doc.id)) {
+    console.warn("Document " + doc.id + " already indexed, replacing");
+    this.update(doc, emitEvent);
+    return;
+  }
   if (indexCallback) {
     name = "" + (indexCallback(doc));
   } else {
@@ -478,7 +483,7 @@ hummingbird.Index.prototype.add = function(doc, emitEvent, indexCallback) {
     allDocumentTokens[token] = token.length;
   }
   Object.keys(allDocumentTokens).forEach((function(token) {
-    this.tokenStore.add(token, doc['id']);
+    this.tokenStore.add(token, doc.id);
   }), this);
   this.metaStore.add(doc);
   if (emitEvent) {
@@ -487,7 +492,7 @@ hummingbird.Index.prototype.add = function(doc, emitEvent, indexCallback) {
 };
 
 hummingbird.Index.prototype.remove = function(docRef, emitEvent) {
-  emitEvent = (emitEvent === undefined ? true : emitEvent);
+  emitEvent = (emitEvent === undefined && this.metaStore.has(docRef) ? true : emitEvent);
   this.metaStore.remove(docRef);
   this.tokenStore.remove(docRef);
   if (emitEvent) {
@@ -497,7 +502,7 @@ hummingbird.Index.prototype.remove = function(docRef, emitEvent) {
 
 hummingbird.Index.prototype.update = function(doc, emitEvent) {
   emitEvent = (emitEvent === undefined ? true : emitEvent);
-  this.remove(doc, false);
+  this.remove(doc.id, false);
   this.add(doc, false);
   if (emitEvent) {
     this.eventEmitter.emit('update', doc, this);

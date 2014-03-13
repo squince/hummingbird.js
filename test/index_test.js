@@ -57,21 +57,22 @@ test('silencing add events', function () {
   ok(!callbackCalled)
 })
 
-/*
 test('removing a document from the index', function () {
   var idx = new hummingbird.Index,
-      doc = {id: 1, body: 'this is a test'}
+      doc = {id: 1, name: 'this is a test'}
 
-  idx.field('body')
-  equal(idx.documentStore.getlength(), 0)
+  equal(idx.metaStore.has(1), false)
+  equal(idx.tokenStore.has('thi'), false)
 
   idx.add(doc)
-  equal(idx.documentStore.getlength(), 1)
+  equal(idx.metaStore.has(1), true)
+  equal(idx.tokenStore.has('thi'), true)
 
-  idx.remove(doc)
-  equal(idx.documentStore.getlength(), 0)
+  idx.remove(doc.id)
+  equal(idx.metaStore.has(1), false)
+  equal(idx.tokenStore.has('thi'), false)
 })
-*/
+
 test('triggering remove events', function () {
   var idx = new hummingbird.Index,
       doc = {id: 1, name: 'this is a test'},
@@ -104,34 +105,32 @@ test('silencing remove events', function () {
   })
 
   idx.add(doc)
-  idx.remove(doc, false)
+  idx.remove(doc.id, false)
 
   ok(!callbackCalled)
 })
 
-/*
 test('removing a non-existent document from the index', function () {
   var idx = new hummingbird.Index,
-      doc = {id: 1, body: 'this is a test'},
-      doc2 = {id: 2, body: 'i dont exist'},
+      doc1 = {id: 1, name: 'this is a test'},
+      doc2 = {id: 2, name: 'i dont exist'},
       callbackCalled = false
 
   idx.on('remove', function (doc, index) {
     callbackCalled = true
   })
 
-  idx.field('body')
-  equal(idx.documentStore.getlength(), 0)
+  equal(idx.metaStore.has(1), false)
 
-  idx.add(doc)
-  equal(idx.documentStore.getlength(), 1)
+  idx.add(doc1)
+  equal(idx.metaStore.has(1), true)
 
-  idx.remove(doc2)
-  equal(idx.documentStore.getlength(), 1)
+  idx.remove(doc2.id)
+  equal(idx.metaStore.has(2), false)
 
   ok(!callbackCalled)
 })
-*/
+
 test('updating a document', function () {
   var idx = new hummingbird.Index,
       doc = {id: 1, name: 'foo'}

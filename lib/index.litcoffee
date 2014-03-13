@@ -70,6 +70,11 @@ Optionally includes additional arbitrary name-value pairs to be stored, but not 
       allDocumentTokens = {}
       emitEvent = (if emitEvent is `undefined` then true else emitEvent)
 
+      if @metaStore.has doc.id
+        console.warn "Document #{doc.id} already indexed, replacing" 
+        @update doc, emitEvent
+        return
+
       if indexCallback
         name = "#{indexCallback doc}"
       else
@@ -84,9 +89,10 @@ Optionally includes additional arbitrary name-value pairs to be stored, but not 
         token = tokens[i]
         allDocumentTokens[token] = token.length
       Object.keys(allDocumentTokens).forEach ((token) ->
-        @tokenStore.add token, doc['id']
+        @tokenStore.add token, doc.id
         return
       ), this
+
       @metaStore.add doc
       @eventEmitter.emit 'add', doc, this  if emitEvent
       return
@@ -95,7 +101,7 @@ Optionally includes additional arbitrary name-value pairs to be stored, but not 
 Removes the document from the index that is referenced by the 'id' property
 
     hummingbird.Index::remove = (docRef, emitEvent) ->
-      emitEvent = (if emitEvent is `undefined` then true else emitEvent)
+      emitEvent = (if emitEvent is `undefined` and @metaStore.has docRef then true else emitEvent)
 
       @metaStore.remove docRef
       @tokenStore.remove docRef
@@ -109,7 +115,7 @@ This method is just a wrapper around `remove` and `add`
     hummingbird.Index::update = (doc, emitEvent) ->
       emitEvent = (if emitEvent is `undefined` then true else emitEvent)
 
-      @remove doc, false
+      @remove doc.id, false
       @add doc, false
       @eventEmitter.emit 'update', doc, this  if emitEvent
       return
