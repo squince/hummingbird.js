@@ -1,9 +1,6 @@
-# Hummingbird
-Look!...  there..., in the sky... it's _not_ [Lucene](https://lucene.apache.org/) _nor_ [ElasticSearch](http://www.elasticsearch.org/), _not_ [Solr](https://lucene.apache.org/solr/) _nor_ [Lunr](http://lunrjs.com/),
+# Hummingbird.js
 
-It's **Hummingbird**.js
-
-Impossibly quick, precise, and beautiful to behold (day _and_ night)
+_Impossibly quick and remarkably precise autosuggest_
 
 You can index any JavaScript object you like with _id_ and _name_, and
 hummingbird.js will merrily make it searchable. No schema needed, it
