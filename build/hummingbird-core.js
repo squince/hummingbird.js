@@ -236,7 +236,8 @@ hummingbird.Index.prototype.search = function(query, callback, options) {
     if (docSetHash[key] >= threshold) {
       docSetArray.push({
         id: key,
-        score: docSetHash[key]
+        score: docSetHash[key],
+        n: (this.metaStore.get(key)).name.toLowerCase()
       });
     }
   }
@@ -244,7 +245,18 @@ hummingbird.Index.prototype.search = function(query, callback, options) {
   this.utils.logTiming('array size = ' + docSetArray.length);
   this.utils.logTiming('sort * start');
   docSetArray.sort(function(a, b) {
-    return b.score - a.score;
+    if (a.score === b.score) {
+      switch (false) {
+        case !(a.n < b.n):
+          return -1;
+        case !(a.n > b.n):
+          return 1;
+        default:
+          return 0;
+      }
+    } else {
+      return b.score - a.score;
+    }
   });
   this.utils.logTiming('sort * finish');
   this.utils.logTiming('add meta * start');

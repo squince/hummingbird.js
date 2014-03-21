@@ -183,12 +183,19 @@ Finds matching names and returns them in order of best match.
           docSetArray.push
             id: key
             score: docSetHash[key]
+            n: (@metaStore.get key).name.toLowerCase()
       @utils.logTiming 'hash to array * finish'
       @utils.logTiming 'array size = ' + docSetArray.length
 
       @utils.logTiming 'sort * start'
       docSetArray.sort (a, b) ->
-        b.score - a.score
+        if a.score is b.score
+          switch
+            when a.n < b.n then -1
+            when a.n > b.n then 1
+            else 0
+        else
+          b.score - a.score
       @utils.logTiming 'sort * finish'
 
       # loop over limited return set and augment with meta
