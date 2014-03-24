@@ -2,7 +2,10 @@
 
 ### html script
 The most obvious way to use hummingbird.js is from within an html page.  
-See a working example of [typeahead here](examples/html-script/index.html)
+Here is an extremely simplistic [example of typeahead](examples/html-script/index.html)
+
+Here is an example of integrating hummingbird.js [with Twitter
+  Typeahead](examples/html-script/twitter.html)
 
 Special thanks to [socrata.com](https://opendata.socrata.com/) for
 making a wide range of interesting data available
