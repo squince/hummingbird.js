@@ -1,5 +1,5 @@
 <head>
-  <script src="jquery-1.11.0.min.js"></script> 
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6/jquery.min.js"></script> 
   <script src="../../hummingbird.js" type="text/javascript" charset="utf-8"></script>
   <script type="text/javascript" charset="utf-8">
     var idx
@@ -23,7 +23,6 @@
         'soviet union': ['russian federation', 'ussr', 'russia']
       };
       idx = new hummingbird.Index(variants);
-      //idx.tokenizer = new hummingbird.tokenizer(2,4)
       hummingbird.loggingOn = true;
       $.getJSON('../raw-countries.json')
       .success(function (rawData) {
@@ -82,8 +81,7 @@
     <p>Once the data is loaded into the page, it is available regardless of network connectivity.  So, mobile users are immune from intermittent connectivity failures.  Most importantly, users many hops away pay a one time penalty, not a penalty on every keystroke.</p>
   </div>
   <form>
-    <label>Type here ->&nbsp;&nbsp;</label>
-    <input type="text" id="searchTerm" size="50" placeholder="Countries and Nicknames">
+    <input type="text" id="searchTerm" size="50" placeholder="Countries">
     <ul id="matchResultsList">
     </ul>
   </form>
