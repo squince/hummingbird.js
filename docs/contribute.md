@@ -21,6 +21,6 @@ install and use Grunt plugins.
 
 1. _$ grunt dev_
 
-    complies, fires up a webserver on localhost:8100, and
+    compiles, fires up a webserver on localhost:8100, and
     sets up a file watcher
 
