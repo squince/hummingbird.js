@@ -62,7 +62,7 @@ module.exports = function(grunt) {
     },
     watch: {
       dev: {
-        files: ["lib/*", "docs/*"],
+        files: ["lib/*", "docs/*", "test/*"],
         tasks: ['default'],
         options: {
           interrupt: true

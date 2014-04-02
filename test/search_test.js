@@ -45,11 +45,11 @@ test('return correct results - with variant', function () {
 test('return correct results - default options', function () {
   this.idx.search('green plant', function(results) {
     equal(results.length, 2)
-    equal(results[0].id, 'b')
-    equal(results[1].id, 'c')
-    equal(results[0].title, 'Plumb waters plant')
-    equal(results[0].wordCount, '9')
-    equal(results[1].title, 'Scary helps Professor')
+    equal(results[0].id, 'c')
+    equal(results[1].id, 'b')
+    equal(results[0].title, 'Scary helps Professor')
+    equal(results[0].wordCount, '16')
+    equal(results[1].title, 'Plumb waters plant')
   });
 })
 
@@ -57,12 +57,11 @@ test('return correct results - no boost, no threshold', function () {
   var options = {"howMany":10, "boostPrefix":false, "scoreThreshold":0};
   this.idx.search('green plant', function(results) {
     equal(results.length, 3)
-    equal(results[0].id, 'b')
-    equal(results[1].id, 'c')
+    equal(results[0].id, 'c')
+    equal(results[1].id, 'b')
     equal(results[2].id, 'a')
-    equal(results[0].title, 'Plumb waters plant')
-    equal(results[0].wordCount, '9')
-    equal(results[1].title, 'Scary helps Professor')
+    equal(results[0].title, 'Scary helps Professor')
+    equal(results[1].title, 'Plumb waters plant')
     equal(results[2].title, 'Mr. Green kills Colonel Mustard')
   }, options);
 })
@@ -71,11 +70,8 @@ test('return correct results - howMany, no boost, no threshold', function () {
   var options = {"howMany":2, "boostPrefix":false, "scoreThreshold":0};
   this.idx.search('green plant', function(results) {
     equal(results.length, 2)
-    equal(results[0].id, 'b')
-    equal(results[1].id, 'c')
-    equal(results[0].title, 'Plumb waters plant')
-    equal(results[0].wordCount, '9')
-    equal(results[1].title, 'Scary helps Professor')
+    equal(results[0].id, 'c')
+    equal(results[1].id, 'b')
   }, options);
 })
 
@@ -86,8 +82,8 @@ test('return correct results - with boost, no threshold', function () {
     equal(results[0].id, 'e')
     equal(results[1].id, 'd')
     equal(results[2].id, 'a')
-    equal(results[0].score, '14')
-    equal(results[1].score, '11')
+    equal(results[0].score, '13')
+    equal(results[1].score, '10')
     equal(results[2].score, '3')
   }, options);
 })
@@ -98,8 +94,8 @@ test('return the correct results - with boost, with threshold', function () {
     equal(results.length, 2)
     equal(results[0].id, 'e')
     equal(results[1].id, 'd')
-    equal(results[0].score, '14')
-    equal(results[1].score, '11')
+    equal(results[0].score, '13')
+    equal(results[1].score, '10')
   }, options);
 })
 
@@ -115,7 +111,7 @@ test('search results ranked by score - default options', function () {
     equal(results.length, 2)
     equal(results[0].id, 'b')
     equal(results[1].id, 'c')
-    equal(results[0].score, 26)
+    equal(results[0].score, 25)
     equal(results[1].score, 21)
   });
 })
@@ -152,8 +148,8 @@ test('ngram search prefix matching', function () {
   this.idx.search('plu', function(results){
 
     equal(results.length, 2)
-    equal(results[0].id, 'b')
-    equal(results[1].id, 'c')
+    equal(results[0].id, 'c')
+    equal(results[1].id, 'b')
   }, options);
 })
 

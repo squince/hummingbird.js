@@ -23,11 +23,11 @@ Returns a representation of the token store ready for serialization.
       root: @root
 
 ### ::add
-Adds a new token, document 'id' pair to the store
+Adds to the store a new token, document 'id', and score for this token in this doc.
 
-    hummingbird.TokenStore::add = (token, docId) ->
-      @root[token] = []  unless @has(token)
-      @root[token].push docId  if @root[token][docId] is `undefined`
+    hummingbird.TokenStore::add = (token, score, docId) ->
+      @root[token] = {}  unless @has(token)
+      @root[token][docId] = score unless docId of @root[token]
       return
 
 ### ::has
@@ -46,23 +46,21 @@ Checks whether this key is contained within this hummingbird.TokenStore.
 Retrieve the documents for the given token
 
     hummingbird.TokenStore::get = (token) ->
-      @root[token] or []
+      @root[token] or {}
 
 ### ::count
 Number of documents associated with the given token
 
     hummingbird.TokenStore::count = (token) ->
       return 0  if not token or not @root[token]
-      @root[token].length
+      Object.keys(@root[token]).length
 
 ### ::remove
-Remove the document identified by docId from the token in the store
+Remove the document identified by docRef from each token in the store where it appears.
 
     hummingbird.TokenStore::remove = (docRef) ->
       Object.keys(this.root).forEach ((token) ->
-        loc = @root[token].indexOf(docRef)
-        return  if loc is -1
-        @root[token].splice loc, 1
-        delete @root[token]  if @root[token].length is 0
+        delete @root[token][docRef]
+        delete @root[token] if Object.keys(@root[token]).length is 0
         return
       ), this

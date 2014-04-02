@@ -5,7 +5,9 @@ test('adding a document with an empty field', function () {
       doc = {id: 1, name: 'test', title: ''}
 
   idx.add(doc)
-  equal(idx.tokenStore.get('tes')[0], 1)
+  equal(Object.keys(idx.tokenStore.get('tes')).length, 1)
+  equal(idx.tokenStore.get('tes')["1"],3)
+  ok(idx.metaStore.has("1"))
 })
 
 test('triggering add events', function () {
@@ -38,7 +40,7 @@ test('Adding to index with callback', function () {
   })
 
   ok(callbackCalled)
-  equal(idx.tokenStore.get('tes')[0], 1)
+  ok(idx.tokenStore.get('tes')["1"])
 })
 
 test('silencing add events', function () {
