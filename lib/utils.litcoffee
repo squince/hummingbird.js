@@ -37,14 +37,15 @@ Returns the max score for a given string
       score = 0
       return score if not phrase?
       (tokenizer.tokenize phrase).forEach ((token, i, tokens) ->
-        score += @tokenScore token, boost
+        score += @tokenScore token, boost, false
       ), this
       return score
 
 ### .tokenScore
 Returns the score for the given token
 
-    hummingbird.Utils::tokenScore = (token, boost) ->
-      len = token.length
-      score = if boost and token.substring(0,1) is '\u0002' then len + 2 else len
+    hummingbird.Utils::tokenScore = (token, boost, fromVariant) ->
+      score = token.length
+      score -= 0.2 if fromVariant
+      score = if boost and token.substring(0,1) is '\u0002' then score + 1 else score
 

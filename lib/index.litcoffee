@@ -81,8 +81,11 @@ Optionally includes additional arbitrary name-value pairs to be stored, but not 
         name = doc['name']
 
       # tokenize the doc
+      # TODO: score variant tokens less than normal by some small amount
+      # TODO: currently throwing away length of token, perhaps should store in tokenStore???
       tokens = @tokenizer.tokenize name
-      tokens = tokens.concat @variantStore.getVariantTokens(name, @tokenizer, tokens)
+      variant_tokens = @variantStore.getVariantTokens(name, @tokenizer, tokens)
+      tokens = tokens.concat variant_tokens
 
       # add the tokens to the tokenStore
       for i of tokens
@@ -155,7 +158,8 @@ Finds matching names and returns them in order of best match.
       @utils.logTiming 'find matching docs * start'
       queryTokens.forEach ((token, i, tokens) ->
         @tokenStore.get(token).forEach ((docRef, i, documents) ->
-          docScore = @utils.tokenScore(token, boost)
+          #TODO: retrieve info stored in tokenStore on whether token for this doc was from variant
+          docScore = @utils.tokenScore(token, boost, fromVariant)
           if docRef of docSetHash
             docSetHash[docRef] += docScore
           else
