@@ -88,6 +88,13 @@ module.exports = function(grunt) {
            stderr: true
          },
         command: 'git commit -am "publish new version to npmjs.org"; git push origin master; npm publish ./; git checkout gh-pages; git merge master; git push origin gh-pages; git checkout master'
+      },
+      index: {
+         options: {
+           stdout: false,
+           stderr: true
+         },
+        command: 'pushd ./examples/coffee-repl; coffee ./repl.coffee exit; popd'
       }
     },
     qunit: {
@@ -110,7 +117,7 @@ module.exports = function(grunt) {
   });
 
   // Default task
-  grunt.registerTask('default', ['clean', 'includereplace:pre', 'browserify', 'coffee', 'concat', 'shell:docs', 'includereplace:post']);
+  grunt.registerTask('default', ['clean', 'includereplace:pre', 'browserify', 'coffee', 'concat', 'shell:docs', 'includereplace:post', 'shell:index']);
   grunt.registerTask('dev', ['default',  'connect:dev', 'watch']);
   grunt.registerTask('test', ['default',  'connect:dev', 'qunit', 'watch']);
   grunt.registerTask('docs', ['includereplace:pre', 'shell:docs', 'includereplace:post']);

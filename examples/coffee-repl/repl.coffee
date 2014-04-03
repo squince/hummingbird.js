@@ -7,6 +7,8 @@ countries = require '../raw-countries.json'
 
 localIndex = "idx-countries.json"
 
+justBuild = if process.argv.indexOf('exit') > -1 then true else false
+
 # In this case, we'll build an autocomplete on item names.  Serialize the index out to disk if so desired.
 buildIndex = (data) ->
   for item in data
@@ -56,6 +58,7 @@ index = new hummingbird variants
 
 index.tokenizer = new hummingbird.tokenizer(3)
 buildIndex(countries)
+process.exit() if justBuild
 
 # Load & Search Index
 serializedindex = hummingbird.Index.load(JSON.parse(fs.readFileSync localIndex, ['utf8']))

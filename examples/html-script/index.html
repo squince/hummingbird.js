@@ -35,7 +35,7 @@
 
     function searchText() {
       $("#matchResultsList").empty();
-      var searchTerm = $("#searchTerm").val().trim();
+      var searchTerm = $("#searchTerm").val();
       if (!searchTerm || searchTerm.length < 2) {
         return;
       };
