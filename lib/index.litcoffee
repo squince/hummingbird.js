@@ -88,7 +88,7 @@ Optionally includes additional arbitrary name-value pairs to be stored, but not 
       # this should be done before the variant tokens are added
       # because we only keep distinct tokens, and only want to add variant tokens
       # with their penalized score if the token is not already associated with the non-variant name
-      for token in tokens
+      for i, token of tokens
         allDocumentTokens[token] = @utils.tokenScore(token, false)
       Object.keys(allDocumentTokens).forEach ((token) ->
         @tokenStore.add token, allDocumentTokens[token], doc.id
@@ -96,7 +96,7 @@ Optionally includes additional arbitrary name-value pairs to be stored, but not 
       ), this
 
       # add the variant tokens to the tokenStore
-      for token in variant_tokens
+      for i, token of variant_tokens
         allDocumentTokens[token] = @utils.tokenScore(token, true)
       Object.keys(allDocumentTokens).forEach ((token) ->
         @tokenStore.add token, allDocumentTokens[token], doc.id
@@ -192,7 +192,7 @@ Finds matching names and returns them in order of best match.
           docSetArray.push
             id: key
             score: docSetHash[key]
-            n: (@metaStore.get key).name.toLowerCase()
+            n: @metaStore.get(key).name.toLowerCase()
       @utils.logTiming 'hash to array * finish'
       @utils.logTiming 'array size = ' + docSetArray.length
 
