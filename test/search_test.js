@@ -1,6 +1,6 @@
 module('search', {
   setup: function () {
-    var variants = {'scarlett': ['scar', 'scary']}
+    var variants = {'scarlett': ['scar', 'scary', 'rouge']}
     var idx = new hummingbird.Index(variants)
     idx.tokenizer = new hummingbird.tokenizer(3)
 
@@ -28,17 +28,31 @@ module('search', {
       name: 'hand',
       title: 'title',
       company: 'foo bar llc'
+    },{
+      id: 'f',
+      name: 'Scarlett Johnson',
+      title: 'Mi Bambina',
+      company: 'My Test Corp'
     }]).forEach(function (doc) {  idx.add(doc) })
 
     this.idx = idx
   }
 })
 
-test('return correct results - with variant', function () {
+test('return correct results - without variant', function () {
   this.idx.search('scarlett watered a green plant', function(results) {
     equal(results.length, 1)
     equal(results[0].id, 'c')
     equal(results[0].title, 'Scary helps Professor')
+  });
+})
+
+test('return correct results - with variant', function () {
+  this.idx.search('Rouge ', function(results) {
+    equal(results.length, 1)
+    equal(results[0].id, 'f')
+    equal(results[0].score, 12.2)
+    equal(results[0].title, 'Mi Bambina')
   });
 })
 

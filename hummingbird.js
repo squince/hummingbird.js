@@ -476,7 +476,7 @@ hummingbird.Index.load = function(serializedData) {
 };
 
 hummingbird.Index.prototype.add = function(doc, emitEvent, indexCallback) {
-  var allDocumentTokens, i, name, token, tokens, variant_tokens;
+  var allDocumentTokens, name, token, tokens, variant_tokens, _i, _j, _len, _len1;
   allDocumentTokens = {};
   emitEvent = (emitEvent === undefined ? true : emitEvent);
   if (this.metaStore.has(doc.id)) {
@@ -491,16 +491,16 @@ hummingbird.Index.prototype.add = function(doc, emitEvent, indexCallback) {
   }
   tokens = this.tokenizer.tokenize(name);
   variant_tokens = this.variantStore.getVariantTokens(name, this.tokenizer, tokens);
-  for (i in tokens) {
-    token = tokens[i];
-    allDocumentTokens[token] = this.utils.tokenScore(token, false, false);
+  for (_i = 0, _len = tokens.length; _i < _len; _i++) {
+    token = tokens[_i];
+    allDocumentTokens[token] = this.utils.tokenScore(token, false);
   }
   Object.keys(allDocumentTokens).forEach((function(token) {
     this.tokenStore.add(token, allDocumentTokens[token], doc.id);
   }), this);
-  for (i in tokens) {
-    token = tokens[i];
-    allDocumentTokens[token] = this.utils.tokenScore(token, false, true);
+  for (_j = 0, _len1 = variant_tokens.length; _j < _len1; _j++) {
+    token = variant_tokens[_j];
+    allDocumentTokens[token] = this.utils.tokenScore(token, true);
   }
   Object.keys(allDocumentTokens).forEach((function(token) {
     this.tokenStore.add(token, allDocumentTokens[token], doc.id);
