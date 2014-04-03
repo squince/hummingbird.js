@@ -493,14 +493,14 @@ hummingbird.Index.prototype.add = function(doc, emitEvent, indexCallback) {
   variant_tokens = this.variantStore.getVariantTokens(name, this.tokenizer, tokens);
   for (i in tokens) {
     token = tokens[i];
-    allDocumentTokens[token] = this.utils.tokenScore(token, false, false);
+    allDocumentTokens[token] = this.utils.tokenScore(token, false);
   }
   Object.keys(allDocumentTokens).forEach((function(token) {
     this.tokenStore.add(token, allDocumentTokens[token], doc.id);
   }), this);
-  for (i in tokens) {
-    token = tokens[i];
-    allDocumentTokens[token] = this.utils.tokenScore(token, false, true);
+  for (i in variant_tokens) {
+    token = variant_tokens[i];
+    allDocumentTokens[token] = this.utils.tokenScore(token, true);
   }
   Object.keys(allDocumentTokens).forEach((function(token) {
     this.tokenStore.add(token, allDocumentTokens[token], doc.id);
@@ -576,7 +576,7 @@ hummingbird.Index.prototype.search = function(query, callback, options) {
       docSetArray.push({
         id: key,
         score: docSetHash[key],
-        n: (this.metaStore.get(key)).name.toLowerCase()
+        n: this.metaStore.get(key).name.toLowerCase()
       });
     }
   }
