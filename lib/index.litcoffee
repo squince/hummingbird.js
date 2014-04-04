@@ -84,22 +84,22 @@ Optionally includes additional arbitrary name-value pairs to be stored, but not 
       tokens = @tokenizer.tokenize name
       variant_tokens = @variantStore.getVariantTokens(name, @tokenizer, tokens)
 
-      # add the document tokens to the tokenStore
+      # add the name tokens to the tokenStore
       # this should be done before the variant tokens are added
       # because we only keep distinct tokens, and only want to add variant tokens
       # with their penalized score if the token is not already associated with the non-variant name
-      for i, token of tokens
-        allDocumentTokens[token] = @utils.tokenScore(token, false)
+      for token in tokens
+        allDocumentTokens[token] = null
       Object.keys(allDocumentTokens).forEach ((token) ->
-        @tokenStore.add token, allDocumentTokens[token], doc.id
+        @tokenStore.add token, false, doc.id
         return
       ), this
 
       # add the variant tokens to the tokenStore
-      for i, token of variant_tokens
-        allDocumentTokens[token] = @utils.tokenScore(token, true)
+      for token in variant_tokens
+        allDocumentTokens[token] = null
       Object.keys(allDocumentTokens).forEach ((token) ->
-        @tokenStore.add token, allDocumentTokens[token], doc.id
+        @tokenStore.add token, true, doc.id
         return
       ), this
 
@@ -165,12 +165,21 @@ Finds matching names and returns them in order of best match.
 
       @utils.logTiming 'find matching docs * start'
       queryTokens.forEach ((token, i, tokens) ->
-        # retrieve each doc stored in tokenStore for this token
-        for docRef,docTokenScore of @tokenStore.get(token)
-          if docRef of docSetHash
-            docSetHash[docRef] += @utils.prefixBoost(docTokenScore, boost, token)
+        # retrieve docs from tokenStore
+        # @utils.logTiming "#{token} score start"
+        # name matches
+        for docRef in @tokenStore.get(token, false)
+          if docSetHash.hasOwnProperty docRef
+            docSetHash[docRef] += @utils.tokenScore(token, false, boost)
           else
-            docSetHash[docRef] = @utils.prefixBoost(docTokenScore, boost, token)
+            docSetHash[docRef] = @utils.tokenScore(token, false, boost)
+        # variant matches
+        for docRef in @tokenStore.get(token, true)
+          if docSetHash.hasOwnProperty docRef
+            docSetHash[docRef] += @utils.tokenScore(token, true, boost)
+          else
+            docSetHash[docRef] = @utils.tokenScore(token, true, boost)
+        # @utils.logTiming "#{token} score end"
         return
       ), this
       @utils.logTiming 'find matching docs * finish'

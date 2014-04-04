@@ -33,28 +33,21 @@ takes a string and normalizes it for case and diacritics
 ### .maxScore
 Returns the max score for a given string
 
-    hummingbird.Utils::maxScore = (phrase, tokenizer, boost) ->
+    hummingbird.Utils::maxScore = (phrase, tokenizer, isBoost) ->
       score = 0
       return score if not phrase?
       (tokenizer.tokenize phrase).forEach ((token, i, tokens) ->
-        score += @prefixBoost(@tokenScore(token, false), boost, token)
+        score += @tokenScore(token, false, isBoost)
       ), this
       return score
 
 ### .tokenScore
 Returns the score for the given token
 
-    hummingbird.Utils::tokenScore = (token, fromVariant) ->
-      fromVariant ?= false
+    hummingbird.Utils::tokenScore = (token, isVariant, isBoost) ->
+      isVariant ?= false
+      isBoost ?= false
       score = token.length
-      score -= 0.2 if fromVariant
+      score += 1 if isBoost and token.substring(0,1) is '\u0002'
+      score -= 0.2 if isVariant
       return score
-
-
-### .prefixBoost
-Boosts the score for the given token if appropriate
-
-    hummingbird.Utils::prefixBoost = (score, boost, token) ->
-      score += 1 if boost and token.substring(0,1) is '\u0002'
-      return score
-
