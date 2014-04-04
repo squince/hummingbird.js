@@ -69,13 +69,18 @@ alternate names will be displayed where appropriate.  The examples
 include name variants for countries (e.g., _America_ as a variant for
 _United States_).
 
+In this example above, searches for _America_, _USA_, or _U.S.A._ will
+return the documents with _United States_.  Searches for _United
+States_, however, will **not** return documents with _America_.  This is
+by design.  For the latter search, you would create a variant with
+_America_ as the primary key and _United States_ as a nickname/variant.
+
 ```javascript
 // example
-var variants = {"United States": ["America", "USA", "U.S.A."]}
+var variants = {
+      "United States": ["America","USA","U.S.A."],
+      "America": ["United States"]
+  }
 var idx = new hummingbird.Index(variants);
 ```
 
-**Caution** - name variants are implemented in such a 
-way that the memory footprint for that particularly index is increased
-(mileage will vary) and you may begin to cross memory allocation thresholds 
-for particularly large indexes, where large is ~ million entries.

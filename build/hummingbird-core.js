@@ -66,10 +66,10 @@ hummingbird.Utils.prototype.tokenScore = function(token, isVariant, isBoost) {
   }
   score = token.length;
   if (isBoost && token.substring(0, 1) === '\u0002') {
-    score += 1;
+    score += 0.2;
   }
   if (isVariant) {
-    score -= 0.2;
+    score -= 0.1;
   }
   return score;
 };
@@ -174,18 +174,12 @@ hummingbird.Index.prototype.add = function(doc, emitEvent, indexCallback) {
   variant_tokens = this.variantStore.getVariantTokens(name, this.tokenizer, tokens);
   for (_i = 0, _len = tokens.length; _i < _len; _i++) {
     token = tokens[_i];
-    allDocumentTokens[token] = null;
-  }
-  Object.keys(allDocumentTokens).forEach((function(token) {
     this.tokenStore.add(token, false, doc.id);
-  }), this);
+  }
   for (_j = 0, _len1 = variant_tokens.length; _j < _len1; _j++) {
     token = variant_tokens[_j];
-    allDocumentTokens[token] = null;
-  }
-  Object.keys(allDocumentTokens).forEach((function(token) {
     this.tokenStore.add(token, true, doc.id);
-  }), this);
+  }
   this.metaStore.add(doc);
   if (emitEvent) {
     this.eventEmitter.emit('add', doc, this);
@@ -373,7 +367,7 @@ hummingbird.TokenStore.prototype.toJSON = function() {
 };
 
 hummingbird.TokenStore.prototype.add = function(token, isVariant, docId) {
-  var _base, _base1, _base2, _ref;
+  var _base, _base1, _base2;
   if ((_base = this.root)[token] == null) {
     _base[token] = {};
   }
@@ -385,7 +379,7 @@ hummingbird.TokenStore.prototype.add = function(token, isVariant, docId) {
       this.root[token]['n'].push(docId);
     }
   } else {
-    if ((((_ref = this.root[token]) != null ? _ref['n'] : void 0) != null) && this.root[token]['n'].indexOf(docId) === -1) {
+    if ((this.root[token]['n'] == null) || this.root[token]['n'].indexOf(docId) === -1) {
       if ((_base2 = this.root[token])['v'] == null) {
         _base2['v'] = [];
       }
@@ -430,11 +424,11 @@ hummingbird.TokenStore.prototype.count = function(token) {
     return 0;
   }
   count = 0;
-  if (Object.keys(((_ref = this.root[token]) != null ? _ref['n'] : void 0) != null)) {
-    count += Object.keys(this.root[token]['n']).length;
+  if (((_ref = this.root[token]) != null ? _ref['n'] : void 0) != null) {
+    count += this.root[token]['n'].length;
   }
-  if (Object.keys(((_ref1 = this.root[token]) != null ? _ref1['v'] : void 0) != null)) {
-    count += Object.keys(this.root[token]['v']).length;
+  if (((_ref1 = this.root[token]) != null ? _ref1['v'] : void 0) != null) {
+    count += this.root[token]['v'].length;
   }
   return count;
 };
@@ -444,7 +438,7 @@ hummingbird.TokenStore.prototype.remove = function(docRef) {
     var i;
     if (this.root[token]['n'] != null) {
       i = this.root[token]['n'].indexOf(docRef);
-      if (i) {
+      if (i !== -1) {
         this.root[token]['n'].splice(i, 1);
       }
       if (Object.keys(this.root[token]['n']).length === 0) {
@@ -453,7 +447,7 @@ hummingbird.TokenStore.prototype.remove = function(docRef) {
     }
     if (this.root[token]['v'] != null) {
       i = this.root[token]['v'].indexOf(docRef);
-      if (i) {
+      if (i !== -1) {
         this.root[token]['v'].splice(i, 1);
       }
       if (Object.keys(this.root[token]['v']).length === 0) {
@@ -481,31 +475,26 @@ hummingbird.tokenizer = function(min, max) {
 };
 
 hummingbird.tokenizer.prototype.tokenize = function(name) {
-  var alltokens, buffer, i, n, norm_name, token;
+  var alltokens, i, n, norm_name;
   norm_name = this.utils.normalizeString(name);
-  if (!arguments.length || (norm_name == null) || norm_name === undefined) {
+  if (norm_name == null) {
     return [];
   }
-  alltokens = [];
+  alltokens = {};
   n = this.min;
   while (n <= this.max) {
-    buffer = [];
-    if (norm_name.length <= n && buffer.indexOf(norm_name) === -1) {
-      buffer.push(norm_name);
+    if (norm_name.length <= n) {
+      alltokens[norm_name] = null;
     } else {
       i = 0;
       while (i <= norm_name.length - n) {
-        token = norm_name.slice(i, i + n);
-        if (buffer.indexOf(token) === -1) {
-          buffer.push(token);
-        }
+        alltokens[norm_name.slice(i, i + n)] = null;
         i++;
       }
     }
-    alltokens = alltokens.concat(buffer);
     n++;
   }
-  return alltokens;
+  return Object.keys(alltokens);
 };
 
 hummingbird.VariantStore = function(variantsObj) {

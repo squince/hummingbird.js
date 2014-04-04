@@ -1,14 +1,14 @@
 ## Examples
+Special thanks to [socrata.com](https://opendata.socrata.com/) for
+making a wide range of interesting data available
 
-### html script
+### jquery
 The most obvious way to use hummingbird.js is from within an html page.  
 Here is an extremely simplistic [example of typeahead](examples/html-script/index.html)
 
+### twitter typeahead
 Here is an example of integrating hummingbird.js [with Twitter
   Typeahead](examples/html-script/twitter.html)
-
-Special thanks to [socrata.com](https://opendata.socrata.com/) for
-making a wide range of interesting data available
 
 ### coffee repl
 Yep, you can even run this from the command-line.  This can be useful if

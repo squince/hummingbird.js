@@ -51,9 +51,9 @@ test('return correct results - with variant', function () {
   this.idx.search('Rouge ', function(results) {
     equal(results.length, 1)
     equal(results[0].id, 'f')
-    equal(results[0].score, 12.2)
+    equal(results[0].score, 11.8)
     equal(results[0].title, 'Mi Bambina')
-  });
+  }, {'scoreThreshold':0});
 })
 
 test('return correct results - default options', function () {
@@ -96,8 +96,8 @@ test('return correct results - with boost, no threshold', function () {
     equal(results[0].id, 'e')
     equal(results[1].id, 'd')
     equal(results[2].id, 'a')
-    equal(results[0].score, '13')
-    equal(results[1].score, '10')
+    equal(results[0].score, '12.2')
+    equal(results[1].score, '9.2')
     equal(results[2].score, '3')
   }, options);
 })
@@ -108,8 +108,8 @@ test('return the correct results - with boost, with threshold', function () {
     equal(results.length, 2)
     equal(results[0].id, 'e')
     equal(results[1].id, 'd')
-    equal(results[0].score, '13')
-    equal(results[1].score, '10')
+    equal(results[0].score, '12.2')
+    equal(results[1].score, '9.2')
   }, options);
 })
 
@@ -125,7 +125,7 @@ test('search results ranked by score - default options', function () {
     equal(results.length, 2)
     equal(results[0].id, 'b')
     equal(results[1].id, 'c')
-    equal(results[0].score, 25)
+    equal(results[0].score, 24.2)
     equal(results[1].score, 21)
   });
 })

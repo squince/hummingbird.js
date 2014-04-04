@@ -71,7 +71,7 @@ Optionally includes additional arbitrary name-value pairs to be stored, but not 
       emitEvent = (if emitEvent is `undefined` then true else emitEvent)
 
       if @metaStore.has doc.id
-        console.warn "Document #{doc.id} already indexed, replacing" 
+        console.warn "Document #{doc.id} already indexed, replacing"
         @update doc, emitEvent
         return
 
@@ -85,24 +85,13 @@ Optionally includes additional arbitrary name-value pairs to be stored, but not 
       variant_tokens = @variantStore.getVariantTokens(name, @tokenizer, tokens)
 
       # add the name tokens to the tokenStore
-      # this should be done before the variant tokens are added
-      # because we only keep distinct tokens, and only want to add variant tokens
-      # with their penalized score if the token is not already associated with the non-variant name
+      # do this before variant tokens are added to ensure tokens are distinct
       for token in tokens
-        allDocumentTokens[token] = null
-      Object.keys(allDocumentTokens).forEach ((token) ->
         @tokenStore.add token, false, doc.id
-        return
-      ), this
 
       # add the variant tokens to the tokenStore
       for token in variant_tokens
-        allDocumentTokens[token] = null
-      Object.keys(allDocumentTokens).forEach ((token) ->
         @tokenStore.add token, true, doc.id
-        return
-      ), this
-
 
       @metaStore.add doc
       @eventEmitter.emit 'add', doc, this  if emitEvent

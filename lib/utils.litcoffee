@@ -48,6 +48,6 @@ Returns the score for the given token
       isVariant ?= false
       isBoost ?= false
       score = token.length
-      score += 1 if isBoost and token.substring(0,1) is '\u0002'
-      score -= 0.2 if isVariant
+      score += 0.2 if isBoost and token.substring(0,1) is '\u0002'
+      score -= 0.1 if isVariant
       return score

@@ -29,21 +29,18 @@ See utils.normalizeString()
 
     hummingbird.tokenizer::tokenize = (name) ->
       norm_name = @utils.normalizeString name
-      return []  if not arguments.length or not norm_name? or norm_name is `undefined`
+      return [] unless norm_name?
 
-      alltokens = []
+      alltokens = {}
       n = @min
 
       while n <= @max
-        buffer = []
-        if norm_name.length <= n and buffer.indexOf(norm_name) is -1
-          buffer.push norm_name
+        if norm_name.length <= n
+          alltokens[norm_name] = null
         else
           i = 0
           while i <= norm_name.length - n
-            token = norm_name.slice(i, i + n)
-            buffer.push token if buffer.indexOf(token) is -1
+            alltokens[norm_name.slice(i, i + n)] = null
             i++
-        alltokens = alltokens.concat(buffer)
         n++
-      alltokens
+      return Object.keys(alltokens)

@@ -39,7 +39,7 @@
       if (!searchTerm || searchTerm.length < 2) {
         return;
       };
-      options = {'boostPrefix': false}
+      options = {'boostPrefix': true}
       console.time('search');
       idx.search(searchTerm, showResults, options);
       console.timeEnd('search');

@@ -39,7 +39,7 @@
 
     function searchText(query, cb) {
       var searchTerm = $("#searchTerm").val().trim();
-      hbOpts = {'boostPrefix': false}
+      hbOpts = {'boostPrefix': true}
       console.time('search');
       idx.search(query, cb, hbOpts);
       console.timeEnd('search');

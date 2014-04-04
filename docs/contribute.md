@@ -5,7 +5,7 @@ before, then
 * _$ npm install hummingbird_
 
 ## Contribute
-This plugin requires Grunt ~0.4.0
+This plugin requires Grunt >=0.4.0
 
 If you haven't used [Grunt](http://gruntjs.com/) before, be sure to
 check out the [Getting
