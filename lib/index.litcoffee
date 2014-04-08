@@ -134,7 +134,8 @@ Optionally, takes an options object with the following possible properties
 Finds matching names and returns them in order of best match.
 
     hummingbird.Index::search = (query, callback, options) ->
-      startTime = @utils.logTiming 'START **********'
+      @utils.debugLog '**********'
+      startTime = @utils.logTiming 'find matching docs'
       if (not query? or query.length < (@tokenizer.min - 1)) then callback []
 
       # search options
@@ -167,25 +168,20 @@ Finds matching names and returns them in order of best match.
         startMatchTime = @utils.logTiming "'#{token}' score start"
         # name matches
         for docRef in @tokenStore.get(token, false)
-          if docSetHash.hasOwnProperty docRef
-            docSetHash[docRef] += @utils.tokenScore(token, false, boost)
-          else
-            docSetHash[docRef] = @utils.tokenScore(token, false, boost)
-        startVariantMatch = @utils.logTiming "\t\toriginal name:\t\t", startMatchTime
+          docSetHash[docRef] ?= 0
+          docSetHash[docRef] += @utils.tokenScore(token, false, boost)
+        startVariantMatch = @utils.logTiming "\t\toriginal name:\t\t#{@tokenStore.get(token, false).length} ", startMatchTime
         # variant matches
         for docRef in @tokenStore.get(token, true)
-          if docSetHash.hasOwnProperty docRef
-            docSetHash[docRef] += @utils.tokenScore(token, true, boost)
-          else
-            docSetHash[docRef] = @utils.tokenScore(token, true, boost)
-        @utils.logTiming "\t\tvariant matches:\t", startVariantMatch
+          docSetHash[docRef] ?= 0
+          docSetHash[docRef] += @utils.tokenScore(token, true, boost)
+        @utils.logTiming "\t\tvariant matches:\t#{@tokenStore.get(token, true).length} ", startVariantMatch
         return
       ), this
-      @utils.logTiming 'found matching docs', startTime
 
       # convert hash to array of hashes for sorting
       # filter out results below the minScore
-      startHashArray = @utils.logTiming 'hash to sorted array'
+      startHashArray = @utils.logTiming 'hash to sorted array\n'
       for key of docSetHash
         if docSetHash[key] >= minScore
           docSetArray.push
@@ -204,16 +200,24 @@ Finds matching names and returns them in order of best match.
 
       # loop over limited return set and augment with meta
       results = docSetArray.slice offset, numResults
+      @utils.debugLog "score\tname (id)"
       resultSet = (results.map (result, i, results) ->
         result = @metaStore.get result.id
         result.score = Math.round(results[i].score*10)/10
-        @utils.logTiming "id: #{result.id}, score: #{result.score}"
+        @utils.debugLog "#{result.score}\t#{result.name} (#{result.id})"
         return result
       , this)
       callback resultSet
-      @utils.logTiming 'hash to sorted array * finish', startHashArray
-      @utils.logTiming 'array size = ' + docSetArray.length
-      @utils.logTiming 'FINISH', startTime
+      @utils.debugLog ""
+      finishTime = @utils.logTiming 'SUMMARY:'
+      @utils.debugLog "hash size:\t#{Object.keys(docSetHash).length.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}"
+      @utils.debugLog "array size:\t#{docSetArray.length.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}"
+      @utils.debugLog "min score:\t#{minScore}"
+      @utils.debugLog "max score:\t#{maxScore}"
+      @utils.debugLog "query time:\t#{finishTime-startTime} ms"
+      @utils.debugLog "\t\t#{startHashArray-startTime} ms - finding docs"
+      @utils.debugLog "\t\t#{finishTime-startHashArray} ms - hash to array"
+      @utils.debugLog "***************"
 
 
 ### ::toJSON

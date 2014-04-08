@@ -11,6 +11,13 @@ logs a warning message to the console
     hummingbird.Utils::warn = (message) ->
       console.warn message if console.warn
 
+### .debugLog
+logs a debug message to the console
+
+    hummingbird.Utils::debugLog = (msg) ->
+      if console.log and hummingbird.loggingOn
+        console.log "#{msg}"
+
 ### .logTiming
 logs a message to the console preceded by time of day
 

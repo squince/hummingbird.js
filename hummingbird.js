@@ -344,6 +344,12 @@ hummingbird.Utils.prototype.warn = function(message) {
   }
 };
 
+hummingbird.Utils.prototype.debugLog = function(msg) {
+  if (console.log && hummingbird.loggingOn) {
+    return console.log("" + msg);
+  }
+};
+
 hummingbird.Utils.prototype.logTiming = function(msg, s) {
   var d;
   if (console.log && hummingbird.loggingOn) {
@@ -528,8 +534,9 @@ hummingbird.Index.prototype.update = function(doc, emitEvent) {
 };
 
 hummingbird.Index.prototype.search = function(query, callback, options) {
-  var boost, docSetArray, docSetHash, hasSomeToken, key, maxScore, minScore, numResults, offset, queryTokens, resultSet, results, startHashArray, startTime;
-  startTime = this.utils.logTiming('START **********');
+  var boost, docSetArray, docSetHash, finishTime, hasSomeToken, key, maxScore, minScore, numResults, offset, queryTokens, resultSet, results, startHashArray, startTime;
+  this.utils.debugLog('**********');
+  startTime = this.utils.logTiming('find matching docs');
   if ((query == null) || query.length < (this.tokenizer.min - 1)) {
     callback([]);
   }
@@ -561,26 +568,23 @@ hummingbird.Index.prototype.search = function(query, callback, options) {
     _ref = this.tokenStore.get(token, false);
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       docRef = _ref[_i];
-      if (docSetHash.hasOwnProperty(docRef)) {
-        docSetHash[docRef] += this.utils.tokenScore(token, false, boost);
-      } else {
-        docSetHash[docRef] = this.utils.tokenScore(token, false, boost);
+      if (docSetHash[docRef] == null) {
+        docSetHash[docRef] = 0;
       }
+      docSetHash[docRef] += this.utils.tokenScore(token, false, boost);
     }
-    startVariantMatch = this.utils.logTiming("\t\toriginal name:\t\t", startMatchTime);
+    startVariantMatch = this.utils.logTiming("\t\toriginal name:\t\t" + (this.tokenStore.get(token, false).length) + " ", startMatchTime);
     _ref1 = this.tokenStore.get(token, true);
     for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
       docRef = _ref1[_j];
-      if (docSetHash.hasOwnProperty(docRef)) {
-        docSetHash[docRef] += this.utils.tokenScore(token, true, boost);
-      } else {
-        docSetHash[docRef] = this.utils.tokenScore(token, true, boost);
+      if (docSetHash[docRef] == null) {
+        docSetHash[docRef] = 0;
       }
+      docSetHash[docRef] += this.utils.tokenScore(token, true, boost);
     }
-    this.utils.logTiming("\t\tvariant matches:\t", startVariantMatch);
+    this.utils.logTiming("\t\tvariant matches:\t" + (this.tokenStore.get(token, true).length) + " ", startVariantMatch);
   }), this);
-  this.utils.logTiming('found matching docs', startTime);
-  startHashArray = this.utils.logTiming('hash to sorted array');
+  startHashArray = this.utils.logTiming('hash to sorted array\n');
   for (key in docSetHash) {
     if (docSetHash[key] >= minScore) {
       docSetArray.push({
@@ -605,16 +609,24 @@ hummingbird.Index.prototype.search = function(query, callback, options) {
     }
   });
   results = docSetArray.slice(offset, numResults);
+  this.utils.debugLog("score\tname (id)");
   resultSet = results.map(function(result, i, results) {
     result = this.metaStore.get(result.id);
     result.score = Math.round(results[i].score * 10) / 10;
-    this.utils.logTiming("id: " + result.id + ", score: " + result.score);
+    this.utils.debugLog("" + result.score + "\t" + result.name + " (" + result.id + ")");
     return result;
   }, this);
   callback(resultSet);
-  this.utils.logTiming('hash to sorted array * finish', startHashArray);
-  this.utils.logTiming('array size = ' + docSetArray.length);
-  return this.utils.logTiming('FINISH', startTime);
+  this.utils.debugLog("");
+  finishTime = this.utils.logTiming('SUMMARY:');
+  this.utils.debugLog("hash size:\t" + (Object.keys(docSetHash).length.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")));
+  this.utils.debugLog("array size:\t" + (docSetArray.length.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")));
+  this.utils.debugLog("min score:\t" + minScore);
+  this.utils.debugLog("max score:\t" + maxScore);
+  this.utils.debugLog("query time:\t" + (finishTime - startTime) + " ms");
+  this.utils.debugLog("\t\t" + (startHashArray - startTime) + " ms - finding docs");
+  this.utils.debugLog("\t\t" + (finishTime - startHashArray) + " ms - hash to array");
+  return this.utils.debugLog("***************");
 };
 
 hummingbird.Index.prototype.toJSON = function() {
