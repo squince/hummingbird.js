@@ -18,7 +18,7 @@ Defaults to false
 ### .version
 Version of the hummingbird code base
 
-    hummingbird.version = "0.6.0"
+    hummingbird.version = "0.6.1"
 
 ### .index_version
 Version of the index data structure

@@ -2,7 +2,7 @@
   "name": "hummingbird",
   "description": "Impossibly quick, precise, and beautiful to behold day and night",
   "homepage": "http://glg.github.io/hummingbird.js",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "index_version": "4.0",
   "author": "Daniel Griffis, Steve Quince",
   "main": "hummingbird.js",

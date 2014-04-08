@@ -14,10 +14,14 @@ logs a warning message to the console
 ### .logTiming
 logs a message to the console preceded by time of day
 
-    hummingbird.Utils::logTiming = (msg) ->
+    hummingbird.Utils::logTiming = (msg, s) ->
       if console.log and hummingbird.loggingOn
         d = new Date()
-        console.log d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds() + '.' + d.getMilliseconds() + ' - ' + msg
+        if s?
+          console.log "#{d.toTimeString().split(' ')[0]}.#{d.getMilliseconds()} - #{msg} in #{d-s} ms"
+        else
+          console.log "#{d.toTimeString().split(' ')[0]}.#{d.getMilliseconds()} - #{msg}"
+        return d
 
 ### .normalizeString
 takes a string and normalizes it for case and diacritics
