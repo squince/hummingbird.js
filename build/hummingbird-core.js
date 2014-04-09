@@ -216,7 +216,7 @@ hummingbird.Index.prototype.update = function(doc, emitEvent) {
 };
 
 hummingbird.Index.prototype.search = function(query, callback, options) {
-  var boost, docSetArray, docSetHash, finishTime, hasSomeToken, key, maxScore, minScore, numResults, offset, queryTokens, resultSet, results, startHashArray, startTime;
+  var boost, docSetArray, docSetHash, finishTime, hasSomeToken, key, maxScore, minNumQueryTokens, minScore, numResults, offset, queryTokens, resultSet, results, startHashArray, startTime;
   this.utils.debugLog('**********');
   startTime = this.utils.logTiming('find matching docs');
   if ((query == null) || query.length < (this.tokenizer.min - 1)) {
@@ -227,17 +227,21 @@ hummingbird.Index.prototype.search = function(query, callback, options) {
   boost = ((options != null ? options.boostPrefix : void 0) == null) || options.boostPrefix === true ? true : false;
   docSetHash = {};
   docSetArray = [];
+  queryTokens = this.tokenizer.tokenize(query);
   maxScore = this.utils.maxScore(query, this.tokenizer, boost);
   if ((options != null ? options.scoreThreshold : void 0) == null) {
     minScore = 0.5 * maxScore;
-  } else if ((options != null ? options.scoreThreshold : void 0) < 0) {
+    minNumQueryTokens = Math.ceil(queryTokens.length * 0.5);
+  } else if ((options != null ? options.scoreThreshold : void 0) <= 0) {
     minScore = 0;
-  } else if ((options != null ? options.scoreThreshold : void 0) > 1) {
+    minNumQueryTokens = queryTokens.length;
+  } else if ((options != null ? options.scoreThreshold : void 0) >= 1) {
     minScore = maxScore;
+    minNumQueryTokens = 0;
   } else {
     minScore = options.scoreThreshold * maxScore;
+    minNumQueryTokens = Math.ceil(queryTokens.length * (1 - options.scoreThreshold));
   }
-  queryTokens = this.tokenizer.tokenize(query);
   hasSomeToken = queryTokens.some(function(token) {
     return this.tokenStore.has(token);
   }, this);
@@ -250,19 +254,25 @@ hummingbird.Index.prototype.search = function(query, callback, options) {
     _ref = this.tokenStore.get(token, false);
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       docRef = _ref[_i];
-      if (docSetHash[docRef] == null) {
-        docSetHash[docRef] = 0;
+      switch (false) {
+        case !((docSetHash[docRef] == null) && i <= minNumQueryTokens):
+          docSetHash[docRef] = this.utils.tokenScore(token, false, boost);
+          break;
+        case docSetHash[docRef] == null:
+          docSetHash[docRef] += this.utils.tokenScore(token, false, boost);
       }
-      docSetHash[docRef] += this.utils.tokenScore(token, false, boost);
     }
     startVariantMatch = this.utils.logTiming("\t\toriginal name:\t\t" + (this.tokenStore.get(token, false).length) + " ", startMatchTime);
     _ref1 = this.tokenStore.get(token, true);
     for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
       docRef = _ref1[_j];
-      if (docSetHash[docRef] == null) {
-        docSetHash[docRef] = 0;
+      switch (false) {
+        case !((docSetHash[docRef] == null) && i <= minNumQueryTokens):
+          docSetHash[docRef] = this.utils.tokenScore(token, true, boost);
+          break;
+        case docSetHash[docRef] == null:
+          docSetHash[docRef] += this.utils.tokenScore(token, true, boost);
       }
-      docSetHash[docRef] += this.utils.tokenScore(token, true, boost);
     }
     this.utils.logTiming("\t\tvariant matches:\t" + (this.tokenStore.get(token, true).length) + " ", startVariantMatch);
   }), this);
