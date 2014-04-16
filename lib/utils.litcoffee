@@ -35,10 +35,8 @@ takes a string and normalizes it for case and diacritics
 
     hummingbird.Utils::normalizeString = (str) ->
       re_start = /^\u0002/
-      re_end = /\u0003$/
       str = diacritics.remove((str.toString()).toLowerCase())
       str = str.replace re_start, ''
-      str = str.replace re_end, ''
       return '\u0002' + str
 
 ### .maxScore

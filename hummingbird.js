@@ -364,12 +364,10 @@ hummingbird.Utils.prototype.logTiming = function(msg, s) {
 };
 
 hummingbird.Utils.prototype.normalizeString = function(str) {
-  var re_end, re_start;
+  var re_start;
   re_start = /^\u0002/;
-  re_end = /\u0003$/;
   str = diacritics.remove((str.toString()).toLowerCase());
   str = str.replace(re_start, '');
-  str = str.replace(re_end, '');
   return '\u0002' + str;
 };
 
@@ -829,15 +827,11 @@ hummingbird.tokenizer.prototype.tokenize = function(name) {
   n = this.min;
   while (n <= this.max) {
     if (norm_name.length <= n) {
-      if (norm_name !== '\u0002 \u0003') {
-        alltokens[norm_name] = null;
-      }
+      alltokens[norm_name] = null;
     } else {
       i = 0;
       while (i <= norm_name.length - n) {
-        if (norm_name !== '\u0002 \u0003') {
-          alltokens[norm_name.slice(i, i + n)] = null;
-        }
+        alltokens[norm_name.slice(i, i + n)] = null;
         i++;
       }
     }

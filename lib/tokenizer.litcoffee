@@ -20,10 +20,10 @@ for substrings suitable for autocomplete indexing and fuzzy name matching
 ### ::tokenize
 Splits a string into ngram tokens
 
-To boost exact matches, a start character \u0002 and an end character \u0003
-are wrapped around the string and used in the ngrams. This causes a sequence
-of characters at the start of both a search query and a sought term to more
-tightly match than a similar series of characters elsewhere in sought terms.
+To boost prefix matches, a start character \u0002 is prepended to the string
+and used in the ngrams. This causes a sequence of characters at the start of both
+a search query and a sought term to more tightly match than a similar series of
+characters elsewhere in sought terms.
 
 See utils.normalizeString()
 
@@ -36,11 +36,11 @@ See utils.normalizeString()
 
       while n <= @max
         if norm_name.length <= n
-          alltokens[norm_name] = null unless norm_name is '\u0002 \u0003'
+          alltokens[norm_name] = null
         else
           i = 0
           while i <= norm_name.length - n
-            alltokens[norm_name.slice(i, i + n)] = null unless norm_name is '\u0002 \u0003'
+            alltokens[norm_name.slice(i, i + n)] = null
             i++
         n++
       return Object.keys(alltokens)
