@@ -45,21 +45,14 @@ hummingbird.Utils.prototype.logTiming = function(msg, s) {
   }
 };
 
-hummingbird.Utils.prototype.normalizeString = function(str, suffixBoost) {
+hummingbird.Utils.prototype.normalizeString = function(str) {
   var re_end, re_start;
-  if (suffixBoost == null) {
-    suffixBoost = false;
-  }
   re_start = /^\u0002/;
   re_end = /\u0003$/;
   str = diacritics.remove((str.toString()).toLowerCase());
   str = str.replace(re_start, '');
   str = str.replace(re_end, '');
-  if (suffixBoost) {
-    return '\u0002' + str + '\u0003';
-  } else {
-    return '\u0002' + str;
-  }
+  return '\u0002' + str;
 };
 
 hummingbird.Utils.prototype.maxScore = function(phrase, tokenizer, prefixBoost) {
@@ -223,7 +216,7 @@ hummingbird.Index.prototype.update = function(doc, emitEvent) {
 };
 
 hummingbird.Index.prototype.search = function(query, callback, options) {
-  var docSetArray, docSetHash, finishTime, hasSomeToken, key, maxScore, minNumQueryTokens, minScore, numResults, offset, prefixBoost, queryTokens, resultSet, results, startHashArray, startTime, suffixBoost;
+  var docSetArray, docSetHash, finishTime, hasSomeToken, key, maxScore, minNumQueryTokens, minScore, numResults, offset, prefixBoost, queryTokens, resultSet, results, startHashArray, startTime;
   this.utils.debugLog('**********');
   startTime = this.utils.logTiming('find matching docs');
   if ((query == null) || query.length < (this.tokenizer.min - 1)) {
@@ -232,10 +225,9 @@ hummingbird.Index.prototype.search = function(query, callback, options) {
   numResults = (options != null ? options.howMany : void 0) === undefined ? 10 : Math.floor(options.howMany);
   offset = (options != null ? options.startPos : void 0) === undefined ? 0 : Math.floor(options.startPos);
   prefixBoost = options != null ? options.boostPrefix : void 0;
-  suffixBoost = options != null ? options.boostSuffix : void 0;
   docSetHash = {};
   docSetArray = [];
-  queryTokens = this.tokenizer.tokenize(query, suffixBoost);
+  queryTokens = this.tokenizer.tokenize(query);
   maxScore = this.utils.maxScore(query, this.tokenizer, prefixBoost);
   if ((options != null ? options.scoreThreshold : void 0) == null) {
     minScore = 0.5 * maxScore;
@@ -509,9 +501,9 @@ hummingbird.tokenizer = function(min, max) {
   }
 };
 
-hummingbird.tokenizer.prototype.tokenize = function(name, suffixBoost) {
+hummingbird.tokenizer.prototype.tokenize = function(name) {
   var alltokens, i, n, norm_name;
-  norm_name = this.utils.normalizeString(name, suffixBoost);
+  norm_name = this.utils.normalizeString(name);
   if (norm_name == null) {
     return [];
   }

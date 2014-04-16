@@ -10,7 +10,7 @@ test('get variant tokens', function () {
   d1_tokens = store.getVariantTokens(doc1.name, tokenizer, ['\u0002st','ste','tev','eve','ve\u0003'])
   d2_tokens = store.getVariantTokens(doc2.name, tokenizer, ['\u0002st','ste','tep','eph','phe','hen','en\u0003'])
 
-  deepEqual(d1_tokens,['ven','en\u0003','tep','eph','phe','hen','tef','efa','fan','an\u0003'])
+  deepEqual(d1_tokens,['ven','tep','eph','phe','hen','tef','efa','fan'])
   deepEqual(d2_tokens,[])
 })
 

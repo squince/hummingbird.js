@@ -51,7 +51,7 @@ test('return correct results - with variant', function () {
   this.idx.search('Rouge ', function(results) {
     equal(results.length, 1)
     equal(results[0].id, 'f')
-    equal(results[0].score, 11.8)
+    equal(results[0].score, 10.6)
     equal(results[0].title, 'Mi Bambina')
   }, {'scoreThreshold':0});
 })
@@ -96,7 +96,7 @@ test('return correct results - with boost, no threshold', function () {
     equal(results[0].id, 'e')
     equal(results[1].id, 'd')
     equal(results[2].id, 'a')
-    equal(results[0].score, '12.2')
+    equal(results[0].score, '9.2')
     equal(results[1].score, '9.2')
     equal(results[2].score, '3')
   }, options);
@@ -108,7 +108,7 @@ test('return the correct results - with boost, with threshold', function () {
     equal(results.length, 2)
     equal(results[0].id, 'e')
     equal(results[1].id, 'd')
-    equal(results[0].score, '12.2')
+    equal(results[0].score, '9.2')
     equal(results[1].score, '9.2')
   }, options);
 })
@@ -152,7 +152,7 @@ test('search boosts exact matches', function () {
     equal(results[1].id, 'd')
     equal(results[2].id, 'a')
 
-    ok(results[0].score > results[1].score)
+    ok(results[0].score = results[1].score)
     ok(results[1].score > results[2].score)
   }, options);
 })
@@ -172,10 +172,10 @@ test('ngram search suffix matching', function () {
   this.idx.search('udy', function(results){
 
     equal(results.length, 2)
-    equal(results[0].id, 'b')
-    equal(results[1].id, 'a')
+    equal(results[0].id, 'a')
+    equal(results[1].id, 'b')
 
-    ok(results[0].score > results[1].score)
+    ok(results[0].score = results[1].score)
   }, options);
 })
 
