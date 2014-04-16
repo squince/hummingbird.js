@@ -33,20 +33,13 @@ logs a message to the console preceded by time of day
 ### .normalizeString
 takes a string and normalizes it for case and diacritics
 
-    hummingbird.Utils::normalizeString = (str, suffixBoost) ->
-      suffixBoost ?= true
+    hummingbird.Utils::normalizeString = (str) ->
       re_start = /^\u0002/
       re_end = /\u0003$/
       str = diacritics.remove((str.toString()).toLowerCase())
       str = str.replace re_start, ''
       str = str.replace re_end, ''
-      if str.indexOf(' ') > -1 and suffixBoost
-        phrase = str.split(' ')
-        phrase.forEach (w, i, p) ->
-          phrase[i] = '\u0002' + w + '\u0003'
-        return phrase.join(' ')
-      else
-        return ('\u0002' + str)
+      return '\u0002' + str
 
 ### .maxScore
 Returns the max score for a given string

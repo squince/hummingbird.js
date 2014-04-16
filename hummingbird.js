@@ -364,21 +364,17 @@ hummingbird.Utils.prototype.logTiming = function(msg, s) {
 };
 
 hummingbird.Utils.prototype.normalizeString = function(str, suffixBoost) {
-  var phrase, re_end, re_start;
+  var re_end, re_start;
   if (suffixBoost == null) {
-    suffixBoost = true;
+    suffixBoost = false;
   }
   re_start = /^\u0002/;
   re_end = /\u0003$/;
   str = diacritics.remove((str.toString()).toLowerCase());
   str = str.replace(re_start, '');
   str = str.replace(re_end, '');
-  if (str.indexOf(' ') > -1 && suffixBoost) {
-    phrase = str.split(' ');
-    phrase.forEach(function(w, i, p) {
-      return phrase[i] = '\u0002' + w + '\u0003';
-    });
-    return phrase.join(' ');
+  if (suffixBoost) {
+    return '\u0002' + str + '\u0003';
   } else {
     return '\u0002' + str;
   }

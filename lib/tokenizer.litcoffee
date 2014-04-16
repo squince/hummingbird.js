@@ -27,8 +27,8 @@ tightly match than a similar series of characters elsewhere in sought terms.
 
 See utils.normalizeString()
 
-    hummingbird.tokenizer::tokenize = (name, suffixBoost) ->
-      norm_name = @utils.normalizeString name, suffixBoost
+    hummingbird.tokenizer::tokenize = (name) ->
+      norm_name = @utils.normalizeString name
       return [] unless norm_name?
 
       alltokens = {}

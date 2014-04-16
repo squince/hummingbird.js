@@ -130,8 +130,6 @@ Optionally, takes an options object with the following possible properties
   includes all matches)
 * _boostPrefix_ - (boolean) if _true_ provides an additional boost to results that start with the first 
   query token (_default=true_)
-* _boostSuffix_ - (boolean) if _true_ provides an additional boost to results that start with the first 
-  query token (_default=true_)
 
 Finds matching names and returns them in order of best match.
 
@@ -144,12 +142,11 @@ Finds matching names and returns them in order of best match.
       numResults = if (options?.howMany is `undefined`) then 10 else Math.floor(options.howMany)
       offset = if (options?.startPos is `undefined`) then 0 else Math.floor(options.startPos)
       prefixBoost = options?.boostPrefix
-      suffixBoost = options?.boostSuffix
 
       # initialize result set vars and search options
       docSetHash = {}
       docSetArray = []
-      queryTokens = @tokenizer.tokenize(query, suffixBoost)
+      queryTokens = @tokenizer.tokenize(query)
       maxScore = @utils.maxScore(query, @tokenizer, prefixBoost)
       if not options?.scoreThreshold?
         minScore = 0.5 * maxScore
