@@ -8,7 +8,7 @@ hummingbird = function(variantsObj) {
 
 hummingbird.loggingOn = false;
 
-hummingbird.version = "0.6.1";
+hummingbird.version = "0.6.2";
 
 hummingbird.index_version = "4.0";
 
@@ -227,7 +227,7 @@ hummingbird.Index.prototype.update = function(doc, emitEvent) {
 };
 
 hummingbird.Index.prototype.search = function(query, callback, options) {
-  var docSetArray, docSetHash, finishTime, hasSomeToken, key, maxScore, minNumQueryTokens, minScore, numResults, offset, prefixBoost, queryTokens, resultSet, results, startHashArray, startTime, suffixBoost, _ref;
+  var docSetArray, docSetHash, finishTime, hasSomeToken, key, maxScore, minNumQueryTokens, minScore, numResults, offset, prefixBoost, queryTokens, resultSet, results, startHashArray, startTime, suffixBoost;
   this.utils.debugLog('**********');
   startTime = this.utils.logTiming('find matching docs');
   if ((query == null) || query.length < (this.tokenizer.min - 1)) {
@@ -235,8 +235,8 @@ hummingbird.Index.prototype.search = function(query, callback, options) {
   }
   numResults = (options != null ? options.howMany : void 0) === undefined ? 10 : Math.floor(options.howMany);
   offset = (options != null ? options.startPos : void 0) === undefined ? 0 : Math.floor(options.startPos);
-  prefixBoost = options != null ? typeof options.boostPrefix === "function" ? options.boostPrefix(false) : void 0 : void 0;
-  suffixBoost = (_ref = options != null ? options.boostSuffix : void 0) != null ? _ref : true;
+  prefixBoost = options != null ? options.boostPrefix : void 0;
+  suffixBoost = options != null ? options.boostSuffix : void 0;
   docSetHash = {};
   docSetArray = [];
   queryTokens = this.tokenizer.tokenize(query, suffixBoost);
@@ -261,11 +261,11 @@ hummingbird.Index.prototype.search = function(query, callback, options) {
     callback([]);
   }
   queryTokens.forEach((function(token, i, tokens) {
-    var docRef, startMatchTime, startVariantMatch, _i, _j, _len, _len1, _ref1, _ref2;
+    var docRef, startMatchTime, startVariantMatch, _i, _j, _len, _len1, _ref, _ref1;
     startMatchTime = this.utils.logTiming("'" + token + "' score start");
-    _ref1 = this.tokenStore.get(token, false);
-    for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-      docRef = _ref1[_i];
+    _ref = this.tokenStore.get(token, false);
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      docRef = _ref[_i];
       switch (false) {
         case !((docSetHash[docRef] == null) && i <= minNumQueryTokens):
           docSetHash[docRef] = this.utils.tokenScore(token, false, prefixBoost);
@@ -275,9 +275,9 @@ hummingbird.Index.prototype.search = function(query, callback, options) {
       }
     }
     startVariantMatch = this.utils.logTiming("\t\toriginal name:\t\t" + (this.tokenStore.get(token, false).length) + " ", startMatchTime);
-    _ref2 = this.tokenStore.get(token, true);
-    for (_j = 0, _len1 = _ref2.length; _j < _len1; _j++) {
-      docRef = _ref2[_j];
+    _ref1 = this.tokenStore.get(token, true);
+    for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+      docRef = _ref1[_j];
       switch (false) {
         case !((docSetHash[docRef] == null) && i <= minNumQueryTokens):
           docSetHash[docRef] = this.utils.tokenScore(token, true, prefixBoost);
@@ -523,11 +523,15 @@ hummingbird.tokenizer.prototype.tokenize = function(name, suffixBoost) {
   n = this.min;
   while (n <= this.max) {
     if (norm_name.length <= n) {
-      alltokens[norm_name] = null;
+      if (!(norm_name = '\u0002 \u0003')) {
+        alltokens[norm_name] = null;
+      }
     } else {
       i = 0;
       while (i <= norm_name.length - n) {
-        alltokens[norm_name.slice(i, i + n)] = null;
+        if (!(norm_name = '\u0002 \u0003')) {
+          alltokens[norm_name.slice(i, i + n)] = null;
+        }
         i++;
       }
     }
