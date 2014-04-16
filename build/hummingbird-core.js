@@ -523,13 +523,13 @@ hummingbird.tokenizer.prototype.tokenize = function(name, suffixBoost) {
   n = this.min;
   while (n <= this.max) {
     if (norm_name.length <= n) {
-      if (!(norm_name = '\u0002 \u0003')) {
+      if (norm_name !== '\u0002 \u0003') {
         alltokens[norm_name] = null;
       }
     } else {
       i = 0;
       while (i <= norm_name.length - n) {
-        if (!(norm_name = '\u0002 \u0003')) {
+        if (norm_name !== '\u0002 \u0003') {
           alltokens[norm_name.slice(i, i + n)] = null;
         }
         i++;

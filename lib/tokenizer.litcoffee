@@ -36,11 +36,11 @@ See utils.normalizeString()
 
       while n <= @max
         if norm_name.length <= n
-          alltokens[norm_name] = null unless norm_name = '\u0002 \u0003'
+          alltokens[norm_name] = null unless norm_name is '\u0002 \u0003'
         else
           i = 0
           while i <= norm_name.length - n
-            alltokens[norm_name.slice(i, i + n)] = null unless norm_name = '\u0002 \u0003'
+            alltokens[norm_name.slice(i, i + n)] = null unless norm_name is '\u0002 \u0003'
             i++
         n++
       return Object.keys(alltokens)
