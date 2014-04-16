@@ -141,8 +141,8 @@ Finds matching names and returns them in order of best match.
       # search options
       numResults = if (options?.howMany is `undefined`) then 10 else Math.floor(options.howMany)
       offset = if (options?.startPos is `undefined`) then 0 else Math.floor(options.startPos)
-      prefixBoost = options?.boostPrefix?
-      suffixBoost = options?.boostSuffix?
+      prefixBoost = options?.boostPrefix? false
+      suffixBoost = options?.boostSuffix ? true
 
       # initialize result set vars and search options
       docSetHash = {}
