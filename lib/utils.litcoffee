@@ -33,32 +33,39 @@ logs a message to the console preceded by time of day
 ### .normalizeString
 takes a string and normalizes it for case and diacritics
 
-    hummingbird.Utils::normalizeString = (str) ->
+    hummingbird.Utils::normalizeString = (str, suffixBoost) ->
+      suffixBoost ?= true
       re_start = /^\u0002/
       re_end = /\u0003$/
       str = diacritics.remove((str.toString()).toLowerCase())
       str = str.replace re_start, ''
       str = str.replace re_end, ''
-      return ('\u0002' + str + '\u0003')
+      if str.indexOf(' ') > -1 and suffixBoost
+        phrase = str.split(' ')
+        phrase.forEach (w, i, p) ->
+          phrase[i] = '\u0002' + w + '\u0003'
+        return phrase.join(' ')
+      else
+        return ('\u0002' + str)
 
 ### .maxScore
 Returns the max score for a given string
 
-    hummingbird.Utils::maxScore = (phrase, tokenizer, isBoost) ->
+    hummingbird.Utils::maxScore = (phrase, tokenizer, prefixBoost) ->
       score = 0
       return score if not phrase?
       (tokenizer.tokenize phrase).forEach ((token, i, tokens) ->
-        score += @tokenScore(token, false, isBoost)
+        score += @tokenScore(token, false, prefixBoost)
       ), this
       return score
 
 ### .tokenScore
 Returns the score for the given token
 
-    hummingbird.Utils::tokenScore = (token, isVariant, isBoost) ->
+    hummingbird.Utils::tokenScore = (token, isVariant, prefixBoost) ->
       isVariant ?= false
-      isBoost ?= false
+      prefixBoost ?= true
       score = token.length
-      score += 0.2 if isBoost and token.substring(0,1) is '\u0002'
-      score -= 0.1 if isVariant
+      score += 0.2 if prefixBoost and token.substring(0,1) is '\u0002'
+      score -= 0.4 if isVariant
       return score

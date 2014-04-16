@@ -141,13 +141,14 @@ Finds matching names and returns them in order of best match.
       # search options
       numResults = if (options?.howMany is `undefined`) then 10 else Math.floor(options.howMany)
       offset = if (options?.startPos is `undefined`) then 0 else Math.floor(options.startPos)
-      boost = if(not options?.boostPrefix? or options.boostPrefix == true) then true else false
+      prefixBoost = options?.boostPrefix?
+      suffixBoost = options?.boostSuffix?
 
       # initialize result set vars and search options
       docSetHash = {}
       docSetArray = []
-      queryTokens = @tokenizer.tokenize(query)
-      maxScore = @utils.maxScore(query, @tokenizer, boost)
+      queryTokens = @tokenizer.tokenize(query, suffixBoost)
+      maxScore = @utils.maxScore(query, @tokenizer, prefixBoost)
       if not options?.scoreThreshold?
         minScore = 0.5 * maxScore
         minNumQueryTokens = Math.ceil(queryTokens.length * 0.5)
@@ -173,17 +174,17 @@ Finds matching names and returns them in order of best match.
         for docRef in @tokenStore.get(token, false)
           switch
             when not docSetHash[docRef]? and i <= minNumQueryTokens
-              docSetHash[docRef] = @utils.tokenScore(token, false, boost)
+              docSetHash[docRef] = @utils.tokenScore(token, false, prefixBoost)
             when docSetHash[docRef]?
-              docSetHash[docRef] += @utils.tokenScore(token, false, boost)
+              docSetHash[docRef] += @utils.tokenScore(token, false, prefixBoost)
         startVariantMatch = @utils.logTiming "\t\toriginal name:\t\t#{@tokenStore.get(token, false).length} ", startMatchTime
         # variant matches
         for docRef in @tokenStore.get(token, true)
           switch
             when not docSetHash[docRef]? and i <= minNumQueryTokens
-              docSetHash[docRef] = @utils.tokenScore(token, true, boost)
+              docSetHash[docRef] = @utils.tokenScore(token, true, prefixBoost)
             when docSetHash[docRef]?
-              docSetHash[docRef] += @utils.tokenScore(token, true, boost)
+              docSetHash[docRef] += @utils.tokenScore(token, true, prefixBoost)
         @utils.logTiming "\t\tvariant matches:\t#{@tokenStore.get(token, true).length} ", startVariantMatch
         return
       ), this

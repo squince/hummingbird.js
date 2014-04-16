@@ -363,42 +363,53 @@ hummingbird.Utils.prototype.logTiming = function(msg, s) {
   }
 };
 
-hummingbird.Utils.prototype.normalizeString = function(str) {
-  var re_end, re_start;
+hummingbird.Utils.prototype.normalizeString = function(str, suffixBoost) {
+  var phrase, re_end, re_start;
+  if (suffixBoost == null) {
+    suffixBoost = true;
+  }
   re_start = /^\u0002/;
   re_end = /\u0003$/;
   str = diacritics.remove((str.toString()).toLowerCase());
   str = str.replace(re_start, '');
   str = str.replace(re_end, '');
-  return '\u0002' + str + '\u0003';
+  if (str.indexOf(' ') > -1 && suffixBoost) {
+    phrase = str.split(' ');
+    phrase.forEach(function(w, i, p) {
+      return phrase[i] = '\u0002' + w + '\u0003';
+    });
+    return phrase.join(' ');
+  } else {
+    return '\u0002' + str;
+  }
 };
 
-hummingbird.Utils.prototype.maxScore = function(phrase, tokenizer, isBoost) {
+hummingbird.Utils.prototype.maxScore = function(phrase, tokenizer, prefixBoost) {
   var score;
   score = 0;
   if (phrase == null) {
     return score;
   }
   (tokenizer.tokenize(phrase)).forEach((function(token, i, tokens) {
-    return score += this.tokenScore(token, false, isBoost);
+    return score += this.tokenScore(token, false, prefixBoost);
   }), this);
   return score;
 };
 
-hummingbird.Utils.prototype.tokenScore = function(token, isVariant, isBoost) {
+hummingbird.Utils.prototype.tokenScore = function(token, isVariant, prefixBoost) {
   var score;
   if (isVariant == null) {
     isVariant = false;
   }
-  if (isBoost == null) {
-    isBoost = false;
+  if (prefixBoost == null) {
+    prefixBoost = true;
   }
   score = token.length;
-  if (isBoost && token.substring(0, 1) === '\u0002') {
+  if (prefixBoost && token.substring(0, 1) === '\u0002') {
     score += 0.2;
   }
   if (isVariant) {
-    score -= 0.1;
+    score -= 0.4;
   }
   return score;
 };
@@ -534,7 +545,7 @@ hummingbird.Index.prototype.update = function(doc, emitEvent) {
 };
 
 hummingbird.Index.prototype.search = function(query, callback, options) {
-  var boost, docSetArray, docSetHash, finishTime, hasSomeToken, key, maxScore, minNumQueryTokens, minScore, numResults, offset, queryTokens, resultSet, results, startHashArray, startTime;
+  var docSetArray, docSetHash, finishTime, hasSomeToken, key, maxScore, minNumQueryTokens, minScore, numResults, offset, prefixBoost, queryTokens, resultSet, results, startHashArray, startTime, suffixBoost;
   this.utils.debugLog('**********');
   startTime = this.utils.logTiming('find matching docs');
   if ((query == null) || query.length < (this.tokenizer.min - 1)) {
@@ -542,11 +553,12 @@ hummingbird.Index.prototype.search = function(query, callback, options) {
   }
   numResults = (options != null ? options.howMany : void 0) === undefined ? 10 : Math.floor(options.howMany);
   offset = (options != null ? options.startPos : void 0) === undefined ? 0 : Math.floor(options.startPos);
-  boost = ((options != null ? options.boostPrefix : void 0) == null) || options.boostPrefix === true ? true : false;
+  prefixBoost = (options != null ? options.boostPrefix : void 0) != null;
+  suffixBoost = (options != null ? options.boostSuffix : void 0) != null;
   docSetHash = {};
   docSetArray = [];
-  queryTokens = this.tokenizer.tokenize(query);
-  maxScore = this.utils.maxScore(query, this.tokenizer, boost);
+  queryTokens = this.tokenizer.tokenize(query, suffixBoost);
+  maxScore = this.utils.maxScore(query, this.tokenizer, prefixBoost);
   if ((options != null ? options.scoreThreshold : void 0) == null) {
     minScore = 0.5 * maxScore;
     minNumQueryTokens = Math.ceil(queryTokens.length * 0.5);
@@ -574,10 +586,10 @@ hummingbird.Index.prototype.search = function(query, callback, options) {
       docRef = _ref[_i];
       switch (false) {
         case !((docSetHash[docRef] == null) && i <= minNumQueryTokens):
-          docSetHash[docRef] = this.utils.tokenScore(token, false, boost);
+          docSetHash[docRef] = this.utils.tokenScore(token, false, prefixBoost);
           break;
         case docSetHash[docRef] == null:
-          docSetHash[docRef] += this.utils.tokenScore(token, false, boost);
+          docSetHash[docRef] += this.utils.tokenScore(token, false, prefixBoost);
       }
     }
     startVariantMatch = this.utils.logTiming("\t\toriginal name:\t\t" + (this.tokenStore.get(token, false).length) + " ", startMatchTime);
@@ -586,10 +598,10 @@ hummingbird.Index.prototype.search = function(query, callback, options) {
       docRef = _ref1[_j];
       switch (false) {
         case !((docSetHash[docRef] == null) && i <= minNumQueryTokens):
-          docSetHash[docRef] = this.utils.tokenScore(token, true, boost);
+          docSetHash[docRef] = this.utils.tokenScore(token, true, prefixBoost);
           break;
         case docSetHash[docRef] == null:
-          docSetHash[docRef] += this.utils.tokenScore(token, true, boost);
+          docSetHash[docRef] += this.utils.tokenScore(token, true, prefixBoost);
       }
     }
     this.utils.logTiming("\t\tvariant matches:\t" + (this.tokenStore.get(token, true).length) + " ", startVariantMatch);
@@ -819,9 +831,9 @@ hummingbird.tokenizer = function(min, max) {
   }
 };
 
-hummingbird.tokenizer.prototype.tokenize = function(name) {
+hummingbird.tokenizer.prototype.tokenize = function(name, suffixBoost) {
   var alltokens, i, n, norm_name;
-  norm_name = this.utils.normalizeString(name);
+  norm_name = this.utils.normalizeString(name, suffixBoost);
   if (norm_name == null) {
     return [];
   }
