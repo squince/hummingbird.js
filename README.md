@@ -20,4 +20,26 @@ Any other properties are just carried along, but are not indexed.
         });
     });
 ```
-[Read more...](http://glg.github.io/hummingbird.js#toc1)
+
+## What goes into a hummingbird index
+Hummingbird is specifically focused on typeahead results, but often
+you'll need to display more than just the name of something for the user
+to make a selection decision.  To that end, the ideal hummingbird index
+should contain:
+
+* the name of the thing on which to select
+* a unique id on which one might take action
+* meta data that enables the user to disambiguate between similarly
+named items
+* meta data that enables further action on selected items.
+
+e.g.,
+
+* *name:* Steve Quince
+* *id:* 1235
+* *company:* Gerson Lehrman Group
+* *location:* Boston, MA
+* *telephone:* 617-555-1212
+* *email:* myemail@address.com
+
+[Read more...](http://glg.github.io/hummingbird.js#toc2)
