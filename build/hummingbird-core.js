@@ -8,7 +8,7 @@ hummingbird = function(variantsObj) {
 
 hummingbird.loggingOn = false;
 
-hummingbird.version = "0.6.3";
+hummingbird.version = "0.6.4";
 
 hummingbird.index_version = "4.0";
 
@@ -578,10 +578,8 @@ hummingbird.VariantStore.prototype.getVariantTokens = function(name, tokenizer, 
   }
   if (norm_name !== norm_name.split(/\s+/)[0]) {
     norm_name.split(/\s+/).forEach((function(name_part, j, names) {
-      var renorm_name_part;
-      renorm_name_part = this.utils.normalizeString(name_part);
-      if (this.variants.hasOwnProperty(renorm_name_part)) {
-        return this.variants[renorm_name_part].forEach((function(variant, i, variants) {
+      if (this.variants.hasOwnProperty(name_part)) {
+        return this.variants[name_part].forEach((function(variant, i, variants) {
           var token, _i, _len, _ref, _results;
           _ref = tokenizer.tokenize(variant);
           _results = [];

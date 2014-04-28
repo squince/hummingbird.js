@@ -52,10 +52,9 @@ that would not otherwise be associated with the provided name.
       # then split the full name on word boundaries and check each name part
       unless norm_name is norm_name.split(/\s+/)[0]
         norm_name.split(/\s+/).forEach ((name_part, j, names) ->
-          renorm_name_part = @utils.normalizeString name_part
           # check each name word for any nicknames/variants
-          if @variants.hasOwnProperty renorm_name_part
-            @variants[renorm_name_part].forEach ((variant, i, variants) ->
+          if @variants.hasOwnProperty name_part
+            @variants[name_part].forEach ((variant, i, variants) ->
               for token in tokenizer.tokenize(variant)
                 variant_tokens[token] = null if tokens.indexOf(token) == -1
             ), this
