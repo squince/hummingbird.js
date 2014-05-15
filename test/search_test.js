@@ -96,7 +96,7 @@ test('return correct results - with boost, no threshold', function () {
     equal(results[0].id, 'e')
     equal(results[1].id, 'd')
     equal(results[2].id, 'a')
-    equal(results[0].score, '9.2')
+    equal(results[0].score, '9.3')
     equal(results[1].score, '9.2')
     equal(results[2].score, '3')
   }, options);
@@ -108,7 +108,7 @@ test('return the correct results - with boost, with threshold', function () {
     equal(results.length, 2)
     equal(results[0].id, 'e')
     equal(results[1].id, 'd')
-    equal(results[0].score, '9.2')
+    equal(results[0].score, '9.3')
     equal(results[1].score, '9.2')
   }, options);
 })
@@ -155,6 +155,20 @@ test('search boosts exact matches', function () {
     ok(results[0].score = results[1].score)
     ok(results[1].score > results[2].score)
   }, options);
+})
+
+test('search boosts full string matches', function () {
+  var options = {"howMany":10, "boostPrefix":false, "scoreThreshold":0};
+  this.idx.search('hand', function(results) {
+    equal(results.length, 3)
+    equal(results[0].id, 'e')
+    equal(results[1].id, 'd')
+    equal(results[2].id, 'a')
+    equal(results[0].score, '9.1')
+    equal(results[1].score, '9')
+    equal(results[2].score, '3')
+  }, options);
+
 })
 
 test('ngram search prefix matching', function () {

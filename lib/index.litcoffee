@@ -193,10 +193,11 @@ Finds matching names and returns them in order of best match.
       startHashArray = @utils.logTiming 'hash to sorted array\n'
       for key of docSetHash
         if docSetHash[key] >= minScore
+          n = @metaStore.get(key).name.toLowerCase()
           docSetArray.push
             id: key
-            score: docSetHash[key]
-            n: @metaStore.get(key).name.toLowerCase()
+            score: if query.toLowerCase() is n then docSetHash[key] + 0.1 else docSetHash[key]
+            n: n
 
       docSetArray.sort (a, b) ->
         if a.score is b.score

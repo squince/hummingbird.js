@@ -8,7 +8,7 @@ hummingbird = function(variantsObj) {
 
 hummingbird.loggingOn = false;
 
-hummingbird.version = "0.6.4";
+hummingbird.version = "0.6.5";
 
 hummingbird.index_version = "4.0";
 
@@ -214,7 +214,7 @@ hummingbird.Index.prototype.update = function(doc, emitEvent) {
 };
 
 hummingbird.Index.prototype.search = function(query, callback, options) {
-  var docSetArray, docSetHash, finishTime, hasSomeToken, key, maxScore, minNumQueryTokens, minScore, numResults, offset, prefixBoost, queryTokens, resultSet, results, startHashArray, startTime;
+  var docSetArray, docSetHash, finishTime, hasSomeToken, key, maxScore, minNumQueryTokens, minScore, n, numResults, offset, prefixBoost, queryTokens, resultSet, results, startHashArray, startTime;
   this.utils.debugLog('**********');
   startTime = this.utils.logTiming('find matching docs');
   if ((query == null) || query.length < (this.tokenizer.min - 1)) {
@@ -277,10 +277,11 @@ hummingbird.Index.prototype.search = function(query, callback, options) {
   startHashArray = this.utils.logTiming('hash to sorted array\n');
   for (key in docSetHash) {
     if (docSetHash[key] >= minScore) {
+      n = this.metaStore.get(key).name.toLowerCase();
       docSetArray.push({
         id: key,
-        score: docSetHash[key],
-        n: this.metaStore.get(key).name.toLowerCase()
+        score: query.toLowerCase() === n ? docSetHash[key] + 0.1 : docSetHash[key],
+        n: n
       });
     }
   }
