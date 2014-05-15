@@ -6,8 +6,8 @@ found in each name in the corpus, associated meta data, and methods
 for interacting with the data
 
 ### constructor
-Set _hummingbird.Index.tokenizer_ to any javascript object that has 
-a method _tokenize_ that takes a string and returns an array of values 
+Set _hummingbird.Index.tokenizer_ to any javascript object that has
+a method _tokenize_ that takes a string and returns an array of values
 that will be used to find this string when the index is searched.
 
 Example:
@@ -121,14 +121,14 @@ This method is just a wrapper around `remove` and `add`
       return
 
 ### ::search
-Takes a callback function that has the resultSet array as its only argument.  
+Takes a callback function that has the resultSet array as its only argument.
 Optionally, takes an options object with the following possible properties
 * _howMany_ - the maximum number of results to be returned (_default=10_)
 * _startPos_ - how far into the sorted matched set should the returned resultset start (_default=0_)
 * _scoreThreshold_ - (number between 0,1 inclusive) only matches with a score equal to or greater
-  than this fraction of the maximum theoretical score will be returned in the result set (_default=0.5_, 
+  than this fraction of the maximum theoretical score will be returned in the result set (_default=0.5_,
   includes all matches)
-* _boostPrefix_ - (boolean) if _true_ provides an additional boost to results that start with the first 
+* _boostPrefix_ - (boolean) if _true_ provides an additional boost to results that start with the first
   query token (_default=true_)
 
 Finds matching names and returns them in order of best match.
@@ -190,6 +190,7 @@ Finds matching names and returns them in order of best match.
 
       # convert hash to array of hashes for sorting
       # filter out results below the minScore
+      # boost exact matches - consciously does not convert diacritics, but uncertain whether that's best
       startHashArray = @utils.logTiming 'hash to sorted array\n'
       for key of docSetHash
         if docSetHash[key] >= minScore
