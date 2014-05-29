@@ -8,7 +8,7 @@ hummingbird = function(variantsObj) {
 
 hummingbird.loggingOn = false;
 
-hummingbird.version = "0.6.5";
+hummingbird.version = "0.7.0";
 
 hummingbird.index_version = "4.0";
 
@@ -318,6 +318,17 @@ hummingbird.Index.prototype.search = function(query, callback, options) {
   this.utils.debugLog("\t\t" + (startHashArray - startTime) + " ms - finding docs");
   this.utils.debugLog("\t\t" + (finishTime - startHashArray) + " ms - hash to array");
   return this.utils.debugLog("***************");
+};
+
+hummingbird.Index.prototype.jump = function(query, callback) {
+  var startTime;
+  this.utils.debugLog('**********');
+  startTime = this.utils.logTiming('get matching doc');
+  if ((query == null) || query.length < 1) {
+    return callback([]);
+  } else {
+    return callback([this.metaStore.get(query)]);
+  }
 };
 
 hummingbird.Index.prototype.toJSON = function() {

@@ -230,6 +230,13 @@ Finds matching names and returns them in order of best match.
       @utils.debugLog "\t\t#{finishTime-startHashArray} ms - hash to array"
       @utils.debugLog "***************"
 
+### ::jump
+Takes a callback function that has the result object as its only argument.
+
+    hummingbird.Index::jump = (query, callback) ->
+      @utils.debugLog '**********'
+      startTime = @utils.logTiming 'get matching doc'
+      if (not query? or query.length < 1) then callback [] else callback [@metaStore.get(query)]
 
 ### ::toJSON
 Returns a representation of the index ready for serialization.
