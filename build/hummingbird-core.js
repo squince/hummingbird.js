@@ -8,7 +8,7 @@ hummingbird = function(variantsObj) {
 
 hummingbird.loggingOn = false;
 
-hummingbird.version = "0.7.0";
+hummingbird.version = "0.7.1";
 
 hummingbird.index_version = "4.0";
 
@@ -321,13 +321,18 @@ hummingbird.Index.prototype.search = function(query, callback, options) {
 };
 
 hummingbird.Index.prototype.jump = function(query, callback) {
-  var startTime;
+  var r, startTime;
   this.utils.debugLog('**********');
   startTime = this.utils.logTiming('get matching doc');
   if ((query == null) || query.length < 1) {
     return callback([]);
   } else {
-    return callback([this.metaStore.get(query)]);
+    r = this.metaStore.get(query);
+    if (r != null) {
+      return callback([r]);
+    } else {
+      return callback([]);
+    }
   }
 };
 
@@ -376,7 +381,7 @@ hummingbird.MetaStore.prototype.has = function(docId) {
 };
 
 hummingbird.MetaStore.prototype.get = function(docId) {
-  return this.root[docId] || {};
+  return this.root[docId];
 };
 
 hummingbird.MetaStore.prototype.remove = function(docId) {

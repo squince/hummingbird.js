@@ -43,7 +43,7 @@ Checks for this id in the MetaStore
 Retrieve the name-value pairs associated with this id
 
     hummingbird.MetaStore::get = (docId) ->
-      @root[docId] or {}
+      @root[docId]
 
 ### ::remove
 Remove the name-value pairs associated with this id

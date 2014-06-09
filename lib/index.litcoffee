@@ -236,7 +236,11 @@ Takes a callback function that has the result object as its only argument.
     hummingbird.Index::jump = (query, callback) ->
       @utils.debugLog '**********'
       startTime = @utils.logTiming 'get matching doc'
-      if (not query? or query.length < 1) then callback [] else callback [@metaStore.get(query)]
+      if (not query? or query.length < 1) then callback []
+      else
+        r = @metaStore.get(query)
+        if r? then callback [r]
+        else callback []
 
 ### ::toJSON
 Returns a representation of the index ready for serialization.
