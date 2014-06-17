@@ -1,4 +1,4 @@
-module('search', {
+module('search - latin', {
   setup: function () {
     var variants = {'scarlett': ['scar', 'scary', 'rouge']}
     var idx = new hummingbird.Index(variants)
