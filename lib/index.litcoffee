@@ -61,13 +61,10 @@ Takes an Object as an argument.
 
 Then, there are two options in order to have something to search:
 * _doc.name_ = this string will be indexed
-* _indexCallback_ = this function if provided will be called on _doc_ and must return
-  the string to be indexed
 
 Optionally includes additional arbitrary name-value pairs to be stored, but not indexed
 
-    hummingbird.Index::add = (doc, emitEvent, indexCallback) ->
-      allDocumentTokens = {}
+    hummingbird.Index::add = (doc, emitEvent) ->
       emitEvent = (if emitEvent is `undefined` then true else emitEvent)
 
       if @metaStore.has doc.id
@@ -75,14 +72,20 @@ Optionally includes additional arbitrary name-value pairs to be stored, but not 
         @update doc, emitEvent
         return
 
-      if indexCallback
-        name = "#{indexCallback doc}"
-      else
-        name = doc['name']
+      @_tokenizeDoc doc
+      @metaStore.add doc
+
+      @eventEmitter.emit 'add', doc, this  if emitEvent
+      return
+
+### ::_tokenizeDoc
+Internal method to tokenize and add doc to tokenstore.  Used by add and update methods
+
+    hummingbird.Index::_tokenizeDoc = (doc) ->
 
       # tokenize the doc
-      tokens = @tokenizer.tokenize name
-      variant_tokens = @variantStore.getVariantTokens(name, @tokenizer, tokens)
+      tokens = @tokenizer.tokenize doc.name
+      variant_tokens = @variantStore.getVariantTokens(doc.name, @tokenizer, tokens)
 
       # add the name tokens to the tokenStore
       # do this before variant tokens are added to ensure tokens are distinct
@@ -93,30 +96,36 @@ Optionally includes additional arbitrary name-value pairs to be stored, but not 
       for token in variant_tokens
         @tokenStore.add token, true, doc.id
 
-      @metaStore.add doc
-      @eventEmitter.emit 'add', doc, this  if emitEvent
-      return
 
 ### ::remove
-Removes the document from the index that is referenced by the 'id' property
+Removes the document from the index that is referenced by the 'id' property.
 
     hummingbird.Index::remove = (docRef, emitEvent) ->
       emitEvent = (if emitEvent is `undefined` and @metaStore.has docRef then true else emitEvent)
 
-      @metaStore.remove docRef
-      @tokenStore.remove docRef
+      if @metaStore.has docRef
+        #Only check the tokens for the doc name - don't loop over all tokens.
+        @tokenStore.remove docRef, @tokenizer.tokenize(@metaStore.get(docRef).name)
+        @metaStore.remove docRef
       @eventEmitter.emit 'remove', docRef, this  if emitEvent
       return
 
 ### ::update
 Updates the document from the index that is referenced by the 'id' property
-This method is just a wrapper around `remove` and `add`
+In case the name has changed, we remove the old tokens and retokenize. 
+Otherwise, we just update the metaStore.
 
     hummingbird.Index::update = (doc, emitEvent) ->
       emitEvent = (if emitEvent is `undefined` then true else emitEvent)
 
-      @remove doc.id, false
-      @add doc, false
+      if @metaStore.has doc.id
+        #Has the name changed?
+        unless doc.name is @metaStore.get(doc.id).name
+          @remove doc.id, false
+          @_tokenizeDoc doc
+        else
+          @metaStore.remove doc.id
+        @metaStore.add doc
       @eventEmitter.emit 'update', doc, this  if emitEvent
       return
 

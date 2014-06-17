@@ -8,7 +8,7 @@ hummingbird = function(variantsObj) {
 
 hummingbird.loggingOn = false;
 
-hummingbird.version = "0.7.1";
+hummingbird.version = "1.0.0";
 
 hummingbird.index_version = "4.0";
 
@@ -165,40 +165,42 @@ hummingbird.Index.load = function(serializedData) {
   return idx;
 };
 
-hummingbird.Index.prototype.add = function(doc, emitEvent, indexCallback) {
-  var allDocumentTokens, name, token, tokens, variant_tokens, _i, _j, _len, _len1;
-  allDocumentTokens = {};
+hummingbird.Index.prototype.add = function(doc, emitEvent) {
   emitEvent = (emitEvent === undefined ? true : emitEvent);
   if (this.metaStore.has(doc.id)) {
     console.warn("Document " + doc.id + " already indexed, replacing");
     this.update(doc, emitEvent);
     return;
   }
-  if (indexCallback) {
-    name = "" + (indexCallback(doc));
-  } else {
-    name = doc['name'];
-  }
-  tokens = this.tokenizer.tokenize(name);
-  variant_tokens = this.variantStore.getVariantTokens(name, this.tokenizer, tokens);
-  for (_i = 0, _len = tokens.length; _i < _len; _i++) {
-    token = tokens[_i];
-    this.tokenStore.add(token, false, doc.id);
-  }
-  for (_j = 0, _len1 = variant_tokens.length; _j < _len1; _j++) {
-    token = variant_tokens[_j];
-    this.tokenStore.add(token, true, doc.id);
-  }
+  this._tokenizeDoc(doc);
   this.metaStore.add(doc);
   if (emitEvent) {
     this.eventEmitter.emit('add', doc, this);
   }
 };
 
+hummingbird.Index.prototype._tokenizeDoc = function(doc) {
+  var token, tokens, variant_tokens, _i, _j, _len, _len1, _results;
+  tokens = this.tokenizer.tokenize(doc.name);
+  variant_tokens = this.variantStore.getVariantTokens(doc.name, this.tokenizer, tokens);
+  for (_i = 0, _len = tokens.length; _i < _len; _i++) {
+    token = tokens[_i];
+    this.tokenStore.add(token, false, doc.id);
+  }
+  _results = [];
+  for (_j = 0, _len1 = variant_tokens.length; _j < _len1; _j++) {
+    token = variant_tokens[_j];
+    _results.push(this.tokenStore.add(token, true, doc.id));
+  }
+  return _results;
+};
+
 hummingbird.Index.prototype.remove = function(docRef, emitEvent) {
   emitEvent = (emitEvent === undefined && this.metaStore.has(docRef) ? true : emitEvent);
-  this.metaStore.remove(docRef);
-  this.tokenStore.remove(docRef);
+  if (this.metaStore.has(docRef)) {
+    this.tokenStore.remove(docRef, this.tokenizer.tokenize(this.metaStore.get(docRef).name));
+    this.metaStore.remove(docRef);
+  }
   if (emitEvent) {
     this.eventEmitter.emit('remove', docRef, this);
   }
@@ -206,8 +208,15 @@ hummingbird.Index.prototype.remove = function(docRef, emitEvent) {
 
 hummingbird.Index.prototype.update = function(doc, emitEvent) {
   emitEvent = (emitEvent === undefined ? true : emitEvent);
-  this.remove(doc.id, false);
-  this.add(doc, false);
+  if (this.metaStore.has(doc.id)) {
+    if (doc.name !== this.metaStore.get(doc.id).name) {
+      this.remove(doc.id, false);
+      this._tokenizeDoc(doc);
+    } else {
+      this.metaStore.remove(doc.id);
+    }
+    this.metaStore.add(doc);
+  }
   if (emitEvent) {
     this.eventEmitter.emit('update', doc, this);
   }
@@ -475,8 +484,11 @@ hummingbird.TokenStore.prototype.count = function(token) {
   return count;
 };
 
-hummingbird.TokenStore.prototype.remove = function(docRef) {
-  return Object.keys(this.root).forEach((function(token) {
+hummingbird.TokenStore.prototype.remove = function(docRef, tokens) {
+  if (tokens == null) {
+    tokens = Object.keys(this.root);
+  }
+  return tokens.forEach((function(token) {
     var i;
     if (this.root[token]['n'] != null) {
       i = this.root[token]['n'].indexOf(docRef);
