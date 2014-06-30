@@ -326,9 +326,9 @@ hummingbird = function(variantsObj) {
 
 hummingbird.loggingOn = false;
 
-hummingbird.version = "1.0.1";
+hummingbird.version = "1.1.0";
 
-hummingbird.index_version = "4.0";
+hummingbird.index_version = "5.0";
 
 if (typeof module !== 'undefined' && module !== null) {
   module.exports = hummingbird;
@@ -574,11 +574,9 @@ hummingbird.Index.prototype.search = function(query, callback, options) {
     callback([]);
   }
   queryTokens.forEach((function(token, i, tokens) {
-    var docRef, startMatchTime, startVariantMatch, _i, _j, _len, _len1, _ref, _ref1;
+    var docRef, startMatchTime, startVariantMatch;
     startMatchTime = this.utils.logTiming("'" + token + "' score start");
-    _ref = this.tokenStore.get(token, false);
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      docRef = _ref[_i];
+    for (docRef in this.tokenStore.get(token, false)) {
       switch (false) {
         case !((docSetHash[docRef] == null) && i <= minNumQueryTokens):
           docSetHash[docRef] = this.utils.tokenScore(token, false, prefixBoost);
@@ -587,10 +585,8 @@ hummingbird.Index.prototype.search = function(query, callback, options) {
           docSetHash[docRef] += this.utils.tokenScore(token, false, prefixBoost);
       }
     }
-    startVariantMatch = this.utils.logTiming("\t\toriginal name:\t\t" + (this.tokenStore.get(token, false).length) + " ", startMatchTime);
-    _ref1 = this.tokenStore.get(token, true);
-    for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-      docRef = _ref1[_j];
+    startVariantMatch = this.utils.logTiming("\t\toriginal name:\t\t" + (Object.keys(this.tokenStore.get(token, false)).length) + " ", startMatchTime);
+    for (docRef in this.tokenStore.get(token, true)) {
       switch (false) {
         case !((docSetHash[docRef] == null) && i <= minNumQueryTokens):
           docSetHash[docRef] = this.utils.tokenScore(token, true, prefixBoost);
@@ -599,7 +595,7 @@ hummingbird.Index.prototype.search = function(query, callback, options) {
           docSetHash[docRef] += this.utils.tokenScore(token, true, prefixBoost);
       }
     }
-    this.utils.logTiming("\t\tvariant matches:\t" + (this.tokenStore.get(token, true).length) + " ", startVariantMatch);
+    this.utils.logTiming("\t\tvariant matches:\t" + (Object.keys(this.tokenStore.get(token, true)).length) + " ", startVariantMatch);
   }), this);
   startHashArray = this.utils.logTiming('hash to sorted array\n');
   for (key in docSetHash) {
@@ -736,25 +732,21 @@ hummingbird.TokenStore.prototype.toJSON = function() {
 };
 
 hummingbird.TokenStore.prototype.add = function(token, isVariant, docId) {
-  var _base, _base1, _base2;
+  var _base, _base1, _base2, _ref;
   if ((_base = this.root)[token] == null) {
     _base[token] = {};
   }
   if (!isVariant) {
     if ((_base1 = this.root[token])['n'] == null) {
-      _base1['n'] = [];
+      _base1['n'] = {};
     }
-    if (this.root[token]['n'].indexOf(docId) === -1) {
-      this.root[token]['n'].push(docId);
-    }
+    this.root[token]['n'][docId] = 1;
   } else {
-    if ((this.root[token]['n'] == null) || this.root[token]['n'].indexOf(docId) === -1) {
+    if (((_ref = this.root[token]['n']) != null ? _ref[docId] : void 0) == null) {
       if ((_base2 = this.root[token])['v'] == null) {
-        _base2['v'] = [];
+        _base2['v'] = {};
       }
-      if (this.root[token]['v'].indexOf(docId) === -1) {
-        this.root[token]['v'].push(docId);
-      }
+      this.root[token]['v'][docId] = 1;
     }
   }
 };
@@ -771,19 +763,11 @@ hummingbird.TokenStore.prototype.has = function(token) {
 };
 
 hummingbird.TokenStore.prototype.get = function(token, isVariant) {
-  var _ref, _ref1;
+  var _ref, _ref1, _ref2, _ref3;
   if (isVariant) {
-    if (((_ref = this.root[token]) != null ? _ref['v'] : void 0) != null) {
-      return this.root[token]['v'];
-    } else {
-      return [];
-    }
+    return (_ref = (_ref1 = this.root[token]) != null ? _ref1['v'] : void 0) != null ? _ref : {};
   } else {
-    if (((_ref1 = this.root[token]) != null ? _ref1['n'] : void 0) != null) {
-      return this.root[token]['n'];
-    } else {
-      return [];
-    }
+    return (_ref2 = (_ref3 = this.root[token]) != null ? _ref3['n'] : void 0) != null ? _ref2 : {};
   }
 };
 
@@ -793,12 +777,8 @@ hummingbird.TokenStore.prototype.count = function(token) {
     return 0;
   }
   count = 0;
-  if (((_ref = this.root[token]) != null ? _ref['n'] : void 0) != null) {
-    count += this.root[token]['n'].length;
-  }
-  if (((_ref1 = this.root[token]) != null ? _ref1['v'] : void 0) != null) {
-    count += this.root[token]['v'].length;
-  }
+  count += Object.keys((_ref = this.root[token]['n']) != null ? _ref : {}).length;
+  count += Object.keys((_ref1 = this.root[token]['v']) != null ? _ref1 : {}).length;
   return count;
 };
 
@@ -807,21 +787,15 @@ hummingbird.TokenStore.prototype.remove = function(docRef, tokens) {
     tokens = Object.keys(this.root);
   }
   return tokens.forEach((function(token) {
-    var i;
-    if (this.root[token]['n'] != null) {
-      i = this.root[token]['n'].indexOf(docRef);
-      if (i !== -1) {
-        this.root[token]['n'].splice(i, 1);
-      }
+    var _ref, _ref1;
+    if (((_ref = this.root[token]['n']) != null ? _ref[docRef] : void 0) != null) {
+      delete this.root[token]['n'][docRef];
       if (Object.keys(this.root[token]['n']).length === 0) {
         delete this.root[token]['n'];
       }
     }
-    if (this.root[token]['v'] != null) {
-      i = this.root[token]['v'].indexOf(docRef);
-      if (i !== -1) {
-        this.root[token]['v'].splice(i, 1);
-      }
+    if (((_ref1 = this.root[token]['v']) != null ? _ref1[docRef] : void 0) != null) {
+      delete this.root[token]['n'][docRef];
       if (Object.keys(this.root[token]['v']).length === 0) {
         delete this.root[token]['v'];
       }

@@ -179,21 +179,21 @@ Finds matching names and returns them in order of best match.
       queryTokens.forEach ((token, i, tokens) ->
         startMatchTime = @utils.logTiming "'#{token}' score start"
         # name matches
-        for docRef in @tokenStore.get(token, false)
+        for docRef of @tokenStore.get(token, false)
           switch
             when not docSetHash[docRef]? and i <= minNumQueryTokens
               docSetHash[docRef] = @utils.tokenScore(token, false, prefixBoost)
             when docSetHash[docRef]?
               docSetHash[docRef] += @utils.tokenScore(token, false, prefixBoost)
-        startVariantMatch = @utils.logTiming "\t\toriginal name:\t\t#{@tokenStore.get(token, false).length} ", startMatchTime
+        startVariantMatch = @utils.logTiming "\t\toriginal name:\t\t#{Object.keys(@tokenStore.get(token, false)).length} ", startMatchTime
         # variant matches
-        for docRef in @tokenStore.get(token, true)
+        for docRef of @tokenStore.get(token, true)
           switch
             when not docSetHash[docRef]? and i <= minNumQueryTokens
               docSetHash[docRef] = @utils.tokenScore(token, true, prefixBoost)
             when docSetHash[docRef]?
               docSetHash[docRef] += @utils.tokenScore(token, true, prefixBoost)
-        @utils.logTiming "\t\tvariant matches:\t#{@tokenStore.get(token, true).length} ", startVariantMatch
+        @utils.logTiming "\t\tvariant matches:\t#{Object.keys(@tokenStore.get(token, true)).length} ", startVariantMatch
         return
       ), this
 

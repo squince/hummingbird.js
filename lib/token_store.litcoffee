@@ -29,13 +29,13 @@ Adds to the store a new token and document 'id', and distinguishes between varia
       @root[token] ?= {}
       unless isVariant
         # name token matches for this document
-        @root[token]['n'] ?= []
-        @root[token]['n'].push docId if @root[token]['n'].indexOf(docId) is -1
+        @root[token]['n'] ?= {}
+        @root[token]['n'][docId] = 1
       else
         # variant-only token matches for this document
-        if not @root[token]['n']? or @root[token]['n'].indexOf(docId) is -1
-          @root[token]['v'] ?= []
-          @root[token]['v'].push(docId) if @root[token]['v'].indexOf(docId) is -1
+        unless @root[token]['n']?[docId]?
+          @root[token]['v'] ?= {}
+          @root[token]['v'][docId] = 1
       return
 
 ### ::has
@@ -55,9 +55,9 @@ Retrieve the documents for the given token
 
     hummingbird.TokenStore::get = (token, isVariant) ->
       if isVariant
-        if @root[token]?['v']? then @root[token]['v'] else []
+        @root[token]?['v'] ? {}
       else
-        if @root[token]?['n']? then @root[token]['n'] else []
+        @root[token]?['n'] ? {}
 
 ### ::count
 Number of documents associated with the given token
@@ -65,8 +65,8 @@ Number of documents associated with the given token
     hummingbird.TokenStore::count = (token) ->
       return 0  if not token or not @root[token]
       count = 0
-      count += @root[token]['n'].length if @root[token]?['n']?
-      count += @root[token]['v'].length if @root[token]?['v']?
+      count += Object.keys(@root[token]['n'] ? {}).length
+      count += Object.keys(@root[token]['v'] ? {}).length
       return count
 
 ### ::remove
@@ -74,14 +74,12 @@ Remove the document identified by docRef from each token in the store where it a
 
     hummingbird.TokenStore::remove = (docRef,tokens=Object.keys(this.root)) ->
       tokens.forEach ((token) ->
-        if @root[token]['n']?
-          i = @root[token]['n'].indexOf docRef
-          @root[token]['n'].splice i, 1 unless i is -1
+        if @root[token]['n']?[docRef]?
+          delete @root[token]['n'][docRef]
           delete @root[token]['n'] if Object.keys(@root[token]['n']).length is 0
 
-        if @root[token]['v']?
-          i = @root[token]['v'].indexOf docRef
-          @root[token]['v'].splice i, 1 unless i is -1
+        if @root[token]['v']?[docRef]?
+          delete @root[token]['n'][docRef]
           delete @root[token]['v'] if Object.keys(@root[token]['v']).length is 0
 
         delete @root[token] if Object.keys(@root[token]).length is 0

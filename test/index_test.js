@@ -6,7 +6,7 @@ test('adding a document with an empty field', function () {
 
   idx.add(doc)
   equal(Object.keys(idx.tokenStore.get('tes')).length, 1)
-  equal(idx.tokenStore.get('tes',false).indexOf(1),0)
+  equal(idx.tokenStore.get('tes',false)['1'],1)
   ok(idx.metaStore.has("1"))
 })
 

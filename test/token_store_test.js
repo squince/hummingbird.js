@@ -7,7 +7,7 @@ test('adding a token to the store', function () {
 
   store.add(token, false, docId)
 
-  ok(store.root['foo'].n.indexOf('123') === 0)
+  ok(store.root['foo'].n['123'] === 1)
   equal(Object.keys(store.root['foo'].n).length, 1)
 })
 
@@ -22,8 +22,8 @@ test('adding another document to the token', function () {
 
   ok(Object.keys(store.root).length === 1)
   equal(Object.keys(store.root)[0], 'foo')
-  ok(store.root['foo'].n.indexOf('123') > -1)
-  ok(store.root['foo'].n.indexOf('456') > -1)
+  ok(store.root['foo'].n['123'] === 1)
+  ok(store.root['foo'].n['456'] === 1)
 })
 
 test('checking if a token exists in the store', function () {
@@ -52,14 +52,14 @@ test('retrieving items from the store', function () {
       token = 'foo'
 
   store.add(token, false, doc)
-  deepEqual(store.get(token), ['123'])
-  deepEqual(store.get(''),[])
+  deepEqual(store.get(token), {'123':1})
+  deepEqual(store.get(''),{})
 })
 
 test('retrieving items that do not exist in the store', function () {
   var store = new hummingbird.TokenStore
 
-  deepEqual(store.get('foo'), [])
+  deepEqual(store.get('foo'), {})
 })
 
 test('counting items in the store', function () {
@@ -81,12 +81,12 @@ test('removing a document from the token store', function () {
   var store = new hummingbird.TokenStore,
       doc = '123'
 
-  deepEqual(store.get('foo'), [])
+  deepEqual(store.get('foo'), {})
   store.add('foo', false, doc)
-  deepEqual(store.get('foo'), ['123'])
+  deepEqual(store.get('foo'), {'123':1})
 
   store.remove(doc)
-  deepEqual(store.get('foo'), [])
+  deepEqual(store.get('foo'), {})
   equal(store.has('foo'), false)
 })
 
@@ -99,7 +99,7 @@ test('removing a document that is not in the store', function () {
   store.add('bar', true, doc2)
   store.remove('456')
 
-  deepEqual(store.get('foo'), ['123'])
+  deepEqual(store.get('foo'), {'123':1})
 })
 
 test('removing a document from a key that does not exist', function () {
@@ -121,7 +121,9 @@ test('serialization', function () {
     {
       root: {
         foo: {
-          n: ['123']
+          n: {
+            '123': 1
+          }
         }
       }
     }
@@ -132,7 +134,9 @@ test('loading a serialized store', function () {
   var serializedData = {
     root: {
       foo: {
-        n: [123]
+        n: {
+          '123': 1
+        }
       }
     }
   }
@@ -141,5 +145,5 @@ test('loading a serialized store', function () {
       documents = store.get('foo')
 
   //equal(store.length, 1)
-  deepEqual(documents, [123])
+  deepEqual(documents, {123:1})
 })

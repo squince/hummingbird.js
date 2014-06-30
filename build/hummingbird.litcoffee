@@ -18,11 +18,11 @@ Defaults to false
 ### .version
 Version of the hummingbird code base
 
-    hummingbird.version = "1.0.1"
+    hummingbird.version = "1.1.0"
 
 ### .index_version
 Version of the index data structure
 
-    hummingbird.index_version = "4.0"
+    hummingbird.index_version = "5.0"
     if typeof module isnt 'undefined' and module isnt null
       module.exports = hummingbird
