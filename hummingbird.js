@@ -503,7 +503,7 @@ hummingbird.Index.prototype._tokenizeDoc = function(doc) {
     tokens = this.tokenizer.tokenize(doc.name);
     variant_tokens = this.variantStore.getVariantTokens(doc.name, this.tokenizer, tokens);
   } else {
-    this.utils.warn("No 'name' property in doc\n" + (JSON.stringify(doc)));
+    this.utils.debugLog("No 'name' property in doc\n" + (JSON.stringify(doc)));
     tokens = [];
     variant_tokens = [];
   }
