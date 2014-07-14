@@ -88,7 +88,7 @@ Internal method to tokenize and add doc to tokenstore.  Used by add and update m
         tokens = @tokenizer.tokenize doc.name
         variant_tokens = @variantStore.getVariantTokens(doc.name, @tokenizer, tokens)
       else
-        @utils.warn "No 'name' property in doc\n#{JSON.stringify doc}"
+        @utils.debugLog "No 'name' property in doc\n#{JSON.stringify doc}"
         tokens = []
         variant_tokens = []
 
