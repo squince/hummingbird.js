@@ -326,7 +326,7 @@ hummingbird = function(variantsObj) {
 
 hummingbird.loggingOn = false;
 
-hummingbird.version = "1.1.0";
+hummingbird.version = "1.1.1";
 
 hummingbird.index_version = "5.0";
 
@@ -499,8 +499,14 @@ hummingbird.Index.prototype.add = function(doc, emitEvent) {
 
 hummingbird.Index.prototype._tokenizeDoc = function(doc) {
   var token, tokens, variant_tokens, _i, _j, _len, _len1, _results;
-  tokens = this.tokenizer.tokenize(doc.name);
-  variant_tokens = this.variantStore.getVariantTokens(doc.name, this.tokenizer, tokens);
+  if ((doc != null ? doc.name : void 0) != null) {
+    tokens = this.tokenizer.tokenize(doc.name);
+    variant_tokens = this.variantStore.getVariantTokens(doc.name, this.tokenizer, tokens);
+  } else {
+    this.utils.warn("No 'name' property in doc\n" + (JSON.stringify(doc)));
+    tokens = [];
+    variant_tokens = [];
+  }
   for (_i = 0, _len = tokens.length; _i < _len; _i++) {
     token = tokens[_i];
     this.tokenStore.add(token, false, doc.id);

@@ -1,5 +1,12 @@
 module('hummingbird.Index')
 
+test('adding a document with no name field', function () {
+  var idx = new hummingbird.Index,
+      doc = {id: 1, desc: 'test', title: 'noname doc'}
+  equal(Object.keys(idx.metaStore.root).length,0)
+  equal(Object.keys(idx.tokenStore.root).length,0)
+})
+
 test('adding a document with an empty field', function () {
   var idx = new hummingbird.Index,
       doc = {id: 1, name: 'test', title: ''}
@@ -28,7 +35,6 @@ test('triggering add events', function () {
   deepEqual(callbackArgs[0], doc)
   deepEqual(callbackArgs[1], idx)
 })
-
 
 test('silencing add events', function () {
   var idx = new hummingbird.Index,

@@ -84,8 +84,13 @@ Internal method to tokenize and add doc to tokenstore.  Used by add and update m
     hummingbird.Index::_tokenizeDoc = (doc) ->
 
       # tokenize the doc
-      tokens = @tokenizer.tokenize doc.name
-      variant_tokens = @variantStore.getVariantTokens(doc.name, @tokenizer, tokens)
+      if doc?.name?
+        tokens = @tokenizer.tokenize doc.name
+        variant_tokens = @variantStore.getVariantTokens(doc.name, @tokenizer, tokens)
+      else
+        @utils.warn "No 'name' property in doc\n#{JSON.stringify doc}"
+        tokens = []
+        variant_tokens = []
 
       # add the name tokens to the tokenStore
       # do this before variant tokens are added to ensure tokens are distinct
@@ -112,7 +117,7 @@ Removes the document from the index that is referenced by the 'id' property.
 
 ### ::update
 Updates the document from the index that is referenced by the 'id' property
-In case the name has changed, we remove the old tokens and retokenize. 
+In case the name has changed, we remove the old tokens and retokenize.
 Otherwise, we just update the metaStore.
 
     hummingbird.Index::update = (doc, emitEvent) ->
