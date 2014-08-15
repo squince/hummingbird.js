@@ -144,6 +144,10 @@ Optionally, takes an options object with the following possible properties
   includes all matches)
 * _boostPrefix_ - (boolean) if _true_ provides an additional boost to results that start with the first
   query token (_default=true_)
+* _secondarySortField_ - (string) if provided, results are sorted first by score descending,
+  then by the property represented by this string
+* _secondarySortOrder_ - (string; 'asc' or 'desc') optionally specifies whether sort on secondarySortField
+  is ascending or descending
 
 Finds matching names and returns them in order of best match.
 
@@ -156,6 +160,8 @@ Finds matching names and returns them in order of best match.
       numResults = if (options?.howMany is `undefined`) then 10 else Math.floor(options.howMany)
       offset = if (options?.startPos is `undefined`) then 0 else Math.floor(options.startPos)
       prefixBoost = options?.boostPrefix
+      secondarySortField = if (options?.secondarySortField is `undefined`) then 'name' else options.secondarySortField
+      secondarySortOrder = if (options?.secondarySortOrder is `undefined`) then 'asc' else options.secondarySortOrder
 
       # initialize result set vars and search options
       docSetHash = {}
@@ -208,20 +214,49 @@ Finds matching names and returns them in order of best match.
       startHashArray = @utils.logTiming 'hash to sorted array\n'
       for key of docSetHash
         if docSetHash[key] >= minScore
-          n = @metaStore.get(key).name.toLowerCase()
-          docSetArray.push
-            id: key
-            score: if query.toLowerCase() is n then docSetHash[key] + 0.1 else docSetHash[key]
-            n: n
+          # exact match?
+          exactMatch = if @utils.normalizeString(query) is @utils.normalizeString(@metaStore.get(key).name) then true else false
+          # Make fields we retrieve optionally include custom secondarySortField value
+          if secondarySortField is 'name'
+            docSetArray.push
+              id: key
+              score: if exactMatch then docSetHash[key] + 0.1 else docSetHash[key]
+              name: @metaStore.get(key).name
+          else
+            docSetArray.push
+              id: key
+              score: if exactMatch then docSetHash[key] + 0.1 else docSetHash[key]
+              name: @metaStore.get(key).name
+              custSortField: @metaStore.get(key)[secondarySortField] if @metaStore.get(key)[secondarySortField]?
 
       docSetArray.sort (a, b) ->
-        if a.score is b.score
-          switch
-            when a.n < b.n then -1
-            when a.n > b.n then 1
-            else 0
+        # Determines sort value (-1, 0, 1) based on data type and sort order
+        # stolen from nectar
+        compareObjects = (a, b, property, order) ->
+          sortOrder = if order is 'desc' then -1 else 1
+          aprop = if a[property]?.toLowerCase? then a[property]?.toLowerCase() else a[property]
+          bprop = if b[property]?.toLowerCase? then b[property]?.toLowerCase() else b[property]
+          if aprop is null and bprop isnt null
+            1
+          else if bprop is null
+            -1
+          else
+            sortOrder * (if aprop > bprop then 1 else (if aprop < bprop then -1 else 0))
+
+        if a.score isnt b.score
+          # sort on score only
+          compareObjects a,b,'score','desc'
         else
-          b.score - a.score
+          if secondarySortField is 'name'
+            # no custom sort, secondary sort on name
+            compareObjects a,b,'name',secondarySortOrder
+          else
+            if a.custSortField isnt b.custSortField
+              # custom secondary sort
+              compareObjects a,b,'custSortField',secondarySortOrder
+            else
+              # ternary sort on name
+              compareObjects a,b,'name','asc'
 
       # loop over limited return set and augment with meta
       results = docSetArray.slice offset, numResults

@@ -8,7 +8,8 @@ module('search - latin', {
       id: 'a',
       name: 'Mr. Green killed Colonel Mustard in the study with the candlestick. Mr. Green is not a very nice fellow.',
       title: 'Mr. Green kills Colonel Mustard',
-      wordCount: 19
+      wordCount: 19,
+      company: 'Askew Software, Inc'
     },{
       id: 'b',
       name: 'Professor Plumb has a green plant in his study',
@@ -22,12 +23,13 @@ module('search - latin', {
     },{
       id: 'd',
       name: 'handsome',
-      title: 'title'
+      title: 'title',
+      company: 'Foobar, LLC'
     },{
       id: 'e',
       name: 'hand',
       title: 'title',
-      company: 'foo bar llc'
+      company: 'foobar, corp'
     },{
       id: 'f',
       name: 'Scarlett Johnson',
@@ -110,6 +112,70 @@ test('return the correct results - with boost, with threshold', function () {
     equal(results[1].id, 'd')
     equal(results[0].score, '9.3')
     equal(results[1].score, '9.2')
+  }, options);
+})
+
+test('return correct results - custom secondary sort ascending', function () {
+  var options = {"howMany":10, "boostPrefix":false, "scoreThreshold":0, "secondarySortField":"title", "secondarySortOrder":"asc"};
+  this.idx.search('green plant', function(results) {
+    equal(results.length, 3)
+    equal(results[0].score, '27')
+    equal(results[1].score, '27')
+    equal(results[2].score, '12')
+    equal(results[0].id, 'b')
+    equal(results[1].id, 'c')
+    equal(results[2].id, 'a')
+    equal(results[0].title, 'Plumb waters plant')
+    equal(results[1].title, 'Scary helps Professor')
+    equal(results[2].title, 'Mr. Green kills Colonel Mustard')
+  }, options);
+})
+
+test('return correct results - custom secondary sort descending', function () {
+  var options = {"howMany":10, "boostPrefix":false, "scoreThreshold":0, "secondarySortField":"title", "secondarySortOrder":"desc"};
+  this.idx.search('green plant', function(results) {
+    equal(results.length, 3)
+    equal(results[0].score, '27')
+    equal(results[1].score, '27')
+    equal(results[2].score, '12')
+    equal(results[0].id, 'c')
+    equal(results[1].id, 'b')
+    equal(results[2].id, 'a')
+    equal(results[0].title, 'Scary helps Professor')
+    equal(results[1].title, 'Plumb waters plant')
+    equal(results[2].title, 'Mr. Green kills Colonel Mustard')
+  }, options);
+})
+
+test('return correct results - custom sort asc', function () {
+  var options = {"howMany":10, "boostPrefix":false, "scoreThreshold":0, "secondarySortField":"company", "secondarySortOrder":"asc"};
+  this.idx.search('and', function(results) {
+    equal(results.length, 3)
+    equal(results[0].score, 3)
+    equal(results[1].score, 3)
+    equal(results[2].score, 3)
+    equal(results[0].id, 'a')
+    equal(results[1].id, 'e')
+    equal(results[2].id, 'd')
+    equal(results[0].company, 'Askew Software, Inc')
+    equal(results[1].company, 'foobar, corp')
+    equal(results[2].company, 'Foobar, LLC')
+  }, options);
+})
+
+test('return correct results - custom sort desc', function () {
+  var options = {"howMany":10, "boostPrefix":false, "scoreThreshold":0, "secondarySortField":"company", "secondarySortOrder":"desc"};
+  this.idx.search('and', function(results) {
+    equal(results.length, 3)
+    equal(results[0].score, 3)
+    equal(results[1].score, 3)
+    equal(results[2].score, 3)
+    equal(results[0].id, 'd')
+    equal(results[1].id, 'e')
+    equal(results[2].id, 'a')
+    equal(results[0].company, 'Foobar, LLC')
+    equal(results[1].company, 'foobar, corp')
+    equal(results[2].company, 'Askew Software, Inc')
   }, options);
 })
 

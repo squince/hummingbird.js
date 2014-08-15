@@ -35,6 +35,18 @@ test('return correct results - single token prefix', function () {
   });
 })
 
+test('return correct results - sort desc', function () {
+  var options = {"secondarySortOrder":"desc"};
+  this.idx.search('陈', function(results) {
+    equal(results.length, 2)
+    equal(results[0].id, 'i')
+    equal(results[1].id, 'h')
+    equal(results[0].company, 'Fudan-Cinpathogen Center')
+    equal(results[1].title, 'Lab Director')
+    equal(results[0].score, results[1].score)
+  }, options);
+})
+
 test('return correct results - single token suffix', function () {
   this.idx.search('康', function(results) {
     equal(results.length, 1)

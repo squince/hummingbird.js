@@ -326,7 +326,7 @@ hummingbird = function(variantsObj) {
 
 hummingbird.loggingOn = false;
 
-hummingbird.version = "1.1.1";
+hummingbird.version = "1.2.0";
 
 hummingbird.index_version = "5.0";
 
@@ -547,7 +547,7 @@ hummingbird.Index.prototype.update = function(doc, emitEvent) {
 };
 
 hummingbird.Index.prototype.search = function(query, callback, options) {
-  var docSetArray, docSetHash, finishTime, hasSomeToken, key, maxScore, minNumQueryTokens, minScore, n, numResults, offset, prefixBoost, queryTokens, resultSet, results, startHashArray, startTime;
+  var docSetArray, docSetHash, exactMatch, finishTime, hasSomeToken, key, maxScore, minNumQueryTokens, minScore, numResults, offset, prefixBoost, queryTokens, resultSet, results, secondarySortField, secondarySortOrder, startHashArray, startTime;
   this.utils.debugLog('**********');
   startTime = this.utils.logTiming('find matching docs');
   if ((query == null) || query.length < (this.tokenizer.min - 1)) {
@@ -556,6 +556,8 @@ hummingbird.Index.prototype.search = function(query, callback, options) {
   numResults = (options != null ? options.howMany : void 0) === undefined ? 10 : Math.floor(options.howMany);
   offset = (options != null ? options.startPos : void 0) === undefined ? 0 : Math.floor(options.startPos);
   prefixBoost = options != null ? options.boostPrefix : void 0;
+  secondarySortField = (options != null ? options.secondarySortField : void 0) === undefined ? 'name' : options.secondarySortField;
+  secondarySortOrder = (options != null ? options.secondarySortOrder : void 0) === undefined ? 'asc' : options.secondarySortOrder;
   docSetHash = {};
   docSetArray = [];
   queryTokens = this.tokenizer.tokenize(query);
@@ -606,26 +608,50 @@ hummingbird.Index.prototype.search = function(query, callback, options) {
   startHashArray = this.utils.logTiming('hash to sorted array\n');
   for (key in docSetHash) {
     if (docSetHash[key] >= minScore) {
-      n = this.metaStore.get(key).name.toLowerCase();
-      docSetArray.push({
-        id: key,
-        score: query.toLowerCase() === n ? docSetHash[key] + 0.1 : docSetHash[key],
-        n: n
-      });
+      exactMatch = this.utils.normalizeString(query) === this.utils.normalizeString(this.metaStore.get(key).name) ? true : false;
+      if (secondarySortField === 'name') {
+        docSetArray.push({
+          id: key,
+          score: exactMatch ? docSetHash[key] + 0.1 : docSetHash[key],
+          name: this.metaStore.get(key).name
+        });
+      } else {
+        docSetArray.push({
+          id: key,
+          score: exactMatch ? docSetHash[key] + 0.1 : docSetHash[key],
+          name: this.metaStore.get(key).name,
+          custSortField: this.metaStore.get(key)[secondarySortField] != null ? this.metaStore.get(key)[secondarySortField] : void 0
+        });
+      }
     }
   }
   docSetArray.sort(function(a, b) {
-    if (a.score === b.score) {
-      switch (false) {
-        case !(a.n < b.n):
-          return -1;
-        case !(a.n > b.n):
-          return 1;
-        default:
-          return 0;
+    var compareObjects;
+    compareObjects = function(a, b, property, order) {
+      var aprop, bprop, sortOrder, _ref, _ref1, _ref2, _ref3;
+      sortOrder = order === 'desc' ? -1 : 1;
+      aprop = ((_ref = a[property]) != null ? _ref.toLowerCase : void 0) != null ? (_ref1 = a[property]) != null ? _ref1.toLowerCase() : void 0 : a[property];
+      bprop = ((_ref2 = b[property]) != null ? _ref2.toLowerCase : void 0) != null ? (_ref3 = b[property]) != null ? _ref3.toLowerCase() : void 0 : b[property];
+      if (aprop === null && bprop !== null) {
+        return 1;
+      } else if (bprop === null) {
+        return -1;
+      } else {
+        return sortOrder * (aprop > bprop ? 1 : (aprop < bprop ? -1 : 0));
       }
+    };
+    if (a.score !== b.score) {
+      return compareObjects(a, b, 'score', 'desc');
     } else {
-      return b.score - a.score;
+      if (secondarySortField === 'name') {
+        return compareObjects(a, b, 'name', secondarySortOrder);
+      } else {
+        if (a.custSortField !== b.custSortField) {
+          return compareObjects(a, b, 'custSortField', secondarySortOrder);
+        } else {
+          return compareObjects(a, b, 'name', 'asc');
+        }
+      }
     }
   });
   results = docSetArray.slice(offset, numResults);

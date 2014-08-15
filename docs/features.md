@@ -12,9 +12,15 @@ _scoreThreshold_ - (number between 0,1 inclusive) only matches with a score equa
   than this fraction of the maximum theoretical score will be returned in the result set (_default=0.5_, 
   includes all matches)
 
-_howMany_ - the maximum number of results to be returned (_default=10_)
+_howMany_ - (number) the maximum number of results to be returned (_default=10_)
 
-_startPos_ - how far into the sorted matched set should the returned resultset start (_default=0_)
+_startPos_ - (number) how far into the sorted matched set should the returned resultset start (_default=0_)
+
+_secondarySortField_ - (string) if provided, results are sorted first by score descending,
+  then by the property represented by this string (_default='name'_)
+
+_secondarySortOrder_ - (string; 'asc' or 'desc') optionally specifies whether sort on secondarySortField
+  is ascending or descending (_default='asc'_)
 
 ```javascript
 // example
@@ -22,7 +28,9 @@ var options = {
   'boostPrefix': false, 
   'scoreThreshold': 0.75, 
   'howMany': 5, 
-  'startPos': 5
+  'startPos': 5,
+  'secondarySortField': 'title',
+  'secondarySortOrder': 'desc'
 };
 idx.search('bob', printResults(), options);
 ```
