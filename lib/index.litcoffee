@@ -154,7 +154,9 @@ Finds matching names and returns them in order of best match.
     hummingbird.Index::search = (query, callback, options) ->
       @utils.debugLog '**********'
       startTime = @utils.logTiming 'find matching docs'
-      if (not query? or query.length < (@tokenizer.min - 1)) then callback []
+      if (not query? or query.length < (@tokenizer.min - 1))
+        callback []
+        return
 
       # search options
       numResults = if (options?.howMany is `undefined`) then 10 else Math.floor(options.howMany)
@@ -184,7 +186,9 @@ Finds matching names and returns them in order of best match.
       hasSomeToken = queryTokens.some((token) ->
         @tokenStore.has token
       , this)
-      callback []  unless hasSomeToken
+      unless hasSomeToken
+        callback []
+        return
 
       # retrieve docs from tokenStore
       queryTokens.forEach ((token, i, tokens) ->

@@ -326,7 +326,7 @@ hummingbird = function(variantsObj) {
 
 hummingbird.loggingOn = false;
 
-hummingbird.version = "1.2.0";
+hummingbird.version = "1.2.1";
 
 hummingbird.index_version = "5.0";
 
@@ -552,6 +552,7 @@ hummingbird.Index.prototype.search = function(query, callback, options) {
   startTime = this.utils.logTiming('find matching docs');
   if ((query == null) || query.length < (this.tokenizer.min - 1)) {
     callback([]);
+    return;
   }
   numResults = (options != null ? options.howMany : void 0) === undefined ? 10 : Math.floor(options.howMany);
   offset = (options != null ? options.startPos : void 0) === undefined ? 0 : Math.floor(options.startPos);
@@ -580,6 +581,7 @@ hummingbird.Index.prototype.search = function(query, callback, options) {
   }, this);
   if (!hasSomeToken) {
     callback([]);
+    return;
   }
   queryTokens.forEach((function(token, i, tokens) {
     var docRef, startMatchTime, startVariantMatch;
