@@ -17,6 +17,24 @@ test('adding a document with an empty field', function () {
   ok(idx.metaStore.has("1"))
 })
 
+test('adding a document that already exists', function () {
+  var idx = new hummingbird.Index,
+      doc = {id: 1, name: 'test', title: 'non existing document'}
+
+  idx.add(doc)
+  equal(Object.keys(idx.tokenStore.get('tes')).length, 1)
+  equal(idx.tokenStore.get('tes',false)['1'],1)
+  ok(idx.metaStore.has("1"))
+  equal((Object.keys(idx.metaStore.root)).length,1)
+
+  idx.add({id: 1, name: 'duplicate', title: 'previously existing doc'})
+  equal(Object.keys(idx.tokenStore.get('dup')).length, 1)
+  equal(idx.tokenStore.get('dup',false)['1'],1)
+  ok(idx.metaStore.has("1"))
+  equal((Object.keys(idx.metaStore.root)).length,1)
+
+})
+
 test('triggering add events', function () {
   var idx = new hummingbird.Index,
       doc = {id: 1, name: 'this is a test'},

@@ -68,7 +68,7 @@ Optionally includes additional arbitrary name-value pairs to be stored, but not 
       emitEvent = (if emitEvent is `undefined` then true else emitEvent)
 
       if @metaStore.has doc.id
-        console.warn "Document #{doc.id} already indexed, replacing"
+        @utils.debugLog "Document #{doc.id} already indexed, replacing"
         @update doc, emitEvent
         return
 

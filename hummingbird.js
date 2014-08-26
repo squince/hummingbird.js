@@ -326,7 +326,7 @@ hummingbird = function(variantsObj) {
 
 hummingbird.loggingOn = false;
 
-hummingbird.version = "1.2.1";
+hummingbird.version = "1.2.2";
 
 hummingbird.index_version = "5.0";
 
@@ -486,7 +486,7 @@ hummingbird.Index.load = function(serializedData) {
 hummingbird.Index.prototype.add = function(doc, emitEvent) {
   emitEvent = (emitEvent === undefined ? true : emitEvent);
   if (this.metaStore.has(doc.id)) {
-    console.warn("Document " + doc.id + " already indexed, replacing");
+    this.utils.debugLog("Document " + doc.id + " already indexed, replacing");
     this.update(doc, emitEvent);
     return;
   }
