@@ -1,8 +1,12 @@
-## NPM Install
+## Install
 Get familiar with [node.js](http://nodejs.org/) if you haven't used it
 before, then
 
 * _$ npm install hummingbird_
+
+Or, get familiar with [bower.js](http://bower.io/) if you haven't used it before, then
+
+* _$ bower install hummingbird_
 
 ## Contribute
 This plugin requires Grunt >=0.4.0

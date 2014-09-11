@@ -1,6 +1,6 @@
 # Hummingbird.js
 
-_Impossibly quick and remarkably precise autosuggest_
+_Impossibly quick and remarkably precise typeahead engine_
 
 You can index any JavaScript object you like with _id_ and _name_, and
 hummingbird.js will merrily make it searchable. No schema needed, it
