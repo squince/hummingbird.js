@@ -27,7 +27,7 @@
     "ngram"
   ],
   "license": "MIT",
-  "private": true,
+  "private": false,
   "ignore": [
     "bower_components",
     "build",
