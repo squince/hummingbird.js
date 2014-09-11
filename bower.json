@@ -1,0 +1,44 @@
+{
+  "name": "hummingbird",
+  "main": "hummingbird.js",
+  "version": "1.2.2",
+  "homepage": "http://glg.github.io/hummingbird.js",
+  "authors": [
+    {"name": "Steve Quince", "email":"squince@glgroup.com"},
+    {"name": "Dan Griffis", "email": "dgriffis@glgroup.com"},
+    {"name": "Amit Segal", "email": "asegal@glgroup.com"}
+  ],
+  "description": "Impossibly quick and remarkably precise typeahead engine",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/glg/hummingbird.js"
+  },
+  "moduleType": [
+    "globals",
+    "node"
+  ],
+  "keywords": [
+    "autosuggest",
+    "autocomplete",
+    "typeahead",
+    "node",
+    "search",
+    "n-gram",
+    "ngram"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "bower_components",
+    "build",
+    "docs",
+    "examples",
+    "lib",
+    "node_modules",
+    "test",
+    "Gruntfile.js",
+    "**/.*",
+    "*.html",
+    "*.json"
+  ]
+}
