@@ -82,12 +82,26 @@ module.exports = function(grunt) {
          },
         command: 'PATH="node_modules/.bin:${PATH}" doc-n-toc docs/header.md docs/readme.md docs/intro.md docs/examples.md docs/features.md docs/contribute.md --css docs/my.less --title "Hummingbird v<%= pkg.version %>" > build/index.html'
       },
+      publish: {
+         options: {
+           stdout: false,
+           stderr: true
+         },
+        command: 'git commit -am "publish new version"; git tag <%= pkg.version %>; git push origin master; git push origin <%= pkg.version %>; git checkout gh-pages; git merge master; git push origin gh-pages; git checkout master'
+      },
       npm: {
          options: {
            stdout: false,
            stderr: true
          },
-        command: 'git commit -am "publish new version to npmjs.org"; git push origin master; npm publish ./; git checkout gh-pages; git merge master; git push origin gh-pages; git checkout master'
+        command: 'npm publish ./;'
+      },
+      bower: {
+         options: {
+           stdout: false,
+           stderr: true
+         },
+        command: 'bower register hummingbird git://github.com/glg/hummingbird.js;'
       },
       index: {
          options: {
@@ -122,5 +136,5 @@ module.exports = function(grunt) {
   grunt.registerTask('test', ['default',  'connect:dev', 'qunit', 'watch']);
   grunt.registerTask('docs', ['includereplace:pre', 'shell:docs', 'includereplace:post']);
   grunt.registerTask('serve', ['connect:dev', 'watch']);
-  grunt.registerTask('publish', ['default','shell:npm']);
+  grunt.registerTask('publish', ['default','shell:publish','shell:npm','shell:bower']);
 };
