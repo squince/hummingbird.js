@@ -68,7 +68,7 @@ Optionally includes additional arbitrary name-value pairs to be stored, but not 
       emitEvent = (if emitEvent is `undefined` then true else emitEvent)
 
       if @metaStore.has doc.id
-        @utils.debugLog "Document #{doc.id} already indexed, replacing"
+        @utils.debugLog "Document #{doc.id} already indexed, replacing" if hummingbird.loggingOn
         @update doc, emitEvent
         return
 
@@ -88,7 +88,7 @@ Internal method to tokenize and add doc to tokenstore.  Used by add and update m
         tokens = @tokenizer.tokenize doc.name
         variant_tokens = @variantStore.getVariantTokens(doc.name, @tokenizer, tokens)
       else
-        @utils.debugLog "No 'name' property in doc\n#{JSON.stringify doc}"
+        @utils.debugLog "No 'name' property in doc\n#{JSON.stringify doc}" if hummingbird.loggingOn
         tokens = []
         variant_tokens = []
 
@@ -135,7 +135,7 @@ Otherwise, we just update the metaStore.
       return
 
 ### ::search
-Takes a callback function that has the resultSet array as its only argument.
+Takes a callback function that has the resultSet array and a profile object as arguments.
 Optionally, takes an options object with the following possible properties
 * _howMany_ - the maximum number of results to be returned (_default=10_)
 * _startPos_ - how far into the sorted matched set should the returned resultset start (_default=0_)
@@ -152,10 +152,11 @@ Optionally, takes an options object with the following possible properties
 Finds matching names and returns them in order of best match.
 
     hummingbird.Index::search = (query, callback, options) ->
-      @utils.debugLog '**********'
-      startTime = @utils.logTiming 'find matching docs'
+      startTime = new Date
+      @utils.logTiming 'find matching docs' if hummingbird.loggingOn
       if (not query? or query.length < (@tokenizer.min - 1))
-        callback []
+        callback [],
+          hbTotal: new Date - startTime
         return
 
       # search options
@@ -187,12 +188,13 @@ Finds matching names and returns them in order of best match.
         @tokenStore.has token
       , this)
       unless hasSomeToken
-        callback []
+        callback [],
+          hbTotal: new Date - startTime
         return
 
       # retrieve docs from tokenStore
       queryTokens.forEach ((token, i, tokens) ->
-        startMatchTime = @utils.logTiming "'#{token}' score start"
+        startMatchTime = @utils.logTiming "'#{token}' score start" if hummingbird.loggingOn
         # name matches
         for docRef of @tokenStore.get(token, false)
           switch
@@ -200,7 +202,7 @@ Finds matching names and returns them in order of best match.
               docSetHash[docRef] = @utils.tokenScore(token, false, prefixBoost)
             when docSetHash[docRef]?
               docSetHash[docRef] += @utils.tokenScore(token, false, prefixBoost)
-        startVariantMatch = @utils.logTiming "\t\toriginal name:\t\t#{Object.keys(@tokenStore.get(token, false)).length} ", startMatchTime
+        startVariantMatch = @utils.logTiming "\t\toriginal name:\t\t#{Object.keys(@tokenStore.get(token, false)).length} ", startMatchTime if hummingbird.loggingOn
         # variant matches
         for docRef of @tokenStore.get(token, true)
           switch
@@ -208,14 +210,15 @@ Finds matching names and returns them in order of best match.
               docSetHash[docRef] = @utils.tokenScore(token, true, prefixBoost)
             when docSetHash[docRef]?
               docSetHash[docRef] += @utils.tokenScore(token, true, prefixBoost)
-        @utils.logTiming "\t\tvariant matches:\t#{Object.keys(@tokenStore.get(token, true)).length} ", startVariantMatch
+        @utils.logTiming "\t\tvariant matches:\t#{Object.keys(@tokenStore.get(token, true)).length} ", startVariantMatch if hummingbird.loggingOn
         return
       ), this
 
       # convert hash to array of hashes for sorting
       # filter out results below the minScore
       # boost exact matches - consciously does not convert diacritics, but uncertain whether that's best
-      startHashArray = @utils.logTiming 'hash to sorted array\n'
+      startHashArray = new Date
+      @utils.logTiming 'hash to sorted array\n' if hummingbird.loggingOn
       for key of docSetHash
         if docSetHash[key] >= minScore
           # exact match?
@@ -233,6 +236,7 @@ Finds matching names and returns them in order of best match.
               name: @metaStore.get(key).name
               custSortField: @metaStore.get(key)[secondarySortField] if @metaStore.get(key)[secondarySortField]?
 
+      startArraySort = new Date
       docSetArray.sort (a, b) ->
         # Determines sort value (-1, 0, 1) based on data type and sort order
         # stolen from nectar
@@ -264,36 +268,51 @@ Finds matching names and returns them in order of best match.
 
       # loop over limited return set and augment with meta
       results = docSetArray.slice offset, numResults
-      @utils.debugLog "score\tname (id)"
+      if hummingbird.loggingOn
+        @utils.debugLog '**********'
+        @utils.debugLog "score\tname (id)"
       resultSet = (results.map (result, i, results) ->
         result = @metaStore.get result.id
         result.score = Math.round(results[i].score*10)/10
-        @utils.debugLog "#{result.score}\t#{result.name} (#{result.id})"
+        @utils.debugLog "#{result.score}\t#{result.name} (#{result.id})" if hummingbird.loggingOn
         return result
       , this)
-      callback resultSet
-      @utils.debugLog ""
-      finishTime = @utils.logTiming 'SUMMARY:'
-      @utils.debugLog "hash size:\t#{Object.keys(docSetHash).length.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}"
-      @utils.debugLog "array size:\t#{docSetArray.length.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}"
-      @utils.debugLog "min score:\t#{minScore}"
-      @utils.debugLog "max score:\t#{maxScore}"
-      @utils.debugLog "query time:\t#{finishTime-startTime} ms"
-      @utils.debugLog "\t\t#{startHashArray-startTime} ms - finding docs"
-      @utils.debugLog "\t\t#{finishTime-startHashArray} ms - hash to array"
-      @utils.debugLog "***************"
+      finishTime = new Date
+      callback resultSet,
+        hbTotalTime: finishTime - startTime
+        findDocsTime: startHashArray - startTime
+        hashToArrayTime: startArraySort - startHashArray
+        sortArrayTime: finishTime - startArraySort
+      if hummingbird.loggingOn
+        @utils.logTiming 'SUMMARY:'
+        @utils.debugLog ""
+        @utils.debugLog "hash size:\t#{Object.keys(docSetHash).length.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}"
+        @utils.debugLog "array size:\t#{docSetArray.length.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}"
+        @utils.debugLog "min score:\t#{minScore}"
+        @utils.debugLog "max score:\t#{maxScore}"
+        @utils.debugLog "query time:\t#{finishTime-startTime} ms"
+        @utils.debugLog "\t\t#{startHashArray-startTime} ms - finding docs"
+        @utils.debugLog "\t\t#{startArraySort-startHashArray} ms - sorting array"
+        @utils.debugLog "\t\t#{finishTime-startArraySort} ms - hash to array"
+        @utils.debugLog "***************"
 
 ### ::jump
 Takes a callback function that has the result object as its only argument.
 
     hummingbird.Index::jump = (query, callback) ->
-      @utils.debugLog '**********'
-      startTime = @utils.logTiming 'get matching doc'
-      if (not query? or query.length < 1) then callback []
+      @utils.debugLog '**********' if hummingbird.loggingOn
+      startTime = @utils.logTiming 'get matching doc' if hummingbird.loggingOn
+      if (not query? or query.length < 1)
+        callback [],
+          hbTotal: new Date - startTime
       else
         r = @metaStore.get(query)
-        if r? then callback [r]
-        else callback []
+        if r?
+          callback [r],
+            hbTotal: new Date - startTime
+        else
+          callback [],
+            hbTotal: new Date - startTime
 
 ### ::toJSON
 Returns a representation of the index ready for serialization.

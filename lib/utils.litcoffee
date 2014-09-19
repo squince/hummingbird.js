@@ -15,20 +15,18 @@ logs a warning message to the console
 logs a debug message to the console
 
     hummingbird.Utils::debugLog = (msg) ->
-      if console.log and hummingbird.loggingOn
-        console.log "#{msg}"
+      console.log "#{msg}"
 
 ### .logTiming
 logs a message to the console preceded by time of day
 
     hummingbird.Utils::logTiming = (msg, s) ->
-      if console.log and hummingbird.loggingOn
-        d = new Date()
-        if s?
-          console.log "#{d.toTimeString().split(' ')[0]}.#{d.getMilliseconds()} - #{msg} in #{d-s} ms"
-        else
-          console.log "#{d.toTimeString().split(' ')[0]}.#{d.getMilliseconds()} - #{msg}"
-        return d
+      d = new Date
+      if s?
+        console.log "#{d.toTimeString().split(' ')[0]}.#{d.getMilliseconds()} - #{msg} in #{d-s} ms"
+      else
+        console.log "#{d.toTimeString().split(' ')[0]}.#{d.getMilliseconds()} - #{msg}"
+      return d
 
 ### .normalizeString
 takes a string and normalizes it for case and diacritics
