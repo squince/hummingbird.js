@@ -391,11 +391,12 @@ hummingbird.Index.prototype.search = function(query, callback, options) {
 
 hummingbird.Index.prototype.jump = function(query, callback) {
   var r, startTime;
+  startTime = new Date;
   if (hummingbird.loggingOn) {
     this.utils.debugLog('**********');
   }
   if (hummingbird.loggingOn) {
-    startTime = this.utils.logTiming('get matching doc');
+    this.utils.logTiming('get matching doc');
   }
   if ((query == null) || query.length < 1) {
     return callback([], {

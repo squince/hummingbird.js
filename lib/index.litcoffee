@@ -300,19 +300,17 @@ Finds matching names and returns them in order of best match.
 Takes a callback function that has the result object as its only argument.
 
     hummingbird.Index::jump = (query, callback) ->
+      startTime = new Date
       @utils.debugLog '**********' if hummingbird.loggingOn
-      startTime = @utils.logTiming 'get matching doc' if hummingbird.loggingOn
+      @utils.logTiming 'get matching doc' if hummingbird.loggingOn
       if (not query? or query.length < 1)
-        callback [],
-          hbTotalTime: new Date - startTime
+        callback [], {hbTotalTime: new Date - startTime}
       else
         r = @metaStore.get(query)
         if r?
-          callback [r],
-            hbTotalTime: new Date - startTime
+          callback [r], {hbTotalTime: new Date - startTime}
         else
-          callback [],
-            hbTotalTime: new Date - startTime
+          callback [], {hbTotalTime: new Date - startTime}
 
 ### ::toJSON
 Returns a representation of the index ready for serialization.
