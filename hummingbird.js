@@ -554,7 +554,7 @@ hummingbird.Index.prototype.search = function(query, callback, options) {
   }
   if ((query == null) || query.length < (this.tokenizer.min - 1)) {
     callback([], {
-      hbTotal: new Date - startTime
+      hbTotalTime: new Date - startTime
     });
     return;
   }
@@ -585,7 +585,7 @@ hummingbird.Index.prototype.search = function(query, callback, options) {
   }, this);
   if (!hasSomeToken) {
     callback([], {
-      hbTotal: new Date - startTime
+      hbTotalTime: new Date - startTime
     });
     return;
   }
@@ -717,17 +717,17 @@ hummingbird.Index.prototype.jump = function(query, callback) {
   }
   if ((query == null) || query.length < 1) {
     return callback([], {
-      hbTotal: new Date - startTime
+      hbTotalTime: new Date - startTime
     });
   } else {
     r = this.metaStore.get(query);
     if (r != null) {
       return callback([r], {
-        hbTotal: new Date - startTime
+        hbTotalTime: new Date - startTime
       });
     } else {
       return callback([], {
-        hbTotal: new Date - startTime
+        hbTotalTime: new Date - startTime
       });
     }
   }

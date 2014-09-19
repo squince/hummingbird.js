@@ -156,7 +156,7 @@ Finds matching names and returns them in order of best match.
       @utils.logTiming 'find matching docs' if hummingbird.loggingOn
       if (not query? or query.length < (@tokenizer.min - 1))
         callback [],
-          hbTotal: new Date - startTime
+          hbTotalTime: new Date - startTime
         return
 
       # search options
@@ -189,7 +189,7 @@ Finds matching names and returns them in order of best match.
       , this)
       unless hasSomeToken
         callback [],
-          hbTotal: new Date - startTime
+          hbTotalTime: new Date - startTime
         return
 
       # retrieve docs from tokenStore
@@ -304,15 +304,15 @@ Takes a callback function that has the result object as its only argument.
       startTime = @utils.logTiming 'get matching doc' if hummingbird.loggingOn
       if (not query? or query.length < 1)
         callback [],
-          hbTotal: new Date - startTime
+          hbTotalTime: new Date - startTime
       else
         r = @metaStore.get(query)
         if r?
           callback [r],
-            hbTotal: new Date - startTime
+            hbTotalTime: new Date - startTime
         else
           callback [],
-            hbTotal: new Date - startTime
+            hbTotalTime: new Date - startTime
 
 ### ::toJSON
 Returns a representation of the index ready for serialization.
