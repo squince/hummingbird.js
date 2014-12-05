@@ -6,7 +6,7 @@
   </ul>
 </div>
 
-</p> <h1>Hummingbird.js</h1> <p><em>Impossibly quick and remarkably precise typeahead engine</em></p> <p>You can index any JavaScript object you like with <em>id</em> and <em>name</em>, and hummingbird.js will merrily make it searchable. No schema needed, it just matches against <em>name</em> and returns the document.</p> <ul> <li><em>id</em> serves as the key, this needs to be unique in an index.</li> <li><em>name</em> is the indexed text, just build up a property. Any other properties are just carried along, but are not indexed.</li> </ul> <pre><code class="language-javascript"> var idx = new hummingbird.Index();
+</p> <h1>Hummingbird.js</h1> <p><em>Impossibly quick and remarkably precise</em></p> <p>Misspellings and nicknames are no match for this fast and forgiving typeahead engine. You can index any JavaScript object you like with <em>id</em> and <em>name</em>, and hummingbird.js will merrily make it searchable. No schema needed, it just matches against <em>name</em> and returns the document.</p> <ul> <li><em>id</em> serves as the key, this needs to be unique in an index.</li> <li><em>name</em> is the indexed text, just build up a property. Any other properties are just carried along, but are not indexed.</li> </ul> <pre><code class="language-javascript"> var idx = new hummingbird.Index();
  idx.add({id: 1, name: 'Hi Mom', female: true});
  idx.add({id: 2, name: 'Sup Dad', male: true});
  idx.search('Dad', function(results){

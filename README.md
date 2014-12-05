@@ -1,7 +1,8 @@
 # Hummingbird.js
 
-_Impossibly quick and remarkably precise typeahead engine_
+_Impossibly quick and remarkably precise_
 
+Misspellings and nicknames are no match for this fast and forgiving typeahead engine.
 You can index any JavaScript object you like with _id_ and _name_, and
 hummingbird.js will merrily make it searchable. No schema needed, it
 just matches against _name_ and returns the document.

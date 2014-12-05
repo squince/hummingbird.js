@@ -8,7 +8,7 @@
     {"name": "Dan Griffis", "email": "dgriffis@glgroup.com"},
     {"name": "Amit Segal", "email": "asegal@glgroup.com"}
   ],
-  "description": "Impossibly quick and remarkably precise typeahead engine",
+  "description": "Misspellings and nicknames are no match for this fast and forgiving typeahead engine.",
   "repository": {
     "type": "git",
     "url": "http://github.com/glg/hummingbird.js"
