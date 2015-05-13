@@ -326,7 +326,7 @@ hummingbird = function(variantsObj) {
 
 hummingbird.loggingOn = false;
 
-hummingbird.version = "2.0.2";
+hummingbird.version = "2.1.0";
 
 hummingbird.index_version = "5.0";
 
@@ -470,7 +470,7 @@ hummingbird.Index.prototype.off = function(name, fn) {
 };
 
 hummingbird.Index.load = function(serializedData) {
-  var idx, _ref, _ref1;
+  var idx;
   idx = new this;
   if (serializedData.index_version !== hummingbird.index_version) {
     idx.utils.warn('version mismatch: current ' + hummingbird.index_version + ' importing ' + serializedData.index_version);
@@ -478,8 +478,8 @@ hummingbird.Index.load = function(serializedData) {
   idx.tokenStore = hummingbird.TokenStore.load(serializedData.tokenStore);
   idx.metaStore = serializedData.hasOwnProperty('metaStore') ? hummingbird.MetaStore.load(serializedData.metaStore) : undefined;
   idx.variantStore = serializedData.hasOwnProperty('variantStore') ? hummingbird.VariantStore.load(serializedData.variantStore) : undefined;
-  idx.createTime = (_ref = new Date(serializedData.createTime)) != null ? _ref : null;
-  idx.lastUpdate = (_ref1 = new Date(serializedData.lastUpdate)) != null ? _ref1 : null;
+  idx.createTime = serializedData.createTime != null ? null : new Date(serializedData.createTime);
+  idx.lastUpdate = serializedData.lastUpdate != null ? null : new Date(serializedData.lastUpdate);
   return idx;
 };
 
