@@ -101,7 +101,7 @@ module.exports = function(grunt) {
            stdout: false,
            stderr: true
          },
-        command: 'bower register hummingbird git://github.com:glg/hummingbird.js;'
+        command: 'bower register hummingbird git://github.com/glg/hummingbird.js.git;'
       },
       index: {
          options: {
