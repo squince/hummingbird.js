@@ -54,8 +54,8 @@ than what is now supported by this version of hummingbird
       idx.tokenStore = hummingbird.TokenStore.load(serializedData.tokenStore)
       idx.metaStore = if serializedData.hasOwnProperty 'metaStore' then hummingbird.MetaStore.load(serializedData.metaStore) else `undefined`
       idx.variantStore = if serializedData.hasOwnProperty 'variantStore' then hummingbird.VariantStore.load(serializedData.variantStore) else `undefined`
-      idx.createTime = if serializedData.createTime? then null else new Date(serializedData.createTime)
-      idx.lastUpdate = if serializedData.lastUpdate? then null else new Date(serializedData.lastUpdate)
+      idx.createTime = if serializedData.createTime? then new Date(serializedData.createTime) else null
+      idx.lastUpdate = if serializedData.lastUpdate? then new Date(serializedData.lastUpdate) else null
 
       idx
 

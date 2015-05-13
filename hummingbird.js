@@ -478,8 +478,8 @@ hummingbird.Index.load = function(serializedData) {
   idx.tokenStore = hummingbird.TokenStore.load(serializedData.tokenStore);
   idx.metaStore = serializedData.hasOwnProperty('metaStore') ? hummingbird.MetaStore.load(serializedData.metaStore) : undefined;
   idx.variantStore = serializedData.hasOwnProperty('variantStore') ? hummingbird.VariantStore.load(serializedData.variantStore) : undefined;
-  idx.createTime = serializedData.createTime != null ? null : new Date(serializedData.createTime);
-  idx.lastUpdate = serializedData.lastUpdate != null ? null : new Date(serializedData.lastUpdate);
+  idx.createTime = serializedData.createTime != null ? new Date(serializedData.createTime) : null;
+  idx.lastUpdate = serializedData.lastUpdate != null ? new Date(serializedData.lastUpdate) : null;
   return idx;
 };
 
