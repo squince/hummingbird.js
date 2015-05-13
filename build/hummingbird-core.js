@@ -8,7 +8,7 @@ hummingbird = function(variantsObj) {
 
 hummingbird.loggingOn = false;
 
-hummingbird.version = "2.1.2";
+hummingbird.version = "2.1.3";
 
 hummingbird.index_version = "5.0";
 
