@@ -18,6 +18,8 @@ idx.variantStore.variants = {'steve': ['steven', 'stephen', 'stefan']}
 ```
 
     hummingbird.Index = (variantsObj) ->
+      @createTime = new Date()
+      @lastUpdate = new Date()
       @tokenStore = new hummingbird.TokenStore
       @metaStore = new hummingbird.MetaStore
       if variantsObj?
@@ -52,6 +54,9 @@ than what is now supported by this version of hummingbird
       idx.tokenStore = hummingbird.TokenStore.load(serializedData.tokenStore)
       idx.metaStore = if serializedData.hasOwnProperty 'metaStore' then hummingbird.MetaStore.load(serializedData.metaStore) else `undefined`
       idx.variantStore = if serializedData.hasOwnProperty 'variantStore' then hummingbird.VariantStore.load(serializedData.variantStore) else `undefined`
+      idx.createTime = new Date(serializedData.createTime) ? null
+      idx.lastUpdate = new Date(serializedData.lastUpdate) ? null
+
       idx
 
 ### ::add
@@ -75,6 +80,7 @@ Optionally includes additional arbitrary name-value pairs to be stored, but not 
       @_tokenizeDoc doc
       @metaStore.add doc
 
+      @lastUpdate = new Date()
       @eventEmitter.emit 'add', doc, this  if emitEvent
       return
 
@@ -112,6 +118,7 @@ Removes the document from the index that is referenced by the 'id' property.
         #Only check the tokens for the doc name - don't loop over all tokens.
         @tokenStore.remove docRef, @tokenizer.tokenize(@metaStore.get(docRef).name)
         @metaStore.remove docRef
+      @lastupdate = new Date()
       @eventEmitter.emit 'remove', docRef, this  if emitEvent
       return
 
@@ -321,3 +328,5 @@ Returns a representation of the index ready for serialization.
       tokenStore: @tokenStore.toJSON()
       metaStore: @metaStore.toJSON()
       variantStore: @variantStore.toJSON()
+      createTime: @createTime.getTime()
+      lastUpdate: @lastUpdate.getTime()

@@ -445,6 +445,8 @@ hummingbird.EventEmitter.prototype.hasHandler = function(name) {
 };
 
 hummingbird.Index = function(variantsObj) {
+  this.createTime = new Date();
+  this.lastUpdate = new Date();
   this.tokenStore = new hummingbird.TokenStore;
   this.metaStore = new hummingbird.MetaStore;
   if (variantsObj != null) {
@@ -468,7 +470,7 @@ hummingbird.Index.prototype.off = function(name, fn) {
 };
 
 hummingbird.Index.load = function(serializedData) {
-  var idx;
+  var idx, _ref, _ref1;
   idx = new this;
   if (serializedData.index_version !== hummingbird.index_version) {
     idx.utils.warn('version mismatch: current ' + hummingbird.index_version + ' importing ' + serializedData.index_version);
@@ -476,6 +478,8 @@ hummingbird.Index.load = function(serializedData) {
   idx.tokenStore = hummingbird.TokenStore.load(serializedData.tokenStore);
   idx.metaStore = serializedData.hasOwnProperty('metaStore') ? hummingbird.MetaStore.load(serializedData.metaStore) : undefined;
   idx.variantStore = serializedData.hasOwnProperty('variantStore') ? hummingbird.VariantStore.load(serializedData.variantStore) : undefined;
+  idx.createTime = (_ref = new Date(serializedData.createTime)) != null ? _ref : null;
+  idx.lastUpdate = (_ref1 = new Date(serializedData.lastUpdate)) != null ? _ref1 : null;
   return idx;
 };
 
@@ -490,6 +494,7 @@ hummingbird.Index.prototype.add = function(doc, emitEvent) {
   }
   this._tokenizeDoc(doc);
   this.metaStore.add(doc);
+  this.lastUpdate = new Date();
   if (emitEvent) {
     this.eventEmitter.emit('add', doc, this);
   }
@@ -525,6 +530,7 @@ hummingbird.Index.prototype.remove = function(docRef, emitEvent) {
     this.tokenStore.remove(docRef, this.tokenizer.tokenize(this.metaStore.get(docRef).name));
     this.metaStore.remove(docRef);
   }
+  this.lastupdate = new Date();
   if (emitEvent) {
     this.eventEmitter.emit('remove', docRef, this);
   }
@@ -740,7 +746,9 @@ hummingbird.Index.prototype.toJSON = function() {
     index_version: hummingbird.index_version,
     tokenStore: this.tokenStore.toJSON(),
     metaStore: this.metaStore.toJSON(),
-    variantStore: this.variantStore.toJSON()
+    variantStore: this.variantStore.toJSON(),
+    createTime: this.createTime.getTime(),
+    lastUpdate: this.lastUpdate.getTime()
   };
 };
 
