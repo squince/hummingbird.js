@@ -2,7 +2,7 @@
   "name": "hummingbird",
   "description": "Misspellings and nicknames are no match for this fast and forgiving typeahead engine.",
   "homepage": "http://glg.github.io/hummingbird.js",
-  "version": "2.0.2",
+  "version": "2.1.0",
   "index_version": "5.0",
   "author": "Daniel Griffis, Steve Quince, Amit Segal",
   "main": "hummingbird.js",
