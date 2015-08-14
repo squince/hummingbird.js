@@ -2,13 +2,12 @@ var hummingbird;
 
 hummingbird = function(variantsObj) {
   var idx;
-  idx = new hummingbird.Index(variantsObj);
-  return idx;
+  return idx = new hummingbird.Index(variantsObj);
 };
 
 hummingbird.loggingOn = false;
 
-hummingbird.version = "2.1.4";
+hummingbird.version = "2.1.5";
 
 hummingbird.index_version = "5.0";
 
@@ -128,7 +127,7 @@ hummingbird.EventEmitter.prototype.hasHandler = function(name) {
 
 hummingbird.Index = function(variantsObj) {
   this.createTime = new Date();
-  this.lastUpdate = new Date();
+  this.lastUpdate = null;
   this.tokenStore = new hummingbird.TokenStore;
   this.metaStore = new hummingbird.MetaStore;
   if (variantsObj != null) {
@@ -211,10 +210,10 @@ hummingbird.Index.prototype.remove = function(docRef, emitEvent) {
   if (this.metaStore.has(docRef)) {
     this.tokenStore.remove(docRef, this.tokenizer.tokenize(this.metaStore.get(docRef).name));
     this.metaStore.remove(docRef);
-  }
-  this.lastupdate = new Date();
-  if (emitEvent) {
-    this.eventEmitter.emit('remove', docRef, this);
+    this.lastupdate = new Date();
+    if (emitEvent) {
+      this.eventEmitter.emit('remove', docRef, this);
+    }
   }
 };
 
@@ -228,9 +227,9 @@ hummingbird.Index.prototype.update = function(doc, emitEvent) {
       this.metaStore.remove(doc.id);
     }
     this.metaStore.add(doc);
-  }
-  if (emitEvent) {
-    this.eventEmitter.emit('update', doc, this);
+    if (emitEvent) {
+      this.eventEmitter.emit('update', doc, this);
+    }
   }
 };
 

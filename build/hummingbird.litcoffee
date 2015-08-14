@@ -7,7 +7,6 @@ Convenience function for instantiating a hummingbird index
 
     hummingbird = (variantsObj) ->
       idx = new hummingbird.Index variantsObj
-      idx
 
 ### .loggingOn
 Set to true or false to enable or disable logging respectively
@@ -18,7 +17,7 @@ Defaults to false
 ### .version
 Version of the hummingbird code base
 
-    hummingbird.version = "2.1.4"
+    hummingbird.version = "2.1.5"
 
 ### .index_version
 Version of the index data structure

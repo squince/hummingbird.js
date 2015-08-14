@@ -1,7 +1,7 @@
 {
   "name": "hummingbird",
   "main": "hummingbird.js",
-  "version": "2.1.4",
+  "version": "2.1.5",
   "homepage": "http://glg.github.io/hummingbird.js",
   "authors": [
     {"name": "Steve Quince", "email":"squince@glgroup.com"},

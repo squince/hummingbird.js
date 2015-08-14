@@ -19,7 +19,7 @@ idx.variantStore.variants = {'steve': ['steven', 'stephen', 'stefan']}
 
     hummingbird.Index = (variantsObj) ->
       @createTime = new Date()
-      @lastUpdate = new Date()
+      @lastUpdate = null
       @tokenStore = new hummingbird.TokenStore
       @metaStore = new hummingbird.MetaStore
       if variantsObj?
@@ -118,8 +118,8 @@ Removes the document from the index that is referenced by the 'id' property.
         #Only check the tokens for the doc name - don't loop over all tokens.
         @tokenStore.remove docRef, @tokenizer.tokenize(@metaStore.get(docRef).name)
         @metaStore.remove docRef
-      @lastupdate = new Date()
-      @eventEmitter.emit 'remove', docRef, this  if emitEvent
+        @lastupdate = new Date()
+        @eventEmitter.emit 'remove', docRef, this  if emitEvent
       return
 
 ### ::update
@@ -138,7 +138,7 @@ Otherwise, we just update the metaStore.
         else
           @metaStore.remove doc.id
         @metaStore.add doc
-      @eventEmitter.emit 'update', doc, this  if emitEvent
+        @eventEmitter.emit 'update', doc, this  if emitEvent
       return
 
 ### ::search
