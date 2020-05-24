@@ -21,12 +21,9 @@ Any other properties are just carried along, but are not indexed.
         });
     });
 ```
-### Browser or Server
+### In Browser
 Hummingbird is designed to run 100% in the browser for reasonably sized
 lists of names (i.e., those that will fit into the users available RAM).
-If you need to run a server-side solution (e.g., for large indexes or
-  other reasons), please take a look at Nectar
-  http://github.com/glg/nectar
 
 ### What goes into a hummingbird index
 Hummingbird is specifically focused on typeahead results, but often
@@ -44,9 +41,7 @@ e.g.,
 
 * *name:* Steve Quince
 * *id:* 1235
-* *company:* Gerson Lehrman Group
+* *company:* abc corp
 * *location:* Boston, MA
 * *telephone:* 617-555-1212
 * *email:* myemail@address.com
-
-[Read more...](http://glg.github.io/hummingbird.js#toc2)
