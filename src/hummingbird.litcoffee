@@ -1,6 +1,7 @@
 # API
 
 ## Core
+const Index = require('index');
 
 ### constructor
 Convenience function for instantiating a hummingbird index

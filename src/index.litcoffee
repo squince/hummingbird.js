@@ -1,4 +1,10 @@
 ## Index
+const EventEmitter = require('event_emitter');
+const MetaStore = require('meta_store');
+const TokenStore = require('token_store');
+const Tokenizer = require('tokenizer');
+const VariantStore = require('variant_store');
+
 The object that manages everything
 
 Most importantly it contains the inverted index of tokens

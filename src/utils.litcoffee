@@ -1,4 +1,6 @@
 ## Utils
+const diacritics = require('diacritics');
+
 Collection of utility functions
 
     hummingbird.Utils = () ->
