@@ -1,4 +1,4 @@
-const Index = require('index');
+const Index = require('./index');
 
 (function() {
   // # API

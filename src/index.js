@@ -1,8 +1,8 @@
-const EventEmitter = require('event_emitter');
-const MetaStore = require('meta_store');
-const TokenStore = require('token_store');
-const Tokenizer = require('tokenizer');
-const VariantStore = require('variant_store');
+const EventEmitter = require('./event_emitter');
+const MetaStore = require('./meta_store');
+const TokenStore = require('./token_store');
+const Tokenizer = require('./tokenizer');
+const VariantStore = require('./variant_store');
 
 (function() {
   // ## Index
