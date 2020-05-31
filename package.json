@@ -1,6 +1,9 @@
 {
   "name": "hummingbird",
   "description": "Misspellings and nicknames are no match for this fast and forgiving typeahead engine.",
+  "scripts": {
+    "build": "webpack"
+  },
   "homepage": "https://github.com/squince/hummingbird.js",
   "version": "2.2.0",
   "index_version": "5.0",
