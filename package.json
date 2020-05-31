@@ -2,6 +2,7 @@
   "name": "hummingbird",
   "description": "Misspellings and nicknames are no match for this fast and forgiving typeahead engine.",
   "scripts": {
+    "start": "./node_modules/http-server/bin/http-server -p 8100",
     "build": "webpack"
   },
   "homepage": "https://github.com/squince/hummingbird.js",
