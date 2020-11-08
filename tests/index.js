@@ -191,7 +191,7 @@ describe("Hummingbird Index", function () {
     });
   });
 
-  describe('removing a document from the index', function () {
+  describe('removing a document', function () {
     beforeEach(function () {
       idx.add(doc2);
       idx.add(doc3);
@@ -207,7 +207,7 @@ describe("Hummingbird Index", function () {
     });
   });
 
-  describe('removing a non-existent document from the index', function () {
+  describe('removing a non-existent document', function () {
     const doc = {id: 99, name: 'I dont exist'};
 
     beforeEach(function () {
@@ -215,7 +215,7 @@ describe("Hummingbird Index", function () {
       idx.add(doc3);
     });
 
-    it("should not have the non-existent document ID in the index", function () {
+    it("should not have the non-existent document ID in the metaStore", function () {
       assert.equal(idx.metaStore.has(99), false);
     });
 
