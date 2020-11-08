@@ -3,6 +3,7 @@ const assert = require("assert").strict;
 
 describe("Hummingbird Index", function () {
   let idx, callbackCalled, callbackArgs;
+  const startOfStringIndicator = "\u0002";
   const doc1 = {id: 1, desc: "some meta data without a name field", title: "noname doc"};
   const doc2 = {id: 2, desc: "Mr", name: "Steven", title: "male"};
   const doc3 = {id: 3, desc: "Mrs", name: "Stephanie", title: "female"};
@@ -57,9 +58,10 @@ describe("Hummingbird Index", function () {
 
     it("should create trigrams in the token store", function () {
       const tokens = Object.keys(idx.tokenStore.root).sort();
+      const firstToken = startOfStringIndicator.concat("st");
       assert.equal(tokens.length,11);
       assert.deepEqual(tokens,[
-        "\u0002st",
+        firstToken,
         "ani",
         "eph",
         "eve",
