@@ -29,32 +29,28 @@ describe('Hummingbird Event Emitter', function () {
     });
   });
 
-  /*
   describe('removing a single event listener', function () {
-    emitter.addListener('test', handler);
-
-    assert.ok('test' in emitter.events)
-    assert.ok(emitter.events.test.indexOf(handler) > -1)
-
-    emitter.removeListener('test', handler)
-
-    assert.ok(!('test' in emitter.events))
+    it("should remove the handler", function () {
+      emitter.addListener('test', handler);
+      assert.ok('test' in emitter.events);
+      emitter.removeListener('test', handler)
+      assert.ok(!('test' in emitter.events));
+    });
   });
 
-  describe('removing a single event listener from many listeners', function () {
+  describe('removing one of several listeners', function () {
     const otherHandler = function () {};
 
-    emitter.addListener('test', handler)
-    emitter.addListener('test', otherHandler)
+    it("should remove only the one handler", function () {
+      emitter.addListener('test', handler)
+      emitter.addListener('test', otherHandler)
+      assert.ok(emitter.events['test'].includes(handler));
+      assert.ok(emitter.events['test'].includes(otherHandler));
 
-    assert.ok('test' in emitter.events)
-    assert.ok(emitter.events.test.indexOf(handler) > -1)
-
-    emitter.removeListener('test', handler)
-
-    assert.ok('test' in emitter.events)
-    assert.equal(emitter.events.test.indexOf(handler), -1)
-    assert.ok(emitter.events.test.indexOf(otherHandler) > -1)
+      emitter.removeListener('test', handler)
+      assert.ok(!emitter.events['test'].includes(handler));
+      assert.ok(emitter.events['test'].includes(otherHandler));
+    });
   });
 
   describe('emitting events', function () {
@@ -65,12 +61,13 @@ describe('Hummingbird Event Emitter', function () {
       callbackCalled = true
     };
 
-    emitter.emit('test', 1, 'a')
-    emitter.addListener('test', callback)
-    emitter.emit('test', 1, 'a')
-
-    assert.ok(callbackCalled)
-    assert.deepEqual(callbackArguments, [1, 'a'])
+    it("should trigger the registered callback", function () {
+      emitter.emit('test', 1, 'a');
+      assert.equal(callbackCalled, false);
+      emitter.addListener('test', callback);
+      emitter.emit('test', 1, 'a');
+      assert.equal(callbackCalled, true);
+      assert.deepEqual(callbackArguments, [1, 'a']);
+    });
   });
-  */
 });
