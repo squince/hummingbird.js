@@ -1,7 +1,7 @@
 const hum = require("../../hummingbird.js");
 const assert = require("assert").strict;
 
-describe("Hummingbird Index", function () {
+describe("Hummingbird Indexer", function () {
   let idx, callbackCalled, callbackArgs;
   const startOfStringIndicator = "\u0002";
   const doc1 = {id: 1, desc: "some meta data without a name field", title: "noname doc"};

@@ -1,7 +1,7 @@
 const hum = require("../../hummingbird.js");
 const assert = require("assert").strict;
 
-describe("Hummingbird Index", function () {
+describe("Hummingbird Tokenizer", function () {
   let bigramTokenizer, trigramTokenizer, rangeGramTokenizer;
   const startOfStringIndicator = "\u0002";
   const simpleTxt = "simple string";
