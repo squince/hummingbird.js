@@ -6,13 +6,14 @@ describe("Hummingbird Token Store", function () {
   const startOfStringIndicator = "\u0002";
   const doc1 = {id: 123, token: "foo"};
   const doc2 = {id: 456, token: "foo"};
+  const doc3 = {id: 789, token: "bar"};
 
-  before(function () {
+  beforeEach(function () {
     store = new hum.TokenStore;
   });
 
   describe('adding a token to the store', function () {
-    before(function () {
+    beforeEach(function () {
       store.add(doc1.token, false, doc1.id);
     });
 
@@ -27,10 +28,20 @@ describe("Hummingbird Token Store", function () {
     it('should associate the token with only one doc ID', function () {
       assert.equal(Object.keys(store.root['foo'].n).length, 1);
     });
+
+    it('should serialize to JSON', function () {
+      const storeJson = {};
+      storeJson['root'] = {};
+      storeJson['root'][doc1.token] = {};
+      storeJson['root'][doc1.token]['n'] = {};
+      storeJson['root'][doc1.token]['n'][doc1.id] = 1;
+
+      assert.deepEqual(store.toJSON(), storeJson);
+    });
   });
 
   describe('adding 2 documents to the token in the store', function () {
-    before(function () {
+    beforeEach(function () {
       store.add(doc1.token, false, doc1.id);
       store.add(doc2.token, false, doc2.id);
     });
@@ -41,124 +52,73 @@ describe("Hummingbird Token Store", function () {
     });
 
     it('should associate the token with 2 doc IDs', function () {
+      assert.equal(store.count(doc1.token), 2)
       assert.equal(Object.keys(store.root[doc1.token].n).length, 2);
       assert.ok(store.root[doc1.token].n.hasOwnProperty(doc1.id.toString()));
       assert.ok(store.root[doc2.token].n.hasOwnProperty(doc2.id.toString()));
     });
+
+    it('should not have a token that was never added', function () {
+      assert.equal(store.count(doc3.token), 0)
+      assert.equal(store.has(doc3.token), false);
+    });
   });
 
-  /*
-  describe('checking if a token does not exist in the store', function () {
-    var store = new hummingbird.TokenStore,
-        doc = '123',
-        token = 'foo'
+  describe('retrieving a token from the store', function () {
+    beforeEach(function () {
+      store.add(doc1.token, false, doc1.id);
+    });
 
-    assert.ok(!store.has('bar'))
-    store.add(token, doc)
-    assert.ok(!store.has('bar'))
-  })
+    it('should return only associated document ID(s)', function () {
+      const tokDocObj = {};
+      tokDocObj[doc1.id] = 1;
 
-  describe('retrieving items from the store', function () {
-    var store = new hummingbird.TokenStore,
-        doc = '123',
-        token = 'foo'
-
-    store.add(token, false, doc)
-    assert.deepEqual(store.get(token), {'123':1})
-    assert.deepEqual(store.get(''),{})
-  })
-
-  describe('retrieving items that do not exist in the store', function () {
-    var store = new hummingbird.TokenStore
-
-    assert.deepEqual(store.get('foo'), {})
-  })
-
-  describe('counting items in the store', function () {
-    var store = new hummingbird.TokenStore,
-        doc1 = '123',
-        doc2 = '456',
-        doc3 = '789'
-
-    store.add('foo', false, doc1)
-    store.add('foo', true, doc2)
-    store.add('bar', false, doc3)
-
-    assert.equal(store.count('foo'), 2)
-    assert.equal(store.count('bar'), 1)
-    assert.equal(store.count('baz'), 0)
-  })
+      assert.deepEqual(store.get(doc1.token), tokDocObj);
+      assert.deepEqual(store.get(doc3.token), {});
+    });
+  });
 
   describe('removing a document from the token store', function () {
-    var store = new hummingbird.TokenStore,
-        doc = '123'
+    const tokDoc1Obj = {};
+    const tokDoc2Obj = {};
+    let tokDocObj;
 
-    assert.deepEqual(store.get('foo'), {})
-    store.add('foo', false, doc)
-    assert.deepEqual(store.get('foo'), {'123':1})
+    beforeEach(function () {
+      store.add(doc1.token, false, doc1.id);
+      store.add(doc2.token, false, doc2.id);
 
-    store.remove(doc)
-    assert.deepEqual(store.get('foo'), {})
-    assert.equal(store.has('foo'), false)
-  })
+      tokDoc1Obj[doc1.id] = 1;
+      tokDoc2Obj[doc2.id] = 1;
+      tokDocObj = { ...tokDoc1Obj, ...tokDoc2Obj };
+    });
 
-  describe('removing a document that is not in the store', function () {
-    var store = new hummingbird.TokenStore,
-        doc1 = '123',
-        doc2 = '567'
+    it('should decrement the document count for the associated token', function () {
+      assert.deepEqual(store.get(doc1.token), tokDocObj);
+      assert.equal(store.count(doc1.token), 2);
+      store.remove(doc1.id);
+      assert.deepEqual(store.get(doc2.token), tokDoc2Obj);
+      assert.equal(store.has(doc2.token), true);
+      assert.equal(store.count(doc2.token), 1);
+    });
 
-    store.add('foo', false, doc1)
-    store.add('bar', true, doc2)
-    store.remove('456')
-
-    assert.deepEqual(store.get('foo'), {'123':1})
-  })
-
-  describe('removing a document from a key that does not exist', function () {
-    var store = new hummingbird.TokenStore
-
-    store.remove('123')
-    assert.ok(!store.has('foo'))
-  })
-
-  describe('serialization', function () {
-    var store = new hummingbird.TokenStore
-
-    //deepEqual(store.toJSON(), { root: { docs: {} }, length: 0 })
-    assert.deepEqual(store.toJSON(), { root: {} })
-
-    store.add('foo', false, '123')
-
-    assert.deepEqual(store.toJSON(),
-      {
-        root: {
-          foo: {
-            n: {
-              '123': 1
-            }
-          }
-        }
-      }
-    )
-  })
-
-  describe('loading a serialized store', function () {
-    var serializedData = {
-      root: {
-        foo: {
-          n: {
-            '123': 1
-          }
-        }
-      }
-    }
-
-    var store = hummingbird.TokenStore.load(serializedData),
-        documents = store.get('foo')
-
-    //equal(store.length, 1)
-    assert.deepEqual(documents, {123:1})
+    it('should have no impact if the document is not in the store', function () {
+      assert.deepEqual(store.get(doc1.token), tokDocObj);
+      store.remove(doc3.id);
+      assert.deepEqual(store.get(doc1.token), tokDocObj);
+    });
   });
-  */
+
+  describe('loading a serialized token store', function () {
+    beforeEach(function () {
+      store.add(doc1.token, false, doc1.id);
+    });
+
+    it('should properly hydrate a new token store', function () {
+      assert.equal(store.has(doc1.token), true);
+      const newStore = hum.TokenStore.load(store.toJSON());
+      assert.deepEqual(newStore, store);
+      assert.equal(newStore.has(doc1.token), true);
+    });
+  });
 });
 
