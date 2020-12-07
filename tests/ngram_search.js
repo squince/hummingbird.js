@@ -32,29 +32,26 @@ describe("Hummingbird NGram Search", function () {
   describe('searching for a string containing a variat', function () {
     it('should return the one document that contains the variant match', function () {
       // TODO: hmmm, we should make indexed documents immutable
-      console.log('#### doc6 BEFORE ####', doc6);
+      // console.log('#### doc6 BEFORE ####', doc6);
       idx.search('Rouge ', function(results) {
-        console.log('#### results[0] ####', results[0]);
-        console.log('#### doc6 AFTER ####', doc6);
+        // console.log('#### results[0] ####', results[0]);
+        // console.log('#### doc6 AFTER ####', doc6);
         assert.deepStrictEqual(results[0], doc6);
         assert.equal(results[0].score, 10.6);
       }, {'scoreThreshold':0});
     });
   });
 
-  /*
-
-  describe('return correct results - default options', function () {
-    this.idx.search('green plant', function(results) {
-      equal(results.length, 2)
-      equal(results[0].id, 'c')
-      equal(results[1].id, 'b')
-      equal(results[0].title, 'Scary helps Professor')
-      equal(results[0].wordCount, '16')
-      equal(results[1].title, 'Plumb waters plant')
+  describe('searching for a string appearing in 2 documents with default settings', function () {
+    it('should return the 2 documents', function () {
+      idx.search('green plant', function(results) {
+        assert.equal(results.length, 2);
+        assert.deepEqual(results, [doc3, doc2]);
+      });
     });
   });
 
+  /*
   describe('return correct results - no boost, no threshold', function () {
     var options = {"howMany":10, "boostPrefix":false, "scoreThreshold":0};
     this.idx.search('green plant', function(results) {
