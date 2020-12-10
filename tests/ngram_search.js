@@ -29,7 +29,7 @@ describe("Hummingbird NGram Search", function () {
     });
   });
 
-  describe('searching for a string containing a variat', function () {
+  describe('searching for a string containing a variant', function () {
     it('should return the one document that contains the variant match', function () {
       // TODO: hmmm, we should make indexed documents immutable
       // console.log('#### doc6 BEFORE ####', doc6);
@@ -42,8 +42,8 @@ describe("Hummingbird NGram Search", function () {
     });
   });
 
-  describe('searching for a string appearing in 2 documents with default settings', function () {
-    it('should return the 2 documents', function () {
+  describe('searching for 2 words appearing in 3 documents using default settings', function () {
+    it('should return 2 documents', function () {
       idx.search('green plant', function(results) {
         assert.equal(results.length, 2);
         assert.deepEqual(results, [doc3, doc2]);
@@ -51,209 +51,156 @@ describe("Hummingbird NGram Search", function () {
     });
   });
 
-  /*
-  describe('return correct results - no boost, no threshold', function () {
-    var options = {"howMany":10, "boostPrefix":false, "scoreThreshold":0};
-    this.idx.search('green plant', function(results) {
-      equal(results.length, 3)
-      equal(results[0].id, 'c')
-      equal(results[1].id, 'b')
-      equal(results[2].id, 'a')
-      equal(results[0].title, 'Scary helps Professor')
-      equal(results[1].title, 'Plumb waters plant')
-      equal(results[2].title, 'Mr. Green kills Colonel Mustard')
-    }, options);
-  });
-
-  describe('return correct results - howMany, no boost, no threshold', function () {
-    var options = {"howMany":2, "boostPrefix":false, "scoreThreshold":0};
-    this.idx.search('green plant', function(results) {
-      equal(results.length, 2)
-      equal(results[0].id, 'c')
-      equal(results[1].id, 'b')
-    }, options);
-  });
-
-  describe('return correct results - with boost, no threshold', function () {
-    var options = {"boostPrefix":true, "scoreThreshold":0};
-    this.idx.search('hand', function(results) {
-      equal(results.length, 3)
-      equal(results[0].id, 'e')
-      equal(results[1].id, 'd')
-      equal(results[2].id, 'a')
-      equal(results[0].score, '9.3')
-      equal(results[1].score, '9.2')
-      equal(results[2].score, '3')
-    }, options);
-  });
-
-  describe('return the correct results - with boost, with threshold', function () {
-    options = {"boostPrefix":true, "scoreThreshold":.75};
-    this.idx.search('hand', function(results) {
-      equal(results.length, 2)
-      equal(results[0].id, 'e')
-      equal(results[1].id, 'd')
-      equal(results[0].score, '9.3')
-      equal(results[1].score, '9.2')
-    }, options);
-  });
-
-  describe('return correct results - custom secondary sort ascending', function () {
-    var options = {"howMany":10, "boostPrefix":false, "scoreThreshold":0, "secondarySortField":"title", "secondarySortOrder":"asc"};
-    this.idx.search('green plant', function(results) {
-      equal(results.length, 3)
-      equal(results[0].score, '27')
-      equal(results[1].score, '27')
-      equal(results[2].score, '12')
-      equal(results[0].id, 'b')
-      equal(results[1].id, 'c')
-      equal(results[2].id, 'a')
-      equal(results[0].title, 'Plumb waters plant')
-      equal(results[1].title, 'Scary helps Professor')
-      equal(results[2].title, 'Mr. Green kills Colonel Mustard')
-    }, options);
-  });
-
-  describe('return correct results - custom secondary sort descending', function () {
-    var options = {"howMany":10, "boostPrefix":false, "scoreThreshold":0, "secondarySortField":"title", "secondarySortOrder":"desc"};
-    this.idx.search('green plant', function(results) {
-      equal(results.length, 3)
-      equal(results[0].score, '27')
-      equal(results[1].score, '27')
-      equal(results[2].score, '12')
-      equal(results[0].id, 'c')
-      equal(results[1].id, 'b')
-      equal(results[2].id, 'a')
-      equal(results[0].title, 'Scary helps Professor')
-      equal(results[1].title, 'Plumb waters plant')
-      equal(results[2].title, 'Mr. Green kills Colonel Mustard')
-    }, options);
-  });
-
-  describe('return correct results - custom sort asc', function () {
-    var options = {"howMany":10, "boostPrefix":false, "scoreThreshold":0, "secondarySortField":"company", "secondarySortOrder":"asc"};
-    this.idx.search('and', function(results) {
-      equal(results.length, 3)
-      equal(results[0].score, 3)
-      equal(results[1].score, 3)
-      equal(results[2].score, 3)
-      equal(results[0].id, 'a')
-      equal(results[1].id, 'e')
-      equal(results[2].id, 'd')
-      equal(results[0].company, 'Askew Software, Inc')
-      equal(results[1].company, 'foobar, corp')
-      equal(results[2].company, 'Foobar, LLC')
-    }, options);
-  });
-
-  describe('return correct results - custom sort desc', function () {
-    var options = {"howMany":10, "boostPrefix":false, "scoreThreshold":0, "secondarySortField":"company", "secondarySortOrder":"desc"};
-    this.idx.search('and', function(results) {
-      equal(results.length, 3)
-      equal(results[0].score, 3)
-      equal(results[1].score, 3)
-      equal(results[2].score, 3)
-      equal(results[0].id, 'd')
-      equal(results[1].id, 'e')
-      equal(results[2].id, 'a')
-      equal(results[0].company, 'Foobar, LLC')
-      equal(results[1].company, 'foobar, corp')
-      equal(results[2].company, 'Askew Software, Inc')
-    }, options);
-  });
-
-  describe('no search tokens in the index', 0, function () {
-    var options = {"howMany":10, "boostPrefix":false, "scoreThreshold":0};
-    this.idx.search('zoo', function (results) {
-      // no results returned, so nothing to do
-    }, options);
-  });
-
-  describe('search results ranked by score - default options', function () {
-    this.idx.search('professor', function(results){
-      equal(results.length, 2)
-      equal(results[0].id, 'b')
-      equal(results[1].id, 'c')
-      equal(results[0].score, 24.2)
-      equal(results[1].score, 21)
+  describe('searching for 2 words appearing in 3 documents using no prefix boost & no threshold', function () {
+    it('should return all 3 documents', function () {
+      const options = {"howMany":10, "boostPrefix":false, "scoreThreshold":0};
+      idx.search('green plant', function(results) {
+        assert.equal(results.length, 3);
+        assert.deepEqual(results, [doc3, doc2, doc1]);
+      }, options);
     });
   });
 
-  describe('search results ranked by score - modified options', function () {
-    var options = {"howMany":10, "boostPrefix":false, "scoreThreshold":0};
-    this.idx.search('professor', function(results){
-
-      equal(results.length, 2)
-      equal(results[0].id, 'b')
-      equal(results[1].id, 'c')
-
-      equal(results[0].score, 24)
-      equal(results[1].score, 21)
-    }, options);
+  describe('searching for 2 words appearing in 3 documents using no prefix boost & no threshold & limiting howMany are returned', function () {
+    it('should return the top 2 matching documents', function () {
+      const options = {"howMany":2, "boostPrefix":false, "scoreThreshold":0};
+      idx.search('green plant', function(results) {
+        assert.equal(results.length, 2);
+        assert.deepEqual(results, [doc3, doc2]);
+      }, options);
+    });
   });
 
-  describe('search boosts exact matches', function () {
-    var options = {"howMany":10, "boostPrefix":false, "scoreThreshold":0};
-    this.idx.search('hand', function(results){
-
-      equal(results.length, 3)
-      equal(results[0].id, 'e')
-      equal(results[1].id, 'd')
-      equal(results[2].id, 'a')
-
-      ok(results[0].score = results[1].score)
-      ok(results[1].score > results[2].score)
-    }, options);
+  describe('searching for a word using a prefix boost, but no threshold', function () {
+    it('should return the 3 matching documents in descending order by score', function () {
+      const options = {"boostPrefix":true, "scoreThreshold":0};
+      idx.search('hand', function(results) {
+        assert.equal(results.length, 3);
+        assert.deepEqual(results, [doc5, doc4, doc1]);
+        assert.equal(results[0].score, 9.3);
+        assert.equal(results[1].score, 9.2);
+        assert.equal(results[2].score, 3);
+      }, options);
+    });
   });
 
-  describe('search boosts full string matches', function () {
-    var options = {"howMany":10, "boostPrefix":false, "scoreThreshold":0};
-    this.idx.search('hand', function(results) {
-      equal(results.length, 3)
-      equal(results[0].id, 'e')
-      equal(results[1].id, 'd')
-      equal(results[2].id, 'a')
-      equal(results[0].score, '9.1')
-      equal(results[1].score, '9')
-      equal(results[2].score, '3')
-    }, options);
+  describe('searching for a word using a prefix boost and a non-zero threshold', function () {
+    it('should return only 2 of the matching documents in descending order by score', function () {
+      const options = {"boostPrefix":true, "scoreThreshold":.75};
+      idx.search('hand', function(results) {
+        assert.equal(results.length, 2);
+        assert.deepEqual(results, [doc5, doc4]);
+        assert.equal(results[0].score, 9.3);
+        assert.equal(results[1].score, 9.2);
+      }, options);
+    });
   });
 
-  describe('ngram search prefix matching', function () {
-    var options = {"howMany":10, "boostPrefix":false, "scoreThreshold":0};
-    this.idx.search('plu', function(results){
-
-      equal(results.length, 2)
-      equal(results[0].id, 'c')
-      equal(results[1].id, 'b')
-    }, options);
+  describe('searching for 2 words appearing in 3 documents using custom secondary sort ascending', function () {
+    it('should return the 3 matching documents where the 2 with equal scores appearing in ascending order by title', function () {
+      const options = {"howMany":10, "boostPrefix":false, "scoreThreshold":0, "secondarySortField":"title", "secondarySortOrder":"asc"};
+      idx.search('green plant', function(results) {
+        assert.equal(results.length, 3);
+        assert.deepEqual(results, [doc2, doc3, doc1]);
+        assert.equal(results[0].score, 27);
+        assert.equal(results[1].score, 27);
+        assert.equal(results[2].score, 12);
+        assert.equal(results[0].title, 'Plumb waters plant');
+        assert.equal(results[1].title, 'Scary helps Professor');
+        assert.equal(results[2].title, 'Mr. Green kills Colonel Mustard');
+      }, options);
+    });
   });
 
-  describe('ngram search suffix matching', function () {
-    var options = {"howMany":10, "boostPrefix":false, "scoreThreshold":0};
-    this.idx.search('udy', function(results){
-
-      equal(results.length, 2)
-      equal(results[0].id, 'a')
-      equal(results[1].id, 'b')
-
-      ok(results[0].score = results[1].score)
-    }, options);
+  describe('searching for 2 words appearing in 3 documents using custom secondary sort descending', function () {
+    it('should return the 3 matching documents where the 2 with equal scores appearing in descending order by title', function () {
+      const options = {"howMany":10, "boostPrefix":false, "scoreThreshold":0, "secondarySortField":"title", "secondarySortOrder":"desc"};
+      idx.search('green plant', function(results) {
+        assert.equal(results.length, 3);
+        assert.deepEqual(results, [doc3, doc2, doc1]);
+        assert.equal(results[0].score, 27);
+        assert.equal(results[1].score, 27);
+        assert.equal(results[2].score, 12);
+        assert.equal(results[0].title, 'Scary helps Professor');
+        assert.equal(results[1].title, 'Plumb waters plant');
+        assert.equal(results[2].title, 'Mr. Green kills Colonel Mustard');
+      }, options);
+    });
   });
 
-  describe('ngram search query too short', 0, function () {
-    var options = {"howMany":10, "boostPrefix":false, "scoreThreshold":0};
-    this.idx.search('y', function(results){
-      // no results returned, so nothing to do
-    }, options);
+  describe('searching for a term not in any of the documents', function () {
+    it('should return no documents', function () {
+      const options = {"howMany":10, "boostPrefix":false, "scoreThreshold":0};
+      idx.search('zoo', function (results) {
+        assert.equal(results.length, 0);
+      }, options);
+    });
   });
 
-  describe('ngram search mid string phrase with typo', function () {
-    var options = {"howMany":10, "boostPrefix":false, "scoreThreshold":0};
-    this.idx.search('watered plant', function(results){
-
-      equal(results[0].id, 'c')
-    }, options);
+  describe('searching for a term', function () {
+    it('should boost scores for docs with exact matches', function () {
+      const options = {"howMany":3, "boostPrefix":false, "scoreThreshold":0};
+      idx.search('hand', function(results){
+        assert.equal(results.length, 3);
+        console.log("###", results);
+        assert.deepEqual(results, [doc5, doc4, doc1]);
+        assert.ok(results[0].score > results[1].score);
+        assert.ok(results[1].score > results[2].score);
+        assert.equal(results[0].score, 9.1);
+        assert.equal(results[1].score, 9);
+        assert.equal(results[2].score, 3);
+      }, options);
+    });
   });
-  */
+
+  describe('searching for prefix match', function () {
+    it('should return documents that have a partial match', function () {
+      const options = {"howMany":10, "boostPrefix":false, "scoreThreshold":0};
+      idx.search('plu', function(results){
+        assert.equal(results.length, 2);
+        assert.deepEqual(results, [doc3, doc2]);
+      }, options);
+    });
+  });
+
+  describe('searching for suffix match', function () {
+    it('should return documents that have a partial match', function () {
+      const options = {"howMany":10, "boostPrefix":false, "scoreThreshold":0};
+      idx.search('udy', function(results){
+        assert.equal(results.length, 2);
+        assert.deepEqual(results, [doc1, doc2]);
+        assert.equal(results[0].score, results[1].score);
+      }, options);
+    });
+  });
+
+  describe('searching for a query that is shorter than the default ngram size', function () {
+    it('should return no results', function () {
+      const options = {"howMany":10, "boostPrefix":false, "scoreThreshold":0};
+      idx.search('ay', function(results){
+        assert.equal(results.length, 0);
+      }, options);
+    });
+  });
+
+  describe('searching for a string that only appears in the middle of phrases', function () {
+    it('should return the docs that contain the string provided their score exceeds the threshold', function () {
+      const options = {"howMany":10, "boostPrefix":false, "scoreThreshold":0};
+      idx.search('ater', function(results){
+        assert.deepEqual(results, [doc3]);
+      }, options);
+    });
+  });
+
+  describe('searching for a string that contains a typo', function () {
+    it('should still return the intended documents', function () {
+      const options = {"howMany":10, "boostPrefix":false, "scoreThreshold":0};
+      idx.search('watered plant', function(results){
+        assert.deepEqual(results, [doc3, doc2, doc1]);
+        assert.equal(results[0].score, 33);
+        assert.equal(results[1].score, 12);
+        assert.equal(results[2].score, 3);
+      }, options);
+    });
+  });
 });
