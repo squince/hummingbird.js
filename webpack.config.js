@@ -1,9 +1,9 @@
 const path = require('path');
 
 module.exports = {
-  entry: './src/hummingbird.js',
+  entry: './wip/hummingbird.js',
   output: {
-    filename: 'hummingbird.js',
+    filename: 'hummingbird-wip.js',
     path: path.resolve(__dirname),
   },
   devServer: {
