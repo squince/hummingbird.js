@@ -56,18 +56,19 @@ describe('Hummingbird Event Emitter', function () {
   describe('emitting events', function () {
     let callbackCalled = false;
     let callbackArguments = [];
-    const callback = function () {
-      callbackArguments = Array.prototype.slice.call(arguments)
+    const callback = (docId) => {
+      callbackArgument = docId;
       callbackCalled = true
     };
+    const doc1 = {id: 1, name: 'steve'};
 
     it("should trigger the registered callback", function () {
-      emitter.emit('test', 1, 'a');
+      emitter.emit('test', doc1.id);
       assert.equal(callbackCalled, false);
       emitter.addListener('test', callback);
-      emitter.emit('test', 1, 'a');
+      emitter.emit('test', doc1.id);
       assert.equal(callbackCalled, true);
-      assert.deepEqual(callbackArguments, [1, 'a']);
+      assert.equal(callbackArgument, doc1.id);
     });
   });
 });

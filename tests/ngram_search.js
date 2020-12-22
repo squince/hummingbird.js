@@ -142,7 +142,6 @@ describe("Hummingbird NGram Search", function () {
       const options = {"howMany":3, "boostPrefix":false, "scoreThreshold":0};
       idx.search('hand', function(results){
         assert.equal(results.length, 3);
-        console.log("###", results);
         assert.deepEqual(results, [doc5, doc4, doc1]);
         assert.ok(results[0].score > results[1].score);
         assert.ok(results[1].score > results[2].score);
