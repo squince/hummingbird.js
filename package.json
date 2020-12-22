@@ -3,8 +3,9 @@
   "description": "Misspellings and nicknames are no match for this fast and forgiving typeahead engine.",
   "scripts": {
     "start": "webpack-dev-server --open",
-    "build": "webpack",
-    "test": "./node_modules/mocha/bin/mocha ./tests/*.js"
+    "build": "webpack --mode=production",
+    "build.dev": "webpack --mode=development",
+    "test": "webpack --mode=development && ./node_modules/mocha/bin/mocha ./tests/*.js"
   },
   "homepage": "https://github.com/squince/hummingbird.js",
   "version": "2.2.0",
