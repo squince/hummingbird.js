@@ -1,14 +1,14 @@
 const diacritics = require('diacritics');
 
 (function() {
-  // ## Utils
+  // Utils
 
   // Collection of utility functions
   hummingbird.Utils = function() {
     this.root = {};
   };
 
-  // ### ::warn
+  // warn
   // logs a warning message to the console
   hummingbird.Utils.prototype.warn = function(message) {
     if (console.warn) {
@@ -16,13 +16,13 @@ const diacritics = require('diacritics');
     }
   };
 
-  // ### .debugLog
+  // .debugLog
   // logs a debug message to the console
   hummingbird.Utils.prototype.debugLog = function(msg) {
     return console.log(`${msg}`);
   };
 
-  // ### .logTiming
+  // .logTiming
   // logs a message to the console preceded by time of day
   hummingbird.Utils.prototype.logTiming = function(msg, s) {
     var d;
@@ -35,7 +35,7 @@ const diacritics = require('diacritics');
     return d;
   };
 
-  // ### .normalizeString
+  // .normalizeString
   // takes a string and normalizes it for case and diacritics
   hummingbird.Utils.prototype.normalizeString = function(str) {
     var re_start;
@@ -45,7 +45,7 @@ const diacritics = require('diacritics');
     return '\u0002' + str;
   };
 
-  // ### .maxScore
+  // .maxScore
   // Returns the max score for a given string
   hummingbird.Utils.prototype.maxScore = function(phrase, tokenizer, prefixBoost) {
     var score;
@@ -59,7 +59,7 @@ const diacritics = require('diacritics');
     return score;
   };
 
-  // ### .tokenScore
+  // .tokenScore
   // Returns the score for the given token
   hummingbird.Utils.prototype.tokenScore = function(token, isVariant, prefixBoost) {
     var score;

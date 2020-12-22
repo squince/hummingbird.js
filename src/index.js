@@ -5,14 +5,14 @@ const Tokenizer = require('./tokenizer');
 const VariantStore = require('./variant_store');
 
 (function() {
-  // ## Index
+  // Index
   // The object that manages everything
 
   // Most importantly it contains the inverted index of tokens
   // found in each name in the corpus, associated meta data, and methods
   // for interacting with the data
 
-  // ### constructor
+  // constructor
   // Set _hummingbird.Index.tokenizer_ to any javascript object that has
   // a method _tokenize_ that takes a string and returns an array of values
   // that will be used to find this string when the index is searched.
@@ -38,7 +38,7 @@ const VariantStore = require('./variant_store');
     this.utils = new hummingbird.Utils();
   };
 
-  // ### ::on
+  // on
   // Binds handler to events emitted by the index
   hummingbird.Index.prototype.on = function() {
     var args;
@@ -46,13 +46,13 @@ const VariantStore = require('./variant_store');
     return this.eventEmitter.addListener.apply(this.eventEmitter, args);
   };
 
-  // ### ::off
+  // off
   // Removes handler from event emitted by the index
   hummingbird.Index.prototype.off = function(name, fn) {
     return this.eventEmitter.removeListener(name, fn);
   };
 
-  // ### ::load
+  // load
   // Loads serialized index and issues a warning if the index being imported is in a different format
   // than what is now supported by this version of hummingbird
   hummingbird.Index.load = function(serializedData) {
@@ -69,7 +69,7 @@ const VariantStore = require('./variant_store');
     return idx;
   };
 
-  // ### ::add
+  // add
   // Add a name to the index (i.e., the tokenStore and its associated metadata to the metaStore)
   // Takes an Object as an argument.
   // * _doc.id_ = must be a unique identifier within a given index
@@ -95,7 +95,7 @@ const VariantStore = require('./variant_store');
     }
   };
 
-  // ### ::_tokenizeDoc
+  // _tokenizeDoc
   // Internal method to tokenize and add doc to tokenstore.  Used by add and update methods
   hummingbird.Index.prototype._tokenizeDoc = function(doc) {
     var j, k, len, len1, results1, token, tokens, variant_tokens;
@@ -125,7 +125,7 @@ const VariantStore = require('./variant_store');
     return results1;
   };
 
-  // ### ::remove
+  // remove
   // Removes the document from the index that is referenced by the 'id' property.
   hummingbird.Index.prototype.remove = function(docRef, emitEvent) {
     emitEvent = (emitEvent === undefined && this.metaStore.has(docRef) ? true : emitEvent);
@@ -140,7 +140,7 @@ const VariantStore = require('./variant_store');
     }
   };
 
-  // ### ::update
+  // update
   // Updates the document from the index that is referenced by the 'id' property
   // In case the name has changed, we remove the old tokens and retokenize.
   // Otherwise, we just update the metaStore.
@@ -161,7 +161,7 @@ const VariantStore = require('./variant_store');
     }
   };
 
-  // ### ::search
+  // search
   // Takes a callback function that has the resultSet array and a profile object as arguments.
   // Optionally, takes an options object with the following possible properties
   // * _howMany_ - the maximum number of results to be returned (_default=10_)
@@ -355,7 +355,7 @@ const VariantStore = require('./variant_store');
     }
   };
 
-  // ### ::jump
+  // jump
   // Takes a callback function that has the result object as its only argument.
   hummingbird.Index.prototype.jump = function(query, callback) {
     var r, startTime;
@@ -384,7 +384,7 @@ const VariantStore = require('./variant_store');
     }
   };
 
-  // ### ::toJSON
+  // toJSON
   // Returns a representation of the index ready for serialization.
   hummingbird.Index.prototype.toJSON = function() {
     return {
