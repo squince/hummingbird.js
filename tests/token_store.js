@@ -1,5 +1,5 @@
-const hum = require("../../hummingbird.js");
-const assert = require("assert").strict;
+import hum from "../main.js";
+import assert from "assert".strict;
 
 describe("Hummingbird Token Store", function () {
   let store;
