@@ -3,7 +3,7 @@
   "type": "module",
   "description": "Misspellings and nicknames are no match for this fast and forgiving typeahead engine.",
   "scripts": {
-    "test": "./node_modules/mocha/bin/mocha ./tests/*.js --require esm"
+    "test": "./node_modules/mocha/bin/mocha ./tests/*.js"
   },
   "homepage": "https://github.com/squince/hummingbird.js",
   "version": "2.2.0",
