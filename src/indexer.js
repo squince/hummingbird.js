@@ -3,6 +3,7 @@ import MetaStore from './meta_store.js';
 import TokenStore from './token_store.js';
 import Tokenizer from './tokenizer.js';
 import VariantStore from './variant_store.js';
+import Utils from './utils.js';
 
 // Index
 // The object that manages everything
@@ -18,44 +19,29 @@ import VariantStore from './variant_store.js';
 
 // Example:
 // ```javascript
-// idx = new hummingbird.index();
-// idx.tokenizer = new hummingbird.tokenizer(2,3)
+// idx = new Index();
+// idx.tokenizer = new Tokenizer(2,3)
 // idx.variantStore.variants = {'steve': ['steven', 'stephen', 'stefan']}
 // ```
-function Index(variantsObj) {
-  const createTime = new Date();
-  const lastUpdate = null;
-  const tokenStore = new hummingbird.TokenStore();
-  const metaStore = new hummingbird.MetaStore();
-  let variantStore;
-  if (variantsObj != null) {
-    variantStore = new hummingbird.VariantStore(variantsObj);
-  } else {
-    variantStore = new hummingbird.VariantStore();
-  }
-  const eventEmitter = new EventEmitter();
-  const tokenizer = new hummingbird.tokenizer();
-  const utils = new hummingbird.Utils();
-
-  return {
-    createTime,
-    lastUpdate,
-    tokenStore,
-    metaStore,
-    variantStore,
-    eventEmitter,
-    tokenizer,
-    utils,
-    on,
-    off,
-    load
+export default class Index {
+  constructor(variantsObj) {
+    this.createTime = new Date();
+    this.lastUpdate = null;
+    this.tokenStore = new TokenStore();
+    this.metaStore = new MetaStore();
+    this.eventEmitter = new EventEmitter();
+    this.tokenizer = new Tokenizer();
+    this.utils = new Utils();
+    this.variantStore = variantsObj ?
+      new VariantStore(variantsObj) :
+      new VariantStore();
   }
 };
 
 // on
 // Binds handler to events emitted by the index
 const on = (eventName, handler) => {
-  return eventEmitter.addListener(eventName, handler);
+  return this.eventEmitter.addListener(eventName, handler);
 };
 
 // off
