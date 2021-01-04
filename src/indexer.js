@@ -1,4 +1,4 @@
-import EventEmitter from './event_emitter_es6.js';
+import EventEmitter from './event_emitter.js';
 import MetaStore from './meta_store.js';
 import TokenStore from './token_store.js';
 import Tokenizer from './tokenizer.js';
@@ -27,10 +27,10 @@ export default class Index {
   constructor(variantsObj) {
     this.createTime = new Date();
     this.lastUpdate = null;
-    this.tokenStore = new TokenStore();
-    this.metaStore = new MetaStore();
     this.eventEmitter = new EventEmitter();
+    this.metaStore = new MetaStore();
     this.tokenizer = new Tokenizer();
+    this.tokenStore = new TokenStore();
     this.utils = new Utils();
     this.variantStore = variantsObj ?
       new VariantStore(variantsObj) :

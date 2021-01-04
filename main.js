@@ -1,1 +1,1 @@
-export "src/hummingbird.js";
+export "./src/hummingbird.js";

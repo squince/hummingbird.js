@@ -1,4 +1,4 @@
-// import "./indexer.js";
+import Index from "./indexer.js";
 
 export default class hummingbird {
   constructor(variantsObj) {
@@ -16,5 +16,29 @@ export default class hummingbird {
     // .index_version
     // Version of the index data structure
     this.index_version = "@@INDEX_VERSION";
+  };
+
+  get EventEmitter() {
+    return this.eventEmitter;
+  };
+
+  get Index() {
+    return this.idx;
+  };
+
+  get MetaStore() {
+    return this.idx.metaStore;
+  };
+
+  get Tokenizer() {
+    return this.idx.tokenizer;
+  };
+
+  get TokenStore() {
+    return this.idx.tokenStore;
+  };
+
+  get VariantStore() {
+    return this.idx.variantStore;
   };
 };

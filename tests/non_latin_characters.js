@@ -1,5 +1,5 @@
-import hum from "../main.js";
-import assert from "assert".strict;
+import hum from "../src/hummingbird.js";
+import assert from "assert";
 
 describe("Non Latin Characters", function () {
   let idx;
