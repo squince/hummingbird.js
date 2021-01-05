@@ -1,5 +1,6 @@
-// MetaStore
-// Maps each id from the TokenStore to its stored, _untokenized_ fields in the MetaStore
+/** MetaStore
+* Maps each id from the TokenStore to its stored, _untokenized_ fields in the MetaStore
+*/
 
 export default class MetaStore {
   constructor() {
@@ -9,13 +10,12 @@ export default class MetaStore {
   // .load
   // Loads a previously serialized MetaStore
   static load(serializedData) {
-    var store;
-    store = new (this)();
+    const store = new this;
     store.root = serializedData.root;
     return store;
   }
 
-  // toJSON
+  // .toJSON
   // Returns a JSON representation of the MetaStore
   // TODO: shouldn't this return a JSON string?
   // TODO: why not just return `this` here?
@@ -25,28 +25,28 @@ export default class MetaStore {
     };
   }
 
-  // add
-  // Adds a hash of name-value pairs to the MetaStore
-  add(doc) {
-    if (!(this.has(doc['id']) || doc === undefined)) {
-      this.root[doc['id']] = doc;
-    }
-  }
-
-  // has
+  // .has
   // Checks for this id in the MetaStore
   has(docId) {
     if (docId && docId in this.root) return true;
     return false;
   }
 
-  // get
+  // .add
+  // Adds a hash of name-value pairs to the MetaStore
+  add(doc) {
+    if (!this.has(doc['id']) && doc !== undefined) {
+      this.root[doc['id']] = doc;
+    }
+  }
+
+  // .get
   // Retrieve the name-value pairs associated with this id
   get(docId) {
     return this.root[docId] || null;
   }
 
-  // remove
+  // .remove
   // Remove the name-value pairs associated with this id
   remove(docId) {
     if (this.has(docId)) delete this.root[docId]
