@@ -34,7 +34,7 @@ export default class TokenStore {
   * TODO: then transform to compressed versions in .toJSON and .load methods
   */
   add(token, isVariant, docId) {
-    if (!(token && docId)) return throw error('token and docId must both be supplied');
+    if (!(token && docId)) throw error('token and docId must both be supplied');
 
     const storedToken = this.root[token] || {};
 
