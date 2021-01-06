@@ -19,7 +19,7 @@ module.exports = {
   },
   extends: ["eslint:recommended"],
   plugins: ["prettier"],
-  parser: "babel-eslint",
+  parser: "eslint",
   rules: {
     "no-console": process.env.NODE_ENV === "production" ? "error" : "off",
     "prettier/prettier": "error",
