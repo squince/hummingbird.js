@@ -8,7 +8,7 @@
   "version": "2.2.0",
   "index_version": "5.0",
   "author": "Daniel Griffis, Steve Quince, Amit Segal",
-  "main": "main.js",
+  "main": "src/hummingbird.mjs",
   "license": "MIT",
   "repository": {
     "type": "git",
