@@ -1,3 +1,5 @@
+import { error } from "./utils.js";
+
 /** EventEmitter
 * Manages adding, removing, and triggering event handlers
 */
@@ -22,10 +24,10 @@ export default class EventEmitter {
   */
   addListener(eventName, fn) {
     if (typeof eventName !== 'string') {
-      throw new TypeError('first argument must be a string representing an event name');
+      throw error('first argument must be a string representing an event name');
     }
     if (typeof fn !== 'function') {
-      throw new TypeError('last argument must be a function');
+      throw error('last argument must be a function');
     }
     if (!this.hasHandler(eventName)) this.events[eventName] = [];
     this.events[eventName].push(fn);

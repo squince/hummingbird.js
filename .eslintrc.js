@@ -2,11 +2,14 @@ module.exports = {
   env: {
     browser: true,
     es6: true,
+    es2017: true,
+    es2020: true,
     amd: true,
     node: true,
+    mocha: true,
   },
   parserOptions: {
-    ecmaVersion: 8,
+    ecmaVersion: 11,
     ecmaFeatures: {
       experimentalDecorators: true,
       experimentalObjectRestSpread: true,
