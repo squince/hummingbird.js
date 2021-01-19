@@ -80,29 +80,32 @@ export default class TokenStore {
 
     let count = 0;
     count += Object.keys(this.root[token]?.n || {}).length;
-    count += Object.keys((ref1 = this.root[token]['v']) != null ? ref1 : {}).length;
+    count += Object.keys(this.root[token]?.v || {}).length;
     return count;
   }
 
   /** .remove
-  * Remove the document identified by docRef from each token in the store where it appears.
+  * Remove the document identified by docRef from each token in the provided array of tokens (optimal).
+  * If no array is provided, traverse all tokens in the store and remove wherever the document appears.
   */
   remove(docRef, tokens = Object.keys(this.root)) {
     return tokens.forEach((function(token) {
-      var ref, ref1;
-      if (((ref = this.root[token]['n']) != null ? ref[docRef] : void 0) != null) {
-        delete this.root[token]['n'][docRef];
-        if (Object.keys(this.root[token]['n']).length === 0) {
-          delete this.root[token]['n'];
+      if (this.root[token]?.n?.[docRef]) {
+        delete this.root[token].n[docRef];
+        if (Object.keys(this.root[token].n).length === 0) {
+          // remove the named-token association if no other documents are attached
+          delete this.root[token].n;
         }
       }
-      if (((ref1 = this.root[token]['v']) != null ? ref1[docRef] : void 0) != null) {
-        delete this.root[token]['n'][docRef];
-        if (Object.keys(this.root[token]['v']).length === 0) {
-          delete this.root[token]['v'];
+      if (this.root[token]?.v?.[docRef]) {
+        delete this.root[token].v[docRef];
+        if (Object.keys(this.root[token].v).length === 0) {
+          // remove the variant-token association if no other documents are attached
+          delete this.root[token].v;
         }
       }
       if (Object.keys(this.root[token]).length === 0) {
+        // remove the token node altogether if neither variant nor name tokens remain
         delete this.root[token];
       }
     }), this);
