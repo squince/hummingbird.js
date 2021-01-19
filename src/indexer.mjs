@@ -1,9 +1,9 @@
-import EventEmitter from './event_emitter.js';
-import MetaStore from './meta_store.js';
-import TokenStore from './token_store.js';
-import Tokenizer from './tokenizer.js';
-import VariantStore from './variant_store.js';
-import Utils from './utils.js';
+import EventEmitter from './event_emitter.mjs';
+import MetaStore from './meta_store.mjs';
+import TokenStore from './token_store.mjs';
+import Tokenizer from './tokenizer.mjs';
+import VariantStore from './variant_store.mjs';
+import Utils from './utils.mjs';
 
 // Index
 // The object that manages everything

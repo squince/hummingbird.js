@@ -1,4 +1,4 @@
-import { error } from "./utils.js";
+import { error } from "./utils.mjs";
 
 /** EventEmitter
 * Manages adding, removing, and triggering event handlers

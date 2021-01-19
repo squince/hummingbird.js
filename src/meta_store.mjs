@@ -19,6 +19,7 @@ export default class MetaStore {
   // Returns a JSON representation of the MetaStore
   // TODO: shouldn't this return a JSON string?
   // TODO: why not just return `this` here?
+  // TODO: or better yet, wrap in try/catch and return JSON.stringify(this)
   toJSON() {
     return {
       root: this.root
@@ -35,8 +36,8 @@ export default class MetaStore {
   // .add
   // Adds a hash of name-value pairs to the MetaStore
   add(doc) {
-    if (!this.has(doc['id']) && doc !== undefined) {
-      this.root[doc['id']] = doc;
+    if (doc && !this.has(doc.id)) {
+      this.root[doc.id] = doc;
     }
   }
 

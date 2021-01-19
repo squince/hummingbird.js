@@ -1,4 +1,4 @@
-import { error } from "./utils.js";
+import { error } from "./utils.mjs";
 
 /** TokenStore
 * The inverted index that maps each token in the corpus to all the names
@@ -42,14 +42,14 @@ export default class TokenStore {
       // augment index with a variant-token
       // only when this token is not also a name-token for this document
       // do not store the same token as both a name-token and variant-token
-      if (!storedToken['n'] || !!storedToken['n'][docId]) {
-        if (!storedToken['v']) storedToken['v'] = {};
-        storedToken['v'][docId] = 1;
+      if (!storedToken.n || !storedToken.n[docId]) {
+        if (!storedToken.v) storedToken.v = {};
+        storedToken.v[docId] = 1;
       }
     } else {
       // associate name-token match for this document
-      if (!storedToken['n']) storedToken['n'] = {};
-      storedToken['n'][docId] = 1;
+      if (!storedToken.n) storedToken.n = {};
+      storedToken.n[docId] = 1;
     }
     this.root[token] = storedToken;
   }
@@ -65,11 +65,10 @@ export default class TokenStore {
   * Retrieve the documents for the given token
   */
   get(token, isVariant) {
-    var ref, ref1, ref2, ref3;
     if (isVariant) {
-      return (ref = (ref1 = this.root[token]) != null ? ref1['v'] : void 0) != null ? ref : {};
+      return this.root[token]?.v || {};
     } else {
-      return (ref2 = (ref3 = this.root[token]) != null ? ref3['n'] : void 0) != null ? ref2 : {};
+      return this.root[token]?.n || {};
     }
   }
 
@@ -77,12 +76,10 @@ export default class TokenStore {
   * Number of documents associated with the given token
   */
   count(token) {
-    var count, ref, ref1;
-    if (!token || !this.root[token]) {
-      return 0;
-    }
-    count = 0;
-    count += Object.keys((ref = this.root[token]['n']) != null ? ref : {}).length;
+    if (!token || !this.root[token]) return 0;
+
+    let count = 0;
+    count += Object.keys(this.root[token]?.n || {}).length;
     count += Object.keys((ref1 = this.root[token]['v']) != null ? ref1 : {}).length;
     return count;
   }
