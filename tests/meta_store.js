@@ -1,4 +1,4 @@
-import hum from "../src/hummingbird.js";
+import hum from "../src/hummingbird.mjs";
 import assert from "assert";
 
 describe("Hummingbird Meta Store", function () {

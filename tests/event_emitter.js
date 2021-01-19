@@ -1,16 +1,16 @@
-import hum from "../src/hummingbird.js";
-import assert from "assert";
+import hum from '../src/hummingbird.mjs';
+import assert from 'assert';
 
 describe('Hummingbird Event Emitter', function () {
   const handler = function () {};
   let emitter;
 
   beforeEach(function () {
-    emitter = new hum.EventEmitter;
+    emitter = new hum.EventEmitter();
   });
 
   describe('adding an event listener', function () {
-    it("should register the event handler", function () {
+    it('should register the event handler', function () {
       emitter.addListener('test', handler);
       assert.ok('test' in emitter.events);
       assert.deepEqual(emitter.events.test[0], handler);
@@ -18,7 +18,7 @@ describe('Hummingbird Event Emitter', function () {
   });
 
   describe('adding a listener to multiple events', function () {
-    it("should register the event handler on each", function () {
+    it('should register the event handler on each', function () {
       emitter.addListener('foo', 'bar', 'baz', handler);
       assert.ok('foo' in emitter.events);
       assert.ok('bar' in emitter.events);
@@ -30,10 +30,10 @@ describe('Hummingbird Event Emitter', function () {
   });
 
   describe('removing a single event listener', function () {
-    it("should remove the handler", function () {
+    it('should remove the handler', function () {
       emitter.addListener('test', handler);
       assert.ok('test' in emitter.events);
-      emitter.removeListener('test', handler)
+      emitter.removeListener('test', handler);
       assert.ok(!('test' in emitter.events));
     });
   });
@@ -41,13 +41,13 @@ describe('Hummingbird Event Emitter', function () {
   describe('removing one of several listeners', function () {
     const otherHandler = function () {};
 
-    it("should remove only the one handler", function () {
-      emitter.addListener('test', handler)
-      emitter.addListener('test', otherHandler)
+    it('should remove only the one handler', function () {
+      emitter.addListener('test', handler);
+      emitter.addListener('test', otherHandler);
       assert.ok(emitter.events['test'].includes(handler));
       assert.ok(emitter.events['test'].includes(otherHandler));
 
-      emitter.removeListener('test', handler)
+      emitter.removeListener('test', handler);
       assert.ok(!emitter.events['test'].includes(handler));
       assert.ok(emitter.events['test'].includes(otherHandler));
     });
@@ -58,11 +58,11 @@ describe('Hummingbird Event Emitter', function () {
     let callbackArguments = [];
     const callback = (docId) => {
       callbackArgument = docId;
-      callbackCalled = true
+      callbackCalled = true;
     };
-    const doc1 = {id: 1, name: 'steve'};
+    const doc1 = { id: 1, name: 'steve' };
 
-    it("should trigger the registered callback", function () {
+    it('should trigger the registered callback', function () {
       emitter.emit('test', doc1.id);
       assert.equal(callbackCalled, false);
       emitter.addListener('test', callback);
