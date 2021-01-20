@@ -17,7 +17,7 @@ export default class TokenStore {
     const store = new this;
     store.root = serializedData.root;
     return store;
-  }
+  };
 
   /** .toJSON
   * Returns a representation of the token store ready for serialization.
@@ -26,7 +26,7 @@ export default class TokenStore {
     return {
       root: this.root
     };
-  }
+  };
 
   /** .add
   * Adds to the store a new token and document 'id', and distinguishes between variant doc matches and normal name matches.
@@ -52,25 +52,27 @@ export default class TokenStore {
       storedToken.n[docId] = 1;
     }
     this.root[token] = storedToken;
-  }
+  };
 
   /** .has
   * Checks whether this key is contained within this hummingbird.TokenStore.
   */
   has(token) {
     return token ? token in this.root : false;
-  }
+  };
 
   /** .get
   * Retrieve the documents for the given token
   */
   get(token, isVariant) {
-    if (isVariant) {
-      return this.root[token]?.v || {};
-    } else {
-      return this.root[token]?.n || {};
-    }
-  }
+    const tokenType = isVariant ? 'v' : 'n';
+    let docs = {};
+
+    if (this.root[token] && this.root[token][tokenType])
+      docs = this.root[token][tokenType];
+
+    return docs;
+  };
 
   /** .count
   * Number of documents associated with the given token
@@ -79,10 +81,12 @@ export default class TokenStore {
     if (!token || !this.root[token]) return 0;
 
     let count = 0;
-    count += Object.keys(this.root[token]?.n || {}).length;
-    count += Object.keys(this.root[token]?.v || {}).length;
+    if (this.root[token]) {
+      count += this.root[token].n ? Object.keys(this.root[token].n).length : 0;
+      count += this.root[token].v ? Object.keys(this.root[token].v).length : 0;
+    }
     return count;
-  }
+  };
 
   /** .remove
   * Remove the document identified by docRef from each token in the provided array of tokens (optimal).
@@ -90,24 +94,27 @@ export default class TokenStore {
   */
   remove(docRef, tokens = Object.keys(this.root)) {
     return tokens.forEach((function(token) {
-      if (this.root[token]?.n?.[docRef]) {
-        delete this.root[token].n[docRef];
-        if (Object.keys(this.root[token].n).length === 0) {
-          // remove the named-token association if no other documents are attached
-          delete this.root[token].n;
+      const storedToken = this.root[token] || {};
+      if (storedToken) {
+        if (storedToken.n && storedToken.n[docRef]) {
+          delete storedToken.n[docRef];
+          if (Object.keys(storedToken.n).length === 0) {
+            // remove the named-token association if no other documents are attached
+            delete storedToken.n;
+          }
         }
-      }
-      if (this.root[token]?.v?.[docRef]) {
-        delete this.root[token].v[docRef];
-        if (Object.keys(this.root[token].v).length === 0) {
-          // remove the variant-token association if no other documents are attached
-          delete this.root[token].v;
+        if (storedToken.v && storedToken.v[docRef]) {
+          delete storedToken.v[docRef];
+          if (Object.keys(storedToken.v).length === 0) {
+            // remove the variant-token association if no other documents are attached
+            delete storedToken.v;
+          }
         }
-      }
-      if (Object.keys(this.root[token]).length === 0) {
-        // remove the token node altogether if neither variant nor name tokens remain
-        delete this.root[token];
+        if (Object.keys(storedToken).length === 0) {
+          // remove the token node altogether if neither variant nor name tokens remain
+          delete this.root[token];
+        }
       }
     }), this);
-  }
+  };
 };
