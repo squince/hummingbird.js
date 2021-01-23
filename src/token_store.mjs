@@ -22,7 +22,7 @@ export default class TokenStore {
   /** .toJSON
   * Returns a representation of the token store ready for serialization.
   */
-  get toJSON() {
+  toJSON() {
     return {
       root: this.root
     };
