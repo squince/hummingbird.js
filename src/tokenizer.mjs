@@ -6,13 +6,13 @@ import { normalizeString } from "./utils.mjs";
 */
 
 export default class Tokenizer {
-  // TODO: update usage of Tokenizer to take a single object with min/max props
-  constructor({min, max}) {
-    if (min && typeof min === 'number' && min > 0) this.min = min;
-    else this.min = 3;
+  constructor(opts = {}) {
+    // default to trigram
+    const MIN_DEFAULT = 3;
+    const { min, max } = opts;
 
-    if (max && typeof max === 'number' && max > min) this.max = max;
-    else this.max = min;
+    this.min = min && typeof min === 'number' && min > 0 ? min : MIN_DEFAULT;
+    this.max = max && typeof max === 'number' && max > this.min ? max : this.min;
   };
 
   /** tokenize

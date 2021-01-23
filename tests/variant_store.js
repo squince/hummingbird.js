@@ -10,7 +10,7 @@ describe('Hummingbird Variant Store', function () {
 
   before(function () {
     emitter = new hum.EventEmitter;;
-    tokenizer = new hum.tokenizer(3);
+    tokenizer = new hum.tokenizer({min: 3});
     vStore = new hum.VariantStore(testVariants);
   });
 

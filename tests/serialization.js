@@ -23,7 +23,7 @@ describe('Index Serialization', function () {
     let dumpedIndx, clonedIdx;
 
     const idx = new hum.Index();
-    idx.tokenizer = new hum.tokenizer(3, 6);
+    idx.tokenizer = new hum.tokenizer({min: 3, max: 6});
     documentSet.forEach((doc) => idx.add(doc));
 
     beforeEach(function () {
@@ -36,7 +36,7 @@ describe('Index Serialization', function () {
     });
 
     it('should produce idential search results after reloading', function () {
-      clonedIdx.tokenizer = new hum.tokenizer(3, 6);
+      clonedIdx.tokenizer = new hum.tokenizer({min: 3, max: 6});
       const results1 = idx.search('green plant', function (results) {
         return results;
       });

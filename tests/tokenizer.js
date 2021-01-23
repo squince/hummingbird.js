@@ -9,9 +9,9 @@ describe("Hummingbird Tokenizer", function () {
   const punctuationTxt = "!@#$%";
 
   before(function () {
-    bigramTokenizer = new hum.tokenizer(2);
-    trigramTokenizer = new hum.tokenizer(3);
-    rangeGramTokenizer = new hum.tokenizer(2,4);
+    bigramTokenizer = new hum.tokenizer({min: 2});
+    trigramTokenizer = new hum.tokenizer({min: 3});
+    rangeGramTokenizer = new hum.tokenizer({min: 2, max: 4});
   });
 
   describe("splitting a simple string into bi-grams", function () {

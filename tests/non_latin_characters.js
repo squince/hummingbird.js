@@ -24,7 +24,7 @@ describe("Non Latin Characters", function () {
 
   before(function () {
     idx = new hum.Index;
-    idx.tokenizer = new hum.tokenizer(1,2);
+    idx.tokenizer = new hum.tokenizer({min: 1, max: 2});
     [doc1, doc2, doc3].forEach( function (doc) {idx.add(doc)} );
   });
 

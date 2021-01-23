@@ -20,7 +20,7 @@ import Utils from './utils.mjs';
 // Example:
 // ```javascript
 // idx = new Index();
-// idx.tokenizer = new Tokenizer(2,3)
+// idx.tokenizer = new Tokenizer({min: 2, max: 3})
 // idx.variantStore.variants = {'steve': ['steven', 'stephen', 'stefan']}
 // ```
 export default class Index {

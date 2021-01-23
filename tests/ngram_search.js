@@ -15,7 +15,7 @@ describe("Hummingbird NGram Search", function () {
 
   beforeEach(function () {
     idx = new hum.Index(variants);
-    idx.tokenizer = new hum.tokenizer(3);
+    idx.tokenizer = new hum.tokenizer({min: 3});
     [doc1, doc2, doc3, doc4, doc5, doc6].forEach( doc => idx.add(doc));
   });
 
