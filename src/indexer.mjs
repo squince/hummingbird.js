@@ -99,7 +99,9 @@ hummingbird.Index.prototype._tokenizeDoc = function(doc) {
   // tokenize the doc
   if ((doc != null ? doc.name : void 0) != null) {
     tokens = this.tokenizer.tokenize(doc.name);
-    variant_tokens = this.variantStore.getVariantTokens(doc.name, this.tokenizer, tokens);
+    const {tokenizer} = this;
+    const {name} = doc
+    variant_tokens = this.variantStore.getVariantTokens({name, tokenizer, tokens});
   } else {
     if (hummingbird.loggingOn) {
       this.utils.debugLog(`No 'name' property in doc\n${JSON.stringify(doc)}`);

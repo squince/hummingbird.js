@@ -2,9 +2,9 @@ import { normalizeString } from "./utils.mjs";
 
 /** VariantStore
 * A collection of objects and methods for working with names and their variants (i.e., nicknames)
+* The class member variants a hash whose key that is a normalized name and whose value is an array of nicknames or aliases
 */
 export default class VariantStore {
-  // this.variants = key is name, value is array of nicknames/variants
   constructor(variantsObj) {
     this.variants = {};
 
@@ -12,10 +12,10 @@ export default class VariantStore {
       for (name in variantsObj) {
         const norm_name = normalizeString(name);
         this.variants[norm_name] = [];
-        variantsObj[name].forEach(((variant, i, variants) => {
+        for (variant in variantsObj[name]) {
           const normVariant = normalizeString(variant);
-          return this.variants[norm_name].push(normVariant);
-        }), this);
+          this.variants[norm_name].push(normVariant);
+        };
       }
     }
   };
@@ -37,57 +37,38 @@ export default class VariantStore {
   };
 
   /** getVariantTokens
-  * Returns tokens associated with variants of the provided name
-  * that would not otherwise be associated with the provided name.
+  * Returns the set of distinct tokens associated with variants of the provided name
+  * These tokens would not otherwise be associated with the provided name.
   */
-  // TODO: change function signature to take named properties of an object
-  getVariantTokens(name, tokenizer, tokens) {
-    var matched_variants, norm_name, variant_tokens;
-    matched_variants = [];
-    variant_tokens = {};
-    norm_name = normalizeString(name);
-    if ((norm_name == null) || norm_name === undefined) {
-      return variant_tokens;
-    }
+  getVariantTokens({name, tokenizer, tokens}) {
+    const variant_tokens = Set();
+    const norm_name = normalizeString(name);
+
+    // short circuit
+    if (!norm_name) return variant_tokens;
+
     // first check to see if the norm_name has variants
     if (this.variants.hasOwnProperty(norm_name)) {
-      this.variants[norm_name].forEach((function(variant, i, variants) {
-        var k, len, ref, results, token;
-        ref = tokenizer.tokenize(variant);
-        results = [];
-        for (k = 0, len = ref.length; k < len; k++) {
-          token = ref[k];
-          if (tokens.indexOf(token) === -1) {
-            results.push(variant_tokens[token] = null);
-          } else {
-            results.push(void 0);
-          }
-        }
-        return results;
-      }), this);
-    }
+      for (const variant of this.variants[norm_name]) {
+        for (const token of tokenizer.tokenize(variant)) {
+          if (!tokens.includes(token)) variant_tokens.add(token);
+        };
+      };
+    };
+
     // then split the full name on word boundaries and check each name part
+    // check each name word for any nicknames/variants
     if (norm_name !== norm_name.split(/\s+/)[0]) {
-      norm_name.split(/\s+/).forEach((function(name_part, j, names) {
-        // check each name word for any nicknames/variants
+      for (const name_part of norm_name.split(/\s+/)) {
         if (this.variants.hasOwnProperty(name_part)) {
-          return this.variants[name_part].forEach((function(variant, i, variants) {
-            var k, len, ref, results, token;
-            ref = tokenizer.tokenize(variant);
-            results = [];
-            for (k = 0, len = ref.length; k < len; k++) {
-              token = ref[k];
-              if (tokens.indexOf(token) === -1) {
-                results.push(variant_tokens[token] = null);
-              } else {
-                results.push(void 0);
-              }
-            }
-            return results;
-          }), this);
-        }
-      }), this);
-    }
-    return Object.keys(variant_tokens);
+          for (const variant of this.variants[name_part]) {
+            for (token of tokenizer.tokenize(variant)) {
+              if (!tokens.includes(token)) variant_tokens.add(token);
+            };
+          };
+        };
+      };
+    };
+    return variant_tokens;
   };
 };
