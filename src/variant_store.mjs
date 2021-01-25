@@ -1,4 +1,4 @@
-import { normalizeString } from "./utils.mjs";
+import * as Utils from "./utils.mjs";
 
 /** VariantStore
 * A collection of objects and methods for working with names and their variants (i.e., nicknames)
@@ -9,11 +9,14 @@ export default class VariantStore {
     this.variants = {};
 
     if (variantsObj) {
-      for (name in variantsObj) {
-        const norm_name = normalizeString(name);
+      console.log('VARIANTS OBJ', variantsObj);
+      for (const name in variantsObj) {
+        console.log('NAME', name);
+        const norm_name = Utils.normalizeString(name);
+        console.log('NORM_NAME', norm_name);
         this.variants[norm_name] = [];
-        for (variant in variantsObj[name]) {
-          const normVariant = normalizeString(variant);
+        for (const variant of variantsObj[name]) {
+          const normVariant = Utils.normalizeString(variant);
           this.variants[norm_name].push(normVariant);
         };
       }
@@ -37,20 +40,23 @@ export default class VariantStore {
   };
 
   /** getVariantTokens
-  * Returns the set of distinct tokens associated with variants of the provided name
+  * Returns an array of distinct tokens associated with variants of the provided name
   * These tokens would not otherwise be associated with the provided name.
   */
   getVariantTokens({name, tokenizer, tokens}) {
-    const variant_tokens = Set();
-    const norm_name = normalizeString(name);
+    const variant_tokens = new Set();
+    const norm_name = Utils.normalizeString(name);
 
     // short circuit
-    if (!norm_name) return variant_tokens;
+    if (!norm_name) return Array.from(variant_tokens);
 
     // first check to see if the norm_name has variants
+    console.log("THIS VARIANTS", this.variants);
     if (this.variants.hasOwnProperty(norm_name)) {
       for (const variant of this.variants[norm_name]) {
         for (const token of tokenizer.tokenize(variant)) {
+          console.log("VARIANT: ", variant);
+          console.log("TOKEN: ", token);
           if (!tokens.includes(token)) variant_tokens.add(token);
         };
       };
@@ -62,13 +68,13 @@ export default class VariantStore {
       for (const name_part of norm_name.split(/\s+/)) {
         if (this.variants.hasOwnProperty(name_part)) {
           for (const variant of this.variants[name_part]) {
-            for (token of tokenizer.tokenize(variant)) {
+            for (const token of tokenizer.tokenize(variant)) {
               if (!tokens.includes(token)) variant_tokens.add(token);
             };
           };
         };
       };
     };
-    return variant_tokens;
+    return Array.from(variant_tokens);
   };
 };

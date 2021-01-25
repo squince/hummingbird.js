@@ -1,4 +1,4 @@
-import { normalizeString } from "./utils.mjs";
+import * as Utils from "./utils.mjs";
 
 /** Tokenizer
 * A flexible ngram tokenizer that can index a string using a range of lengths
@@ -23,23 +23,23 @@ export default class Tokenizer {
   * characters elsewhere in sought terms.
   */
   tokenize(name) {
-    const norm_name = normalizeString(name);
+    const norm_name = Utils.normalizeString(name);
     if (!norm_name) return [];
 
-    const alltokens = {};
+    const alltokens = new Set();
     let n = this.min;
     while (n <= this.max) {
       if (norm_name.length <= n) {
-        alltokens[norm_name] = null;
+        alltokens.add(norm_name);
       } else {
         let i = 0;
         while (i <= norm_name.length - n) {
-          alltokens[norm_name.slice(i, i + n)] = null;
+          alltokens.add(norm_name.slice(i, i + n));
           i++;
         }
       }
       n++;
     }
-    return Object.keys(alltokens);
+    return Array.from(alltokens);
   };
 };
