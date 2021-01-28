@@ -1,4 +1,5 @@
-import hum from "../src/hummingbird.mjs";
+import Tokenizer from "../src/tokenizer.mjs";
+import Index from "../src/indexer.mjs";
 import assert from "assert";
 
 describe("Hummingbird NGram Search", function () {
@@ -14,8 +15,8 @@ describe("Hummingbird NGram Search", function () {
   const doc6 = {id: 'f', name: 'Scarlett Johnson', title: 'Mi Bambina', company: 'My Test Corp'};
 
   beforeEach(function () {
-    idx = new hum.Index(variants);
-    idx.tokenizer = new hum.tokenizer({min: 3});
+    idx = new Index(variants);
+    idx.tokenizer = new Tokenizer({min: 3});
     [doc1, doc2, doc3, doc4, doc5, doc6].forEach( doc => idx.add(doc));
   });
 

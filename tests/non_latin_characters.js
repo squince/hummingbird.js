@@ -1,4 +1,5 @@
-import hum from "../src/hummingbird.mjs";
+import Index from "../src/indexer.mjs";
+import Tokenizer from "../src/tokenizer.mjs";
 import assert from "assert";
 
 describe("Non Latin Characters", function () {
@@ -23,8 +24,8 @@ describe("Non Latin Characters", function () {
   };
 
   before(function () {
-    idx = new hum.Index;
-    idx.tokenizer = new hum.tokenizer({min: 1, max: 2});
+    idx = new Index;
+    idx.tokenizer = new Tokenizer({min: 1, max: 2});
     [doc1, doc2, doc3].forEach( function (doc) {idx.add(doc)} );
   });
 

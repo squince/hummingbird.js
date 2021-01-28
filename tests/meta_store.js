@@ -1,11 +1,11 @@
-import hum from "../src/hummingbird.mjs";
+import MetaStore from "../src/meta_store.mjs";
 import assert from "assert";
 
 describe("Hummingbird Meta Store", function () {
   let store;
 
   beforeEach(function () {
-    store = new hum.MetaStore;
+    store = new MetaStore;
   });
 
   describe('adding empty meta object to the store', function () {

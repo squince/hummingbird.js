@@ -1,12 +1,15 @@
-import hum from '../src/hummingbird.mjs';
+import EventEmitter from '../src/event_emitter.mjs';
 import assert from 'assert';
 
 describe('Hummingbird Event Emitter', function () {
-  const handler = function () {};
-  let emitter;
+  let emitter, handler, callbackCalled, callbackArgument;
 
   beforeEach(function () {
-    emitter = new hum.EventEmitter();
+    callbackCalled = false;
+    emitter = new EventEmitter();
+    handler = function () {
+      console.log("This is the handler function");
+    };
   });
 
   describe('adding an event listener', function () {
@@ -19,7 +22,9 @@ describe('Hummingbird Event Emitter', function () {
 
   describe('adding a listener to multiple events', function () {
     it('should register the event handler on each', function () {
-      emitter.addListener('foo', 'bar', 'baz', handler);
+      emitter.addListener('foo', handler);
+      emitter.addListener('bar', handler);
+      emitter.addListener('baz', handler);
       assert.ok('foo' in emitter.events);
       assert.ok('bar' in emitter.events);
       assert.ok('baz' in emitter.events);
@@ -54,8 +59,6 @@ describe('Hummingbird Event Emitter', function () {
   });
 
   describe('emitting events', function () {
-    let callbackCalled = false;
-    let callbackArguments = [];
     const callback = (docId) => {
       callbackArgument = docId;
       callbackCalled = true;

@@ -1,4 +1,4 @@
-import hum from '../src/hummingbird.mjs';
+import Index from '../src/indexer.mjs';
 import assert from 'assert';
 
 describe('Hummingbird Indexer', function () {
@@ -9,7 +9,7 @@ describe('Hummingbird Indexer', function () {
   const doc3 = { id: 3, desc: 'Mrs', name: 'Stephanie', title: 'female' };
 
   beforeEach(function () {
-    idx = new hum.Index();
+    idx = new Index();
     addCallbackCalled = false;
     removeCallbackCalled = false;
     updateCallbackCalled = false;

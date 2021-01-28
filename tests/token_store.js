@@ -1,4 +1,4 @@
-import hum from "../src/hummingbird.mjs";
+import TokenStore from "../src/token_store.mjs";
 import assert from "assert";
 
 describe("Hummingbird Token Store", function () {
@@ -9,7 +9,7 @@ describe("Hummingbird Token Store", function () {
   const doc3 = {id: 789, token: "bar"};
 
   beforeEach(function () {
-    store = new hum.TokenStore;
+    store = new TokenStore;
   });
 
   describe('adding a token to the store', function () {
@@ -115,7 +115,7 @@ describe("Hummingbird Token Store", function () {
 
     it('should properly hydrate a new token store', function () {
       assert.equal(store.has(doc1.token), true);
-      const newStore = hum.TokenStore.load(store.toJSON());
+      const newStore = TokenStore.load(store.toJSON());
       assert.deepEqual(newStore, store);
       assert.equal(newStore.has(doc1.token), true);
     });

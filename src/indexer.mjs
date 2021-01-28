@@ -3,7 +3,7 @@ import MetaStore from './meta_store.mjs';
 import TokenStore from './token_store.mjs';
 import Tokenizer from './tokenizer.mjs';
 import VariantStore from './variant_store.mjs';
-import Utils from './utils.mjs';
+import * as Utils from "./utils.mjs";
 
 // Index
 // The object that manages everything

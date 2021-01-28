@@ -1,4 +1,4 @@
-import hum from "../src/hummingbird.mjs";
+import Tokenizer from "../src/tokenizer.mjs";
 import assert from "assert";
 
 describe("Hummingbird Tokenizer", function () {
@@ -9,9 +9,9 @@ describe("Hummingbird Tokenizer", function () {
   const punctuationTxt = "!@#$%";
 
   before(function () {
-    bigramTokenizer = new hum.tokenizer({min: 2});
-    trigramTokenizer = new hum.tokenizer({min: 3});
-    rangeGramTokenizer = new hum.tokenizer({min: 2, max: 4});
+    bigramTokenizer = new Tokenizer({min: 2});
+    trigramTokenizer = new Tokenizer({min: 3});
+    rangeGramTokenizer = new Tokenizer({min: 2, max: 4});
   });
 
   describe("splitting a simple string into bi-grams", function () {

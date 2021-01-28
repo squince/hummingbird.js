@@ -14,7 +14,7 @@ export default class EventEmitter {
   /** hasHandler
   * Private method that Checks whether a handler has ever been stored against an event.
   */
-  static hasHandler = (eventName) => {
+  hasHandler = (eventName) => {
     return eventName in this.events;
   }
 
