@@ -2,7 +2,7 @@ import Index from '../src/indexer.mjs';
 import assert from 'assert';
 
 describe('Hummingbird Indexer', function () {
-  let idx, callbackCalled, callbackArgs;
+  let idx, addCallbackCalled, removeCallbackCalled, updateCallbackCalled, callbackArgs;
   const startOfStringIndicator = '\u0002';
   const doc1 = { id: 1, desc: 'some meta data without a name field', title: 'noname doc' };
   const doc2 = { id: 2, desc: 'Mr', name: 'Steven', title: 'male' };
