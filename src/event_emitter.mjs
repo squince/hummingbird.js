@@ -9,14 +9,14 @@ export default class EventEmitter {
     * Hash of event names bound to handler functions
     */
     this.events  = {};
-  }
 
-  /** hasHandler
-  * Private method that Checks whether a handler has ever been stored against an event.
-  */
-  hasHandler = (eventName) => {
-    return eventName in this.events;
-  }
+    /** hasHandler
+    * Private method that Checks whether a handler has ever been stored against an event.
+    */
+    this.hasHandler = (eventName) => {
+      return eventName in this.events;
+    };
+  };
 
   /** addListener
   * Binds a handler function to specific events
