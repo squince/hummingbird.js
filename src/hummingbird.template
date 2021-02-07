@@ -11,11 +11,11 @@ export default class Hummingbird {
 
     // .version
     // Version of the hummingbird code base
-    this.version = '2.2.0';
+    this.version = '@@VERSION';
 
     // .index_version
     // Version of the index data structure
-    this.index_version = '5.0';
+    this.index_version = '@@INDEX_VERSION';
   };
 
   Index() {

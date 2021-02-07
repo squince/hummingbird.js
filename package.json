@@ -2,7 +2,10 @@
   "name": "hummingbird",
   "description": "Misspellings and nicknames are no match for this fast and forgiving typeahead engine.",
   "scripts": {
-    "test": "./node_modules/mocha/bin/mocha ./tests/*.js"
+    "test": "npm run prepare && ./node_modules/mocha/bin/mocha ./tests/*.js",
+    "prepare": "npm run lib.version && npm run index.version",
+    "lib.version": "sed \"s/@@VERSION/$(echo $npm_package_version)/g\" src/hummingbird.template > src/hummingbird.mjs",
+    "index.version": "sed -i '' \"s/@@INDEX_VERSION/$(echo $npm_package_index_version)/g\" src/hummingbird.mjs"
   },
   "homepage": "https://github.com/squince/hummingbird.js",
   "version": "2.2.0",
