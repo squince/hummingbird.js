@@ -9,11 +9,8 @@ export default class VariantStore {
     this.variants = {};
 
     if (variantsObj) {
-      console.log('VARIANTS OBJ', variantsObj);
       for (const name in variantsObj) {
-        console.log('NAME', name);
         const norm_name = Utils.normalizeString(name);
-        console.log('NORM_NAME', norm_name);
         this.variants[norm_name] = [];
         for (const variant of variantsObj[name]) {
           const normVariant = Utils.normalizeString(variant);
@@ -51,12 +48,9 @@ export default class VariantStore {
     if (!norm_name) return Array.from(variant_tokens);
 
     // first check to see if the norm_name has variants
-    console.log("THIS VARIANTS", this.variants);
     if (this.variants.hasOwnProperty(norm_name)) {
       for (const variant of this.variants[norm_name]) {
         for (const token of tokenizer.tokenize(variant)) {
-          console.log("VARIANT: ", variant);
-          console.log("TOKEN: ", token);
           if (!tokens.includes(token)) variant_tokens.add(token);
         };
       };
