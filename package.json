@@ -2,8 +2,7 @@
   "name": "hummingbird",
   "description": "Misspellings and nicknames are no match for this fast and forgiving typeahead engine.",
   "scripts": {
-    "test": "npm run prepare && ./node_modules/mocha/bin/mocha ./tests/*.js",
-    "testfile": "npm run prepare && ./node_modules/mocha/bin/mocha ./tests/$npm_config_file",
+    "test": "module=./tests/${npm_config_mod:-*}.js; npm run prepare && ./node_modules/mocha/bin/mocha ${module}",
     "prepare": "npm run lib.version && npm run index.version",
     "lib.version": "sed \"s/@@VERSION/$(echo $npm_package_version)/g\" src/hummingbird.template > src/hummingbird.mjs",
     "index.version": "sed -i '' \"s/@@INDEX_VERSION/$(echo $npm_package_index_version)/g\" src/hummingbird.mjs"
