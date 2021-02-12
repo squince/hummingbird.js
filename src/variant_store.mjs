@@ -3,6 +3,7 @@ import * as Utils from "./utils.mjs";
 /** VariantStore
 * A collection of objects and methods for working with names and their variants (i.e., nicknames)
 * The class member variants a hash whose key that is a normalized name and whose value is an array of nicknames or aliases
+* example: {'steve': ['steven', 'stephen', 'stefan']}
 */
 export default class VariantStore {
   constructor(variantsObj) {

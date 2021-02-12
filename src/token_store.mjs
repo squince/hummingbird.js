@@ -13,10 +13,8 @@ export default class TokenStore {
   /** .load
   * Loads a previously serialized token store
   */
-  static load(serializedData) {
-    const store = new this;
-    store.root = serializedData.root;
-    return store;
+  load(serializedData) {
+    this.root = serializedData && serializedData.root ? serializedData.root : {};
   };
 
   /** .toJSON

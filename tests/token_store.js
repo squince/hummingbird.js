@@ -115,7 +115,8 @@ describe("Hummingbird Token Store", function () {
 
     it('should properly hydrate a new token store', function () {
       assert.equal(store.has(doc1.token), true);
-      const newStore = TokenStore.load(store.toJSON());
+      const newStore = new TokenStore();
+      newStore.load(store.toJSON());
       assert.deepEqual(newStore, store);
       assert.equal(newStore.has(doc1.token), true);
     });

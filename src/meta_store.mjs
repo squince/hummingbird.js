@@ -9,7 +9,7 @@ export default class MetaStore {
 
   // .load
   // Loads a previously serialized MetaStore
-  static load(serializedData) {
+  load(serializedData) {
     const store = new this;
     store.root = serializedData.root;
     return store;
