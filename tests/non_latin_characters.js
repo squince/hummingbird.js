@@ -1,4 +1,5 @@
 import Index from "../src/indexer.mjs";
+// TODO: do not import the tokenizer separate from the indexer
 import Tokenizer from "../src/tokenizer.mjs";
 import assert from "assert";
 
