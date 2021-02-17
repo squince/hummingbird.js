@@ -1,0 +1,20 @@
+{
+  "opts": {
+    "destination": "./api"
+  },
+  "plugins": [],
+  "recurseDepth": 1,
+  "source": {
+    "includePattern": ".+\\.mjs$",
+    "excludePattern": "(^|\\/|\\\\)_"
+  },
+  "sourceType": "module",
+  "tags": {
+    "allowUnknownTags": true,
+    "dictionaries": ["jsdoc","closure"]
+  },
+  "templates": {
+    "cleverLinks": false,
+    "monospaceLinks": false
+  }
+}
