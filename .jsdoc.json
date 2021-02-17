@@ -1,17 +1,22 @@
 {
   "opts": {
-    "destination": "./api"
+    "destination": "./api",
+    "package": "./package.json",
+    "readme": "./docs/readme.md"
   },
-  "plugins": [],
+  "plugins": [
+    "plugins/markdown"
+  ],
   "recurseDepth": 1,
   "source": {
+    "include": ["src"],
     "includePattern": ".+\\.mjs$",
     "excludePattern": "(^|\\/|\\\\)_"
   },
   "sourceType": "module",
   "tags": {
     "allowUnknownTags": true,
-    "dictionaries": ["jsdoc","closure"]
+    "dictionaries": ["jsdoc"]
   },
   "templates": {
     "cleverLinks": false,

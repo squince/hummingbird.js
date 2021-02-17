@@ -1,5 +1,12 @@
 # Hummingbird.js
 
+[MIT Licensed](./LICENSE)
+
+## Install
+_$ npm install hummingbird_
+
+## Summary
+
 _Impossibly quick and remarkably precise_
 
 Misspellings and nicknames are no match for this fast and forgiving typeahead engine.
