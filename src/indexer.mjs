@@ -43,9 +43,7 @@ export default class Index {
   load({ tokenStore, metaStore, createTime, lastUpdate }) {
     this.createTime = createTime ? new Date(createTime) : new Date();
     this.lastUpdate = lastUpdate ? new Date(lastUpdate) : null;
-    this.metaStore = new MetaStore();
-    this.tokenStore = new TokenStore();
-    this.TokenStore.load(tokenStore);
+    this.tokenStore.load(tokenStore);
     this.metaStore.load(metaStore);
   };
 
@@ -59,21 +57,17 @@ export default class Index {
 
    * Optionally includes additional arbitrary name-value pairs to be stored, but not indexed
   */
-  add(doc, emitEvent) {
-    emitEvent = (emitEvent === undefined ? true : emitEvent);
+  add({doc, emitEvent, loggingOn}) {
+    const eventName = emitEvent.trim();
     if (this.metaStore.has(doc.id)) {
-      if (hummingbird.loggingOn) {
-        Utils.debugLog(`Document ${doc.id} already indexed, replacing`);
-      }
-      this.update(doc, emitEvent);
+      if (loggingOn) Utils.debugLog(`Document ${doc.id} already indexed, replacing`);
+      this.update(doc, eventName);
       return;
     }
     this.tokenizeDoc(doc);
     this.metaStore.add(doc);
     this.lastUpdate = new Date();
-    if (emitEvent) {
-      this.eventEmitter.emit('add', doc, this);
-    }
+    if (eventName) this.eventEmitter.emit('add', doc, this);
   };
 
   // tokenizeDoc
