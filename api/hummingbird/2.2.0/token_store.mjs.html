@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: token_store.mjs</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: token_store.mjs</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import { error } from "./utils.mjs";
+
+/** TokenStore
+* The inverted index that maps each token in the corpus to all the names
+* that contain said token
+*/
+
+export default class TokenStore {
+  constructor() {
+    this.root = {};
+  };
+
+  /** .load
+  * Loads a previously serialized token store
+  */
+  load(serializedData) {
+    this.root = serializedData &amp;&amp; serializedData.root ? serializedData.root : {};
+  };
+
+  /** .toJSON
+  * Returns a representation of the token store ready for serialization.
+  */
+  toJSON() {
+    return {
+      root: this.root
+    };
+  };
+
+  /** .add
+  * Adds to the store a new token and document 'id', and distinguishes between variant doc matches and normal name matches.
+  * TODO: consider changing object keys 'n' and 'v' to more human friendly values
+  * TODO: then transform to compressed versions in .toJSON and .load methods
+  */
+  add(token, isVariant, docId) {
+    if (!(token &amp;&amp; docId)) throw error('token and docId must both be supplied');
+
+    const storedToken = this.root[token] || {};
+
+    if (isVariant) {
+      // augment index with a variant-token
+      // only when this token is not also a name-token for this document
+      // do not store the same token as both a name-token and variant-token
+      if (!storedToken.n || !storedToken.n[docId]) {
+        if (!storedToken.v) storedToken.v = {};
+        storedToken.v[docId] = 1;
+      }
+    } else {
+      // associate name-token match for this document
+      if (!storedToken.n) storedToken.n = {};
+      storedToken.n[docId] = 1;
+    }
+    this.root[token] = storedToken;
+  };
+
+  /** .has
+  * Checks whether this key is contained within this hummingbird.TokenStore.
+  */
+  has(token) {
+    return token ? token in this.root : false;
+  };
+
+  /** .get
+  * Retrieve the documents for the given token
+  */
+  get(token, isVariant) {
+    const tokenType = isVariant ? 'v' : 'n';
+    let docs = {};
+
+    if (this.root[token] &amp;&amp; this.root[token][tokenType])
+      docs = this.root[token][tokenType];
+
+    return docs;
+  };
+
+  /** .count
+  * Number of documents associated with the given token
+  */
+  count(token) {
+    if (!token || !this.root[token]) return 0;
+
+    let count = 0;
+    if (this.root[token]) {
+      count += this.root[token].n ? Object.keys(this.root[token].n).length : 0;
+      count += this.root[token].v ? Object.keys(this.root[token].v).length : 0;
+    }
+    return count;
+  };
+
+  /** .remove
+  * Remove the document identified by docRef from each token in the provided array of tokens (optimal).
+  * If no array is provided, traverse all tokens in the store and remove wherever the document appears.
+  */
+  remove(docRef, tokens = Object.keys(this.root)) {
+    return tokens.forEach((function(token) {
+      const storedToken = this.root[token] || {};
+      if (storedToken) {
+        if (storedToken.n &amp;&amp; storedToken.n[docRef]) {
+          delete storedToken.n[docRef];
+          if (Object.keys(storedToken.n).length === 0) {
+            // remove the named-token association if no other documents are attached
+            delete storedToken.n;
+          }
+        }
+        if (storedToken.v &amp;&amp; storedToken.v[docRef]) {
+          delete storedToken.v[docRef];
+          if (Object.keys(storedToken.v).length === 0) {
+            // remove the variant-token association if no other documents are attached
+            delete storedToken.v;
+          }
+        }
+        if (Object.keys(storedToken).length === 0) {
+          // remove the token node altogether if neither variant nor name tokens remain
+          delete this.root[token];
+        }
+      }
+    }), this);
+  };
+};
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Hummingbird.html">Hummingbird</a></li><li><a href="module.exports.html">exports</a></li></ul><h3>Global</h3><ul><li><a href="global.html#add">add</a></li><li><a href="global.html#addListener">addListener</a></li><li><a href="global.html#count">count</a></li><li><a href="global.html#debugLog">debugLog</a></li><li><a href="global.html#emit">emit</a></li><li><a href="global.html#error">error</a></li><li><a href="global.html#get">get</a></li><li><a href="global.html#getVariantTokens">getVariantTokens</a></li><li><a href="global.html#has">has</a></li><li><a href="global.html#load">load</a></li><li><a href="global.html#logTiming">logTiming</a></li><li><a href="global.html#maxScore">maxScore</a></li><li><a href="global.html#normalizeString">normalizeString</a></li><li><a href="global.html#off">off</a></li><li><a href="global.html#on">on</a></li><li><a href="global.html#remove">remove</a></li><li><a href="global.html#removeListener">removeListener</a></li><li><a href="global.html#START_OF_STRING_INDICATOR">START_OF_STRING_INDICATOR</a></li><li><a href="global.html#toJSON">toJSON</a></li><li><a href="global.html#tokenize">tokenize</a></li><li><a href="global.html#tokenScore">tokenScore</a></li><li><a href="global.html#warn">warn</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.6</a> on Tue Feb 16 2021 22:24:50 GMT-0500 (Eastern Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

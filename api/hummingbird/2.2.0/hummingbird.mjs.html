@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: hummingbird.mjs</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: hummingbird.mjs</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import Index from './indexer.mjs';
+import Tokenizer from './tokenizer.mjs';
+import * as Utils from "./utils.mjs";
+
+/**
+ * @class Hummingbird
+*/
+export default class Hummingbird {
+  /**
+   * @constructs
+  */
+  constructor(variantsObj, opts) {
+    this.tokenizer = new Tokenizer(opts);
+    this.idx = new Index(variantsObj, this.tokenizer);
+
+    // .loggingOn
+    // Set to true or false to enable or disable logging respectively
+    // Defaults to false
+    this.loggingOn = false;
+
+    // .version
+    // Version of the hummingbird code base
+    this.version = '2.2.0';
+
+    // .index_version
+    // Version of the index data structure
+    this.index_version = '5.0';
+  };
+
+  /** load
+   * Loads serialized index and issues a warning if the index being imported is in a different format
+   * than what is now supported by this version of Humminbird
+   * serializedData - [object]
+      version,
+      index_version,
+      createTime,
+      lastUpdate
+      metaStore,
+      tokenStore,
+      variantStore,
+  */
+  load(serializedData) {
+    const {index_version, variantStore, tokenStore, metaStore, createTime, lastUpdate} = serializedData;
+    if (serializedData.index_version !== this.index_version) {
+      Utils.warn(`version mismatch: current ${this.index_version}, importing ${serializedData.index_version}`);
+    }
+    serializedData.hasOwnProperty('variantStore') ? hummingbird.VariantStore.load(serializedData.variantStore) : undefined;
+    this.idx = Index.load({ tokenStore, metaStore, createTime, lastUpdate });
+  };
+
+  /** add
+   * Add a name to the index (i.e., the tokenStore and its associated metadata to the metaStore)
+   * Takes an Object as an argument.
+   * _doc.id_ = must be a unique identifier within a given index
+
+   * Then, there are two options in order to have something to search:
+   * _doc.name_ = this string will be indexed
+
+   * Optionally includes additional arbitrary name-value pairs to be stored, but not indexed
+  */
+  add(doc, emitEvent) {
+    // Index.add
+    this.idx.add({doc, emitEvent, loggingOn: this.loggingOn});
+  };
+
+  update(doc, emitEvent) {
+    // Index.update
+  };
+
+  remove(docRef, emitEvent) {
+    // Index.remove
+  };
+
+  // toJSON
+  // Returns a representation of the index ready for serialization.
+  toJSON() {
+    return {
+      version: this.version,
+      index_version: this.index_version,
+      tokenStore: this.idx.tokenStore.toJSON(),
+      metaStore: this.idx.metaStore.toJSON(),
+      variantStore: this.idx.variantStore.toJSON(),
+      createTime: this.idx.createTime.getTime(),
+      lastUpdate: this.idx.lastUpdate?.getTime()
+    };
+  };
+
+  search(query, cb, opts) {
+    // Index.load
+    return this.idx.search(query, cb, opts);
+  };
+};
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Hummingbird.html">Hummingbird</a></li><li><a href="module.exports.html">exports</a></li></ul><h3>Global</h3><ul><li><a href="global.html#add">add</a></li><li><a href="global.html#addListener">addListener</a></li><li><a href="global.html#count">count</a></li><li><a href="global.html#debugLog">debugLog</a></li><li><a href="global.html#emit">emit</a></li><li><a href="global.html#error">error</a></li><li><a href="global.html#get">get</a></li><li><a href="global.html#getVariantTokens">getVariantTokens</a></li><li><a href="global.html#has">has</a></li><li><a href="global.html#load">load</a></li><li><a href="global.html#logTiming">logTiming</a></li><li><a href="global.html#maxScore">maxScore</a></li><li><a href="global.html#normalizeString">normalizeString</a></li><li><a href="global.html#off">off</a></li><li><a href="global.html#on">on</a></li><li><a href="global.html#remove">remove</a></li><li><a href="global.html#removeListener">removeListener</a></li><li><a href="global.html#START_OF_STRING_INDICATOR">START_OF_STRING_INDICATOR</a></li><li><a href="global.html#toJSON">toJSON</a></li><li><a href="global.html#tokenize">tokenize</a></li><li><a href="global.html#tokenScore">tokenScore</a></li><li><a href="global.html#warn">warn</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.6</a> on Tue Feb 16 2021 22:24:50 GMT-0500 (Eastern Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

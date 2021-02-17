@@ -1,11 +1,4 @@
-# Hummingbird.js
-
-[MIT Licensed](./LICENSE)
-
-## Install
-_$ npm install hummingbird_
-
-## Summary
+## Overview
 
 _Impossibly quick and remarkably precise_
 
@@ -28,7 +21,13 @@ Any other properties are just carried along, but are not indexed.
         });
     });
 ```
-### In Browser
+### Install
+_$ npm install hummingbird_
+
+### License
+[MIT Licensed](./LICENSE)
+
+### Browser-side Search
 Hummingbird is designed to run 100% in the browser for reasonably sized
 lists of names (i.e., those that will fit into the users available RAM).
 

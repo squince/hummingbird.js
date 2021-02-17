@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Home</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Home</h1>
+
+    
+
+
+
+    
+
+
+    <h3>hummingbird 2.2.0</h3>
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+    <section>
+        <article><h2>Overview</h2>
+<p><em>Impossibly quick and remarkably precise</em></p>
+<p>Misspellings and nicknames are no match for this fast and forgiving typeahead engine.
+You can index any JavaScript object you like with <em>id</em> and <em>name</em>, and
+hummingbird.js will merrily make it searchable. No schema needed, it
+just matches against <em>name</em> and returns the document.</p>
+<ul>
+<li><em>id</em> serves as the key, this needs to be unique in an index.</li>
+<li><em>name</em> is the indexed text, just build up a property.
+Any other properties are just carried along, but are not indexed.</li>
+</ul>
+<pre class="prettyprint source lang-javascript"><code>    var idx = new hummingbird.Index();
+    idx.add({id: 1, name: 'Hi Mom', female: true});
+    idx.add({id: 2, name: 'Sup Dad', male: true});
+    idx.search('Dad', function(results){
+        results.forEach(function(doc){
+            console.log(doc);
+        });
+    });
+</code></pre>
+<h3>Install</h3>
+<p><em>$ npm install hummingbird</em></p>
+<h3>License</h3>
+<p><a href="./LICENSE">MIT Licensed</a></p>
+<h3>Browser-side Search</h3>
+<p>Hummingbird is designed to run 100% in the browser for reasonably sized
+lists of names (i.e., those that will fit into the users available RAM).</p>
+<h3>What goes into a hummingbird index</h3>
+<p>Hummingbird is specifically focused on typeahead results, but often
+you'll need to display more than just the name of something for the user
+to make a selection decision.  To that end, the ideal hummingbird index
+should contain:</p>
+<ul>
+<li>the name of the thing on which to select</li>
+<li>a unique id on which one might take action</li>
+<li>meta data that enables the user to disambiguate between similarly
+named items</li>
+<li>meta data that enables further action on selected items.</li>
+</ul>
+<p>e.g.,</p>
+<ul>
+<li><em>name:</em> Steve Quince</li>
+<li><em>id:</em> 1235</li>
+<li><em>company:</em> abc corp</li>
+<li><em>location:</em> Boston, MA</li>
+<li><em>telephone:</em> 617-555-1212</li>
+<li><em>email:</em> myemail@address.com</li>
+</ul>
+<h2>Inspiration</h2>
+<p>Inspired by the desire to help folks <em>get to</em> what they want
+<em>without leaving</em> what they're doing.  Hummingbird's
+goals are simple:</p>
+<ul>
+<li>Unlike other search solutions, focus strictly on names of
+persons, places, and things for autocomplete, autosuggest,
+and typeahead applications</li>
+<li>Prioritize speed and simplicity</li>
+<li>Enable finding near matches (e.g., substring matches, misspellings, nicknames)</li>
+</ul>
+<p>To do this we decided to push as much processing as possible to the
+browser and eliminate the latency and architectural complexity
+introduced by server-side solutions.</p>
+<h2>Features</h2>
+<h3>Search Options</h3>
+<p>Customizable <em>options</em> javascript object can be passed into the
+hummingbird.index.search method to tune various search-time
+features.</p>
+<p><em>boostPrefix</em> - (boolean) if <em>true</em> provides an additional boost to results that start with the first
+query token (<em>default=true</em>)</p>
+<p><em>scoreThreshold</em> - (number between 0,1 inclusive) only matches with a score equal to or greater
+than this fraction of the maximum theoretical score will be returned in the result set (<em>default=0.5</em>,
+includes all matches)</p>
+<p><em>howMany</em> - (number) the maximum number of results to be returned (<em>default=10</em>)</p>
+<p><em>startPos</em> - (number) how far into the sorted matched set should the returned resultset start (<em>default=0</em>)</p>
+<p><em>secondarySortField</em> - (string) if provided, results are sorted first by score descending,
+then by the property represented by this string (<em>default='name'</em>)</p>
+<p><em>secondarySortOrder</em> - (string; 'asc' or 'desc') optionally specifies whether sort on secondarySortField
+is ascending or descending (<em>default='asc'</em>)</p>
+<pre class="prettyprint source lang-javascript"><code>// example
+var options = {
+  'boostPrefix': false, 
+  'scoreThreshold': 0.75, 
+  'howMany': 5, 
+  'startPos': 5,
+  'secondarySortField': 'title',
+  'secondarySortOrder': 'desc'
+};
+idx.search('bob', printResults(), options);
+</code></pre>
+<h3>Arbitrary Meta Data</h3>
+<p>To include a name in the hummingbird index, you pass the <em>add</em> method a
+'document' that is a javascript object with an arbitrary collection of key-value
+pairs.  This document must contain an 'id' key that is a unique identifier for this
+document within a given index.</p>
+<p>Additionally, choose one of the following two options in order to have something to search:</p>
+<ul>
+<li><em>doc.name</em> = this string will be indexed, unless <em>indexCallback</em> is
+provided</li>
+<li><em>indexCallback</em> = this function if provided will be called on <em>doc</em> and must return
+the string to be indexed</li>
+</ul>
+<p>All other key-value pairs wil be stored, but <em>not</em> indexed.
+These additional key-value pairs are simply added to the index <em>as is</em> and returned as part of
+the result set. This makes it really easy to provide autosuggest on the name of
+anything (e.g., a person, company, project description, email subject,
+whatever) AND display any additional metadata that provides additional
+context to the user.  For example, you might include a person's current
+employer, their title, geographic location, telephone number, email
+address, etc.</p>
+<h3>Ranking Across Indexes</h3>
+<p>Scoring results in response to a query is based soley on how
+names are tokenized.  Therefore, as long as different indexes are tokenized in the
+same way you can compare scores across them and rank documents by best
+match regardless from which index they came.  Let's say you use
+trigrams, for example, to build a person name index and a project name index.  Now
+at search time you can allow your users to type into a single search box
+and it will &quot;magically understand&quot; whether they're looking for a person
+or a project (or both).  You can merge results into a single list or
+denote them as different types of things.  You have all the
+flexibility you need to provide the users what they need to streamline
+their workflow.</p>
+<h3>Name Variants</h3>
+<p>It is possible to supply a set of name variants (aka, nicknames; aka, synonyms)
+for each index individually.  If a set of name variants is provided, searches for
+alternate names will be displayed where appropriate.  The examples
+include name variants for countries (e.g., <em>America</em> as a variant for
+<em>United States</em>).</p>
+<p>In this example above, searches for <em>America</em>, <em>USA</em>, or <em>U.S.A.</em> will
+return the documents with <em>United States</em>.  Searches for <em>United
+States</em>, however, will <strong>not</strong> return documents with <em>America</em>.  This is
+by design.  For the latter search, you would create a variant with
+<em>America</em> as the primary key and <em>United States</em> as a nickname/variant.</p>
+<pre class="prettyprint source lang-javascript"><code>// example
+var variants = {
+      &quot;United States&quot;: [&quot;America&quot;,&quot;USA&quot;,&quot;U.S.A.&quot;],
+      &quot;America&quot;: [&quot;United States&quot;]
+  }
+var idx = new hummingbird.Index(variants);
+</code></pre>
+<h2>Contribute</h2>
+<ol>
+<li>Clone or fork the source, <a href="http://github.com/glg/hummingbird.js">github.com/glg/hummingbird.js</a>, then</li>
+<li><em>$ npm install</em></li>
+<li><em>$ npm test</em></li>
+</ol>
+<h2>Examples</h2>
+<p>Special thanks to <a href="https://opendata.socrata.com/">socrata.com</a> for
+making a wide range of interesting data available</p>
+<h3>jquery</h3>
+<p>The most obvious way to use hummingbird.js is from within an html page.<br>
+Here is an extremely simplistic <a href="examples/html-script/index.html">example of typeahead</a></p>
+<h3>twitter typeahead</h3>
+<p>Here is an example of integrating hummingbird.js <a href="examples/html-script/twitter.html">with Twitter
+Typeahead</a></p>
+<h3>coffee repl</h3>
+<p>Yep, you can even run this from the command-line.  This can be useful if
+making changes to the code or if you simply want to experiment with the
+data you are indexing or configuration parameters.</p>
+<ol>
+<li>
+<p>Clone the <a href="https://github.com/glg/hummingbird.js">repo</a> or pull down
+just this
+<a href="https://github.com/glg/hummingbird.js/tree/master/examples">subdirectory</a></p>
+</li>
+<li>
+<p><em>$ npm install</em></p>
+<p>from inside the ./coffee-repl subdirectory in order to get
+additional dependencies like <em>prompt</em></p>
+</li>
+<li>
+<p><em>$ coffee repl.coffee</em></p>
+<p>builds in memory index, serializes it out
+to disk, and displays interactive query prompt</p>
+</li>
+</ol></article>
+    </section>
+
+
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Hummingbird.html">Hummingbird</a></li><li><a href="module.exports.html">exports</a></li></ul><h3>Global</h3><ul><li><a href="global.html#add">add</a></li><li><a href="global.html#addListener">addListener</a></li><li><a href="global.html#count">count</a></li><li><a href="global.html#debugLog">debugLog</a></li><li><a href="global.html#emit">emit</a></li><li><a href="global.html#error">error</a></li><li><a href="global.html#get">get</a></li><li><a href="global.html#getVariantTokens">getVariantTokens</a></li><li><a href="global.html#has">has</a></li><li><a href="global.html#load">load</a></li><li><a href="global.html#logTiming">logTiming</a></li><li><a href="global.html#maxScore">maxScore</a></li><li><a href="global.html#normalizeString">normalizeString</a></li><li><a href="global.html#off">off</a></li><li><a href="global.html#on">on</a></li><li><a href="global.html#remove">remove</a></li><li><a href="global.html#removeListener">removeListener</a></li><li><a href="global.html#START_OF_STRING_INDICATOR">START_OF_STRING_INDICATOR</a></li><li><a href="global.html#toJSON">toJSON</a></li><li><a href="global.html#tokenize">tokenize</a></li><li><a href="global.html#tokenScore">tokenScore</a></li><li><a href="global.html#warn">warn</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.6</a> on Tue Feb 16 2021 22:24:50 GMT-0500 (Eastern Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

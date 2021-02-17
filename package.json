@@ -5,7 +5,9 @@
     "test": "module=./tests/${npm_config_mod:-*}.js; npm run prepare && ./node_modules/mocha/bin/mocha ${module}",
     "prepare": "npm run lib.version && npm run index.version",
     "lib.version": "sed \"s/@@VERSION/$(echo $npm_package_version)/g\" src/hummingbird.template > src/hummingbird.mjs",
-    "index.version": "sed -i '' \"s/@@INDEX_VERSION/$(echo $npm_package_index_version)/g\" src/hummingbird.mjs"
+    "index.version": "sed -i '' \"s/@@INDEX_VERSION/$(echo $npm_package_index_version)/g\" src/hummingbird.mjs",
+    "docs": "npm run prepare && rm -rf ./api && npm run cat.md && ./node_modules/jsdoc/jsdoc.js -c .jsdoc.json",
+    "cat.md": "rm ./docs/readme.md && cat README.md ./docs/inspiration.md ./docs/features.md ./docs/contribute.md ./docs/examples.md >> ./docs/readme.md"
   },
   "homepage": "https://github.com/squince/hummingbird.js",
   "version": "2.2.0",
@@ -22,10 +24,12 @@
     "eslint": "6.8.0",
     "eslint-config-airbnb": "18.1.0",
     "eslint-config-prettier": "6.10.1",
+    "eslint-plugin-jsdoc": "^32.0.0",
     "eslint-plugin-json": "2.1.2",
     "eslint-plugin-prettier": "^3.1.3",
     "esm": "3.2.25",
     "husky": "4.2.3",
+    "jsdoc": "^3.6.6",
     "lint-staged": "10.1.5",
     "mocha": "8.1.3",
     "prettier": "2.0.2",
