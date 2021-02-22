@@ -1,16 +1,16 @@
 import { error } from "./utils.mjs";
 
-/** EventEmitter
+/* EventEmitter
 * Manages adding, removing, and triggering event handlers
 */
 export default class EventEmitter {
   constructor() {
-    /** events
+    /* events
     * Hash of event names bound to handler functions
     */
     this.events  = {};
 
-    /** hasHandler
+    /* hasHandler
     * Private method that Checks whether a handler has ever been stored against an event.
     */
     this.hasHandler = (eventName) => {
@@ -18,7 +18,7 @@ export default class EventEmitter {
     };
   };
 
-  /** addListener
+  /* addListener
   * Binds a handler function to specific events
   * Can bind a single function to many different events in one call
   */
@@ -33,7 +33,7 @@ export default class EventEmitter {
     this.events[eventName].push(fn);
   }
 
-  /** removeListener
+  /* removeListener
   * Removes a handler function from a specific event
   */
   removeListener(eventName, fn) {
@@ -45,7 +45,7 @@ export default class EventEmitter {
     if (!this.events[eventName].length) delete this.events[eventName];
   }
 
-  /** emit
+  /* emit
   * Calls all functions bound to the given event
   */
   emit(eventName, docId) {

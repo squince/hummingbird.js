@@ -1,4 +1,4 @@
-/** MetaStore
+/* MetaStore
 * Maps each id from the TokenStore to its stored, _untokenized_ fields in the MetaStore
 */
 

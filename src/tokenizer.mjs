@@ -1,6 +1,6 @@
 import * as Utils from "./utils.mjs";
 
-/** Tokenizer
+/* Tokenizer
 * A flexible ngram tokenizer that can index a string using a range of lengths
 * for substrings suitable for autocomplete indexing and fuzzy name matching
 */
@@ -15,7 +15,7 @@ export default class Tokenizer {
     this.max = max && typeof max === 'number' && max > this.min ? max : this.min;
   };
 
-  /** tokenize
+  /* tokenize
   * Splits a string into ngram tokens
   * To boost prefix matches, a start character \u0002 is prepended to the string
   * and used in the ngrams. This causes a sequence of characters at the start of both

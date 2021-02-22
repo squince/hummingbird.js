@@ -1,6 +1,6 @@
 import { error } from "./utils.mjs";
 
-/** TokenStore
+/* TokenStore
 * The inverted index that maps each token in the corpus to all the names
 * that contain said token
 */
@@ -10,14 +10,14 @@ export default class TokenStore {
     this.root = {};
   };
 
-  /** .load
+  /* .load
   * Loads a previously serialized token store
   */
   load(serializedData) {
     this.root = serializedData && serializedData.root ? serializedData.root : {};
   };
 
-  /** .toJSON
+  /* .toJSON
   * Returns a representation of the token store ready for serialization.
   */
   toJSON() {
@@ -26,7 +26,7 @@ export default class TokenStore {
     };
   };
 
-  /** .add
+  /* .add
   * Adds to the store a new token and document 'id', and distinguishes between variant doc matches and normal name matches.
   * TODO: consider changing object keys 'n' and 'v' to more human friendly values
   * TODO: then transform to compressed versions in .toJSON and .load methods
@@ -52,14 +52,14 @@ export default class TokenStore {
     this.root[token] = storedToken;
   };
 
-  /** .has
+  /* .has
   * Checks whether this key is contained within this hummingbird.TokenStore.
   */
   has(token) {
     return token ? token in this.root : false;
   };
 
-  /** .get
+  /* .get
   * Retrieve the documents for the given token
   */
   get(token, isVariant) {
@@ -72,7 +72,7 @@ export default class TokenStore {
     return docs;
   };
 
-  /** .count
+  /* .count
   * Number of documents associated with the given token
   */
   count(token) {
@@ -86,7 +86,7 @@ export default class TokenStore {
     return count;
   };
 
-  /** .remove
+  /* .remove
   * Remove the document identified by docRef from each token in the provided array of tokens (optimal).
   * If no array is provided, traverse all tokens in the store and remove wherever the document appears.
   */

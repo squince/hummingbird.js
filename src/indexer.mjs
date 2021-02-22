@@ -4,7 +4,7 @@ import TokenStore from './token_store.mjs';
 import VariantStore from './variant_store.mjs';
 import * as Utils from "./utils.mjs";
 
-/** Index
+/* Index
  * The object that contains the inverted index of tokens
  * found in each name in the corpus, associated meta data, and methods
  * for interacting with the data
@@ -22,21 +22,21 @@ export default class Index {
     this.tokenizer = tokenizer;
   }
 
-  /** on
+  /* on
    * Binds handler to events emitted by the index
   */
   on(eventName, handler) {
     return this.eventEmitter.addListener(eventName, handler);
   };
 
-  /** off
+  /* off
    * Removes handler from event emitted by the index
   */
   off(eventName, handler) {
     return this.eventEmitter.removeListener(eventName, handler);
   };
 
-  /** load
+  /* load
    * Loads serialized index and issues a warning if the index being imported is in a different format
    * than what is now supported by this version of Humminbird
   */
@@ -47,7 +47,7 @@ export default class Index {
     this.metaStore.load(metaStore);
   };
 
-  /** add
+  /* add
    * Add a name to the index (i.e., the tokenStore and its associated metadata to the metaStore)
    * Takes an Object as an argument.
    * _doc.id_ = must be a unique identifier within a given index
@@ -58,7 +58,7 @@ export default class Index {
    * Optionally includes additional arbitrary name-value pairs to be stored, but not indexed
   */
   add({doc, emitEvent, loggingOn}) {
-    const eventName = emitEvent.trim();
+    emitEvent = (emitEvent === undefined ? true : emitEvent);
     if (this.metaStore.has(doc.id)) {
       if (loggingOn) Utils.debugLog(`Document ${doc.id} already indexed, replacing`);
       this.update(doc, eventName);
@@ -67,7 +67,7 @@ export default class Index {
     this.tokenizeDoc(doc);
     this.metaStore.add(doc);
     this.lastUpdate = new Date();
-    if (eventName) this.eventEmitter.emit('add', doc, this);
+    if (emitEvent) this.eventEmitter.emit('add', doc, this);
   };
 
   // tokenizeDoc

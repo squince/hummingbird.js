@@ -1,13 +1,13 @@
 import diacritics from 'diacritics';
 
-/** Utils
+/* Utils
 * Collection of utility functions
 */
 
 const START_OF_STRING_INDICATOR = "\u0002";
 const REG_EXP_START_INDICATOR = /^\u0002/;
 
-/** error
+/* error
 * logs an error message to the console and returns a new Error object
 */
 export function error(message) {
@@ -17,7 +17,7 @@ export function error(message) {
   }
 };
 
-/** warn
+/* warn
 * logs a warning message to the console
 */
 export function warn(message) {
@@ -26,14 +26,14 @@ export function warn(message) {
   }
 };
 
-/** debugLog
+/* debugLog
 * logs a debug message to the console
 */
 export function debugLog(msg) {
   return console.log(`${msg}`);
 };
 
-/** logTiming
+/* logTiming
 * logs a message to the console preceded by time of day
 */
 export function logTiming(msg, s) {
@@ -46,7 +46,7 @@ export function logTiming(msg, s) {
   return d;
 };
 
-/** normalizeString
+/* normalizeString
 * takes a string and normalizes it for case and diacritics
 */
 export function normalizeString(str) {
@@ -54,7 +54,7 @@ export function normalizeString(str) {
   return START_OF_STRING_INDICATOR.concat(newStr);
 };
 
-/** maxScore
+/* maxScore
 * Returns the max score for a given string
 */
 export function maxScore(phrase, tokenizer, prefixBoost) {
@@ -67,7 +67,7 @@ export function maxScore(phrase, tokenizer, prefixBoost) {
   return score;
 };
 
-/** tokenScore
+/* tokenScore
 * Returns the score for the given token
 */
 export function tokenScore(token, isVariant, prefixBoost) {

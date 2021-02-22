@@ -1,6 +1,6 @@
 import * as Utils from "./utils.mjs";
 
-/** VariantStore
+/* VariantStore
 * A collection of objects and methods for working with names and their variants (i.e., nicknames)
 * The class member variants a hash whose key that is a normalized name and whose value is an array of nicknames or aliases
 * example: {'steve': ['steven', 'stephen', 'stefan']}
@@ -21,7 +21,7 @@ export default class VariantStore {
     }
   };
 
-  /** .load
+  /* .load
   * Loads a previously serialized variant store
   */
   load(serializedData) {
@@ -30,14 +30,14 @@ export default class VariantStore {
     return store;
   };
 
-  /** toJSON
+  /* toJSON
   * Returns a representation of the variant store ready for serialization.
   */
   toJSON() {
     return { variants: this.variants };
   };
 
-  /** getVariantTokens
+  /* getVariantTokens
   * Returns an array of distinct tokens associated with variants of the provided name
   * These tokens would not otherwise be associated with the provided name.
   */
