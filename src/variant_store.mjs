@@ -9,7 +9,6 @@ export default class VariantStore {
   constructor(variantsObj) {
     this.variants = null;
 
-    console.log('VAR_STORE variantsObj', variantsObj);
     if (variantsObj) {
       this.variants = {};
       for (const name in variantsObj) {
@@ -23,7 +22,7 @@ export default class VariantStore {
     }
   };
 
-  /* .load
+  /*
   * Loads a previously serialized variant store
   */
   load(serializedData) {

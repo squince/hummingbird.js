@@ -17,8 +17,6 @@ describe('Hummingbird Variant Store', function () {
   describe('loading nicknames into the variant store', function () {
     it('should enable nickname ngram tokens to be used to find documents', function () {
       const doc1Tokens = [startOfStringIndicator.concat('st'),'ste','tev','eve'];
-      console.log('TEST_NAME', doc1.name);
-      console.log('TEST_TOKENS', doc1Tokens);
       const d1_vTokens = vStore.getVariantTokens({name: doc1.name, tokenizer, tokens: doc1Tokens});
       assert.deepEqual(d1_vTokens, ['ven','tep','eph','phe','hen','tef','efa','fan']);
     });
@@ -33,8 +31,7 @@ describe('Hummingbird Variant Store', function () {
       const normalizedVariantNames = testVariants['steve'].map( (name) => startOfStringIndicator.concat(name));
       const variants = {};
       variants[startOfStringIndicator.concat('steve')] = normalizedVariantNames;
-
-      assert.deepEqual(vStore.toJSON(), { variants });
+      assert.deepEqual(vStore.toJSON(), variants);
     });
   });
 });
