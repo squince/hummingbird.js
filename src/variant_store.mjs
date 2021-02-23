@@ -7,9 +7,11 @@ import * as Utils from "./utils.mjs";
 */
 export default class VariantStore {
   constructor(variantsObj) {
-    this.variants = {};
+    this.variants = null;
 
+    console.log('VAR_STORE variantsObj', variantsObj);
     if (variantsObj) {
+      this.variants = {};
       for (const name in variantsObj) {
         const norm_name = Utils.normalizeString(name);
         this.variants[norm_name] = [];
@@ -34,7 +36,7 @@ export default class VariantStore {
   * Returns a representation of the variant store ready for serialization.
   */
   toJSON() {
-    return { variants: this.variants };
+    return this.variants;
   };
 
   /* getVariantTokens
@@ -49,7 +51,7 @@ export default class VariantStore {
     if (!norm_name) return Array.from(variant_tokens);
 
     // first check to see if the norm_name has variants
-    if (this.variants.hasOwnProperty(norm_name)) {
+    if (this.variants?.hasOwnProperty(norm_name)) {
       for (const variant of this.variants[norm_name]) {
         for (const token of tokenizer.tokenize(variant)) {
           if (!tokens.includes(token)) variant_tokens.add(token);
@@ -61,7 +63,7 @@ export default class VariantStore {
     // check each name word for any nicknames/variants
     if (norm_name !== norm_name.split(/\s+/)[0]) {
       for (const name_part of norm_name.split(/\s+/)) {
-        if (this.variants.hasOwnProperty(name_part)) {
+        if (this.variants?.hasOwnProperty(name_part)) {
           for (const variant of this.variants[name_part]) {
             for (const token of tokenizer.tokenize(variant)) {
               if (!tokens.includes(token)) variant_tokens.add(token);

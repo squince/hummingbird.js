@@ -41,6 +41,13 @@ export default class Index {
    * than what is now supported by this version of Humminbird
   */
   load({ tokenStore, metaStore, createTime, lastUpdate }) {
+    /*
+    console.log('loaded stores');
+    console.log('tokenStore', tokenStore);
+    console.log('metaStore', metaStore);
+    console.log('createTime', createTime);
+    console.log('lastUpdate', lastUpdate);
+    */
     this.createTime = createTime ? new Date(createTime) : new Date();
     this.lastUpdate = lastUpdate ? new Date(lastUpdate) : null;
     this.tokenStore.load(tokenStore);
@@ -73,7 +80,7 @@ export default class Index {
   // tokenizeDoc
   // Internal method to tokenize and add doc to tokenstore.  Used by add and update methods
   tokenizeDoc(doc) {
-    var j, k, len, len1, results1, token, tokens, variant_tokens;
+    let j, k, len, len1, results1, token, tokens, variant_tokens;
     // tokenize the doc
     if ((doc != null ? doc.name : void 0) != null) {
       tokens = this.tokenizer.tokenize(doc.name);
@@ -81,9 +88,7 @@ export default class Index {
       const {name} = doc
       variant_tokens = this.variantStore.getVariantTokens({name, tokenizer, tokens});
     } else {
-      if (hummingbird.loggingOn) {
-        Utils.debugLog(`No 'name' property in doc\n${JSON.stringify(doc)}`);
-      }
+      if (this.loggingOn) Utils.debugLog(`No 'name' property in doc\n${JSON.stringify(doc)}`);
       tokens = [];
       variant_tokens = [];
     }
@@ -155,11 +160,12 @@ export default class Index {
 
   // Finds matching names and returns them in order of best match.
   search(query, callback, options) {
-    var docSetArray, docSetHash, exactMatch, finishTime, hasSomeToken, key, maxScore, minNumQueryTokens, minScore, numResults, offset, prefixBoost, queryTokens, resultSet, results, secondarySortField, secondarySortOrder, startArraySort, startHashArray, startTime;
-    startTime = new Date();
-    if (hummingbird.loggingOn) {
-      Utils.logTiming('find matching docs');
-    }
+    const startTime = new Date();
+    const { howMany, startPos, boostPrefix, secondarySortField='name', secondarySortOrder='asc', scoreThreshold } = options;
+    let minNumQueryTokens, minScore;
+
+    if (this.loggingOn) Utils.logTiming('find matching docs');
+
     if ((query == null) || query.length < (this.tokenizer.min - 1)) {
       callback([], {
         hbTotalTime: new Date() - startTime
@@ -167,30 +173,28 @@ export default class Index {
       return;
     }
     // search options
-    numResults = ((options != null ? options.howMany : void 0) === undefined) ? 10 : Math.floor(options.howMany);
-    offset = ((options != null ? options.startPos : void 0) === undefined) ? 0 : Math.floor(options.startPos);
-    prefixBoost = options != null ? options.boostPrefix : void 0;
-    secondarySortField = ((options != null ? options.secondarySortField : void 0) === undefined) ? 'name' : options.secondarySortField;
-    secondarySortOrder = ((options != null ? options.secondarySortOrder : void 0) === undefined) ? 'asc' : options.secondarySortOrder;
+    const numResults = ((options != null ? howMany : void 0) === undefined) ? 10 : Math.floor(howMany);
+    const offset = ((options != null ? startPos : void 0) === undefined) ? 0 : Math.floor(startPos);
+    const prefixBoost = options != null ? boostPrefix : void 0;
     // initialize result set vars and search options
-    docSetHash = {};
-    docSetArray = [];
-    queryTokens = this.tokenizer.tokenize(query);
-    maxScore = Utils.maxScore(query, this.tokenizer, prefixBoost);
-    if ((options != null ? options.scoreThreshold : void 0) == null) {
+    const docSetHash = {};
+    const docSetArray = [];
+    const queryTokens = this.tokenizer.tokenize(query);
+    const maxScore = Utils.maxScore(query, this.tokenizer, prefixBoost);
+    if ((options != null ? scoreThreshold : void 0) == null) {
       minScore = 0.5 * maxScore;
       minNumQueryTokens = Math.ceil(queryTokens.length * 0.5);
-    } else if ((options != null ? options.scoreThreshold : void 0) <= 0) {
+    } else if ((options != null ? scoreThreshold : void 0) <= 0) {
       minScore = 0;
       minNumQueryTokens = queryTokens.length;
-    } else if ((options != null ? options.scoreThreshold : void 0) >= 1) {
+    } else if ((options != null ? scoreThreshold : void 0) >= 1) {
       minScore = maxScore;
       minNumQueryTokens = 0;
     } else {
-      minScore = options.scoreThreshold * maxScore;
-      minNumQueryTokens = Math.ceil(queryTokens.length * (1 - options.scoreThreshold));
+      minScore = scoreThreshold * maxScore;
+      minNumQueryTokens = Math.ceil(queryTokens.length * (1 - scoreThreshold));
     }
-    hasSomeToken = queryTokens.some(function(token) {
+    const hasSomeToken = queryTokens.some(function(token) {
       return this.tokenStore.has(token);
     }, this);
     if (!hasSomeToken) {
@@ -201,10 +205,8 @@ export default class Index {
     }
     // retrieve docs from tokenStore
     queryTokens.forEach((function(token, i, tokens) {
-      var docRef, startMatchTime, startVariantMatch;
-      if (hummingbird.loggingOn) {
-        startMatchTime = Utils.logTiming(`'${token}' score start`);
-      }
+      let docRef, startMatchTime, startVariantMatch;
+      if (this.loggingOn) startMatchTime = Utils.logTiming(`'${token}' score start`);
   // name matches
       for (docRef in this.tokenStore.get(token, false)) {
         switch (false) {
@@ -215,7 +217,7 @@ export default class Index {
             docSetHash[docRef] += Utils.tokenScore(token, false, prefixBoost);
         }
       }
-      if (hummingbird.loggingOn) {
+      if (this.loggingOn) {
         startVariantMatch = Utils.logTiming(`\t\toriginal name:\t\t${Object.keys(this.tokenStore.get(token, false)).length} `, startMatchTime);
       }
   // variant matches
@@ -228,21 +230,19 @@ export default class Index {
             docSetHash[docRef] += Utils.tokenScore(token, true, prefixBoost);
         }
       }
-      if (hummingbird.loggingOn) {
+      if (this.loggingOn) {
         Utils.logTiming(`\t\tvariant matches:\t${Object.keys(this.tokenStore.get(token, true)).length} `, startVariantMatch);
       }
     }), this);
     // convert hash to array of hashes for sorting
     // filter out results below the minScore
     // boost exact matches - consciously does not convert diacritics, but uncertain whether that's best
-    startHashArray = new Date();
-    if (hummingbird.loggingOn) {
-      Utils.logTiming('hash to sorted array\n');
-    }
-    for (key in docSetHash) {
+    const startHashArray = new Date();
+    if (this.loggingOn) Utils.logTiming('hash to sorted array\n');
+    for (let key in docSetHash) {
       if (docSetHash[key] >= minScore) {
         // exact match?
-        exactMatch = Utils.normalizeString(query) === Utils.normalizeString(this.metaStore.get(key).name) ? true : false;
+        const exactMatch = Utils.normalizeString(query) === Utils.normalizeString(this.metaStore.get(key).name) ? true : false;
         // Make fields we retrieve optionally include custom secondarySortField value
         if (secondarySortField === 'name') {
           docSetArray.push({
@@ -260,13 +260,13 @@ export default class Index {
         }
       }
     }
-    startArraySort = new Date();
+    const startArraySort = new Date();
     docSetArray.sort(function(a, b) {
-      var compareObjects;
+      let compareObjects;
       // Determines sort value (-1, 0, 1) based on data type and sort order
       // stolen from nectar
       compareObjects = function(a, b, property, order) {
-        var aprop, bprop, ref, ref1, ref2, ref3, sortOrder;
+        let aprop, bprop, ref, ref1, ref2, ref3, sortOrder;
         sortOrder = order === 'desc' ? -1 : 1;
         aprop = ((ref = a[property]) != null ? ref.toLowerCase : void 0) != null ? (ref1 = a[property]) != null ? ref1.toLowerCase() : void 0 : a[property];
         bprop = ((ref2 = b[property]) != null ? ref2.toLowerCase : void 0) != null ? (ref3 = b[property]) != null ? ref3.toLowerCase() : void 0 : b[property];
@@ -297,27 +297,25 @@ export default class Index {
       }
     });
     // loop over limited return set and augment with meta
-    results = docSetArray.slice(offset, numResults);
-    if (hummingbird.loggingOn) {
+    const results = docSetArray.slice(offset, numResults);
+    if (this.loggingOn) {
       Utils.debugLog('**********');
       Utils.debugLog("score\tname (id)");
     }
-    resultSet = results.map(function(result, i, results) {
+    const resultSet = results.map(function(result, i, results) {
       result = this.metaStore.get(result.id);
       result.score = Math.round(results[i].score * 10) / 10;
-      if (hummingbird.loggingOn) {
-        Utils.debugLog(`${result.score}\t${result.name} (${result.id})`);
-      }
+      if (this.loggingOn) Utils.debugLog(`${result.score}\t${result.name} (${result.id})`);
       return result;
     }, this);
-    finishTime = new Date();
+    const finishTime = new Date();
     callback(resultSet, {
       hbTotalTime: finishTime - startTime,
       findDocsTime: startHashArray - startTime,
       hashToArrayTime: startArraySort - startHashArray,
       sortArrayTime: finishTime - startArraySort
     });
-    if (hummingbird.loggingOn) {
+    if (this.loggingOn) {
       Utils.logTiming('SUMMARY:');
       Utils.debugLog("");
       Utils.debugLog(`hash size:\t${Object.keys(docSetHash).length.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`);

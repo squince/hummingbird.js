@@ -1,6 +1,4 @@
-import Tokenizer from '../src/tokenizer.mjs';
-// TODO: do not import the tokenizer separate from the indexer
-import Index from '../src/indexer.mjs';
+import Hummingbird from '../src/hummingbird.mjs';
 import assert from 'assert';
 
 describe('Index Serialization', function () {
@@ -22,27 +20,27 @@ describe('Index Serialization', function () {
   const documentSet = [doc1, doc2, doc3];
 
   describe('serializing an index', function () {
-    let dumpedIndx, clonedIdx;
-
-    const idx = new Index();
-    idx.tokenizer = new Tokenizer({min: 3, max: 6});
-    documentSet.forEach((doc) => idx.add(doc));
+    const hum = new Hummingbird(null, {min: 3, max: 6});
+    const hum_clone = new Hummingbird();
+    documentSet.forEach((doc) => hum.add(doc));
 
     beforeEach(function () {
-      dumpedIdx = JSON.stringify(idx);
-      clonedIdx = hum.Index.load(JSON.parse(dumpedIdx));
+      //console.log('hum_clone', JSON.stringify(hum_clone));
+      const dumped_hum = JSON.stringify(hum);
+      //console.log('dumped_hum', dumped_hum);
+      hum_clone.load(JSON.parse(dumped_hum));
+      //console.log('hum_clone', JSON.stringify(hum_clone));
     });
 
     it('should produce an idential index upon reloading', function () {
-      assert.deepEqual(idx.tokenStore, clonedIdx.tokenStore);
+      assert.deepEqual(hum.idx.tokenStore, hum_clone.idx.tokenStore);
     });
 
     it('should produce idential search results after reloading', function () {
-      clonedIdx.tokenizer = new Tokenizer({min: 3, max: 6});
-      const results1 = idx.search('green plant', function (results) {
+      const results1 = hum.search('green plant', function (results) {
         return results;
       });
-      const results2 = clonedIdx.search('green plant', function (results) {
+      const results2 = hum_clone.search('green plant', function (results) {
         return results;
       });
 

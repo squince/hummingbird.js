@@ -10,9 +10,9 @@ export default class MetaStore {
   // .load
   // Loads a previously serialized MetaStore
   load(serializedData) {
-    const store = new this;
-    store.root = serializedData.root;
-    return store;
+    console.log('typeof', typeof serializedData);
+    console.log('keys', Object.keys(serializedData));
+    this.root = serializedData.root;
   }
 
   // .toJSON

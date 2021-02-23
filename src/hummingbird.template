@@ -6,7 +6,7 @@ import * as Utils from "./utils.mjs";
  * The API namespace for making names searchable and returning
    appropriately ordered fuzzy matched names based on supplied partial strings.
 */
-class Hummingbird {
+export default class Hummingbird {
   /**
     * @param {object} variantsObj - a hash whose keys are intended to be standarized names and who
       values are those names' synonyms (i.e., nicknames, alternate spellings, acronyms, and
@@ -46,12 +46,21 @@ class Hummingbird {
     * @param {string} serializedData.variantStore
   */
   load(serializedData) {
-    const {index_version, variantStore, tokenStore, metaStore, createTime, lastUpdate} = serializedData;
-    if (serializedData.index_version !== this.index_version) {
+    const {index_version, variantStore, tokenStore, metaStore, createTime, lastUpdate} = typeof serializedData === 'object' ? serializedData : JSON.parse(serializedData);
+    this.idx = new Index(variantStore, this.tokenizer);
+    /*
+    console.log('HUM index_version', createTime);
+    console.log('HUM createTime', createTime);
+    console.log('HUM lastUpdate', lastUpdate);
+    console.log('HUM loaded stores');
+    console.log('HUM variantStore', variantStore);
+    console.log('HUM tokenStore', tokenStore);
+    console.log('HUM metaStore', metaStore);
+    */
+    if (index_version !== this.index_version) {
       Utils.warn(`version mismatch: current ${this.index_version}, importing ${serializedData.index_version}`);
     }
-    serializedData.hasOwnProperty('variantStore') ? hummingbird.VariantStore.load(serializedData.variantStore) : undefined;
-    this.idx = Index.load({ tokenStore, metaStore, createTime, lastUpdate });
+    this.idx.load({ tokenStore, metaStore, createTime, lastUpdate });
   };
 
   /**
@@ -118,6 +127,7 @@ class Hummingbird {
    * @param {string} opts.secondarySortOrder='asc' - ('asc' or 'desc') optionally specifies whether sort on secondarySortField is ascending or descending
   */
   search(query, cb, opts) {
-    return this.idx.search(query, cb, opts);
+    const options = {...opts, loggingOn: this.loggingOn };
+    return this.idx.search(query, cb, options);
   };
 };
