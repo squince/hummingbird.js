@@ -1,15 +1,17 @@
 import Index from '../src/indexer.mjs';
+import Tokenizer from '../src/tokenizer.mjs';
 import assert from 'assert';
 
 describe('Hummingbird Indexer', function () {
   let idx, addCallbackCalled, removeCallbackCalled, updateCallbackCalled, callbackArgs;
+  const tokenizer = new Tokenizer();
   const startOfStringIndicator = '\u0002';
   const doc1 = { id: 1, desc: 'some meta data without a name field', title: 'noname doc' };
   const doc2 = { id: 2, desc: 'Mr', name: 'Steven', title: 'male' };
   const doc3 = { id: 3, desc: 'Mrs', name: 'Stephanie', title: 'female' };
 
   beforeEach(function () {
-    idx = new Index();
+    idx = new Index(null, tokenizer);
     addCallbackCalled = false;
     removeCallbackCalled = false;
     updateCallbackCalled = false;
@@ -17,23 +19,23 @@ describe('Hummingbird Indexer', function () {
 
     idx.on('add', function (doc, index) {
       addCallbackCalled = true;
-      callbackArgs = Array.prototype.slice.call(arguments);
+      callbackArgs = [...arguments];
     });
 
     idx.on('remove', function (doc, index) {
       removeCallbackCalled = true;
-      callbackArgs = Array.prototype.slice.call(arguments);
+      callbackArgs = [...arguments];
     });
 
     idx.on('update', function (doc, index) {
       updateCallbackCalled = true;
-      callbackArgs = Array.prototype.slice.call(arguments);
+      callbackArgs = [...arguments];
     });
   });
 
   describe('adding a document with no name field', function () {
     beforeEach(function () {
-      idx.add(doc1);
+      idx.add({doc: doc1});
     });
 
     it('will populate the meta data store', function () {
@@ -47,8 +49,8 @@ describe('Hummingbird Indexer', function () {
 
   describe('adding one or more documents having a name field', function () {
     beforeEach(function () {
-      idx.add(doc2);
-      idx.add(doc3);
+      idx.add({doc: doc2});
+      idx.add({doc: doc3});
     });
 
     it('should have the most recently added document, and the index as the event callback arguments', function () {
@@ -78,8 +80,8 @@ describe('Hummingbird Indexer', function () {
     const doc03 = Object.assign({}, doc3, { name: 'bar' });
 
     beforeEach(function () {
-      idx.add(doc2);
-      idx.add(doc3, TRIGGER_EVENT);
+      idx.add({doc: doc2});
+      idx.add({doc: doc3, emitEvent: TRIGGER_EVENT});
     });
 
     afterEach(function () {
@@ -122,8 +124,8 @@ describe('Hummingbird Indexer', function () {
     const doc03 = Object.assign({}, doc3, { name: 'bar' });
 
     beforeEach(function () {
-      idx.add(doc2, TRIGGER_EVENT);
-      idx.add(doc3, TRIGGER_EVENT);
+      idx.add({doc: doc2, emitEvent: TRIGGER_EVENT});
+      idx.add({doc: doc3, emitEvent: TRIGGER_EVENT});
     });
 
     afterEach(function () {
@@ -152,38 +154,38 @@ describe('Hummingbird Indexer', function () {
 
   describe('adding a document that already exists', function () {
     beforeEach(function () {
-      idx.add(doc2);
-      idx.add(doc3);
+      idx.add({doc: doc2});
+      idx.add({doc: doc3});
     });
 
     it('should not change the token nor meta stores', function () {
       assert.equal(Object.keys(idx.tokenStore.root).length, 11);
       assert.equal(Object.keys(idx.metaStore.root).length, 2);
-      idx.add(doc2);
+      idx.add({doc: doc2});
       assert.equal(Object.keys(idx.tokenStore.root).length, 11);
       assert.equal(Object.keys(idx.metaStore.root).length, 2);
     });
 
     it("should still have 'ste' as a token in the store", function () {
-      idx.add(doc2);
+      idx.add({doc: doc2});
       assert.ok(idx.tokenStore.get('ste', false));
     });
 
     it("should still have only two documents containing 'ste'", function () {
-      idx.add(doc2);
+      idx.add({doc: doc2});
       assert.equal(Object.keys(idx.tokenStore.get('ste')).length, 2);
     });
 
     it('should still have only 2 docs in the metaStore', function () {
-      idx.add(doc2);
+      idx.add({doc: doc2});
       assert.equal(Object.keys(idx.metaStore.root).length, 2);
     });
   });
 
   describe('removing a document', function () {
     beforeEach(function () {
-      idx.add(doc2);
-      idx.add(doc3);
+      idx.add({doc: doc2});
+      idx.add({doc: doc3});
     });
 
     it('should not have the document in the index stores after it is removed', function () {
@@ -200,8 +202,8 @@ describe('Hummingbird Indexer', function () {
     const doc = { id: 99, name: 'I dont exist' };
 
     beforeEach(function () {
-      idx.add(doc2);
-      idx.add(doc3);
+      idx.add({doc: doc2});
+      idx.add({doc: doc3});
     });
 
     it('should not have the non-existent document ID in the metaStore', function () {
@@ -224,8 +226,8 @@ describe('Hummingbird Indexer', function () {
     const doc03 = Object.assign({}, doc3, { name: 'bar' });
 
     beforeEach(function () {
-      idx.add(doc2);
-      idx.add(doc3);
+      idx.add({doc: doc2});
+      idx.add({doc: doc3});
     });
 
     it('should have a couple of documents in the index before update', function () {

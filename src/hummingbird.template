@@ -48,15 +48,6 @@ export default class Hummingbird {
   load(serializedData) {
     const {index_version, variantStore, tokenStore, metaStore, createTime, lastUpdate} = typeof serializedData === 'object' ? serializedData : JSON.parse(serializedData);
     this.idx = new Index(variantStore, this.tokenizer);
-    /*
-    console.log('HUM index_version', createTime);
-    console.log('HUM createTime', createTime);
-    console.log('HUM lastUpdate', lastUpdate);
-    console.log('HUM loaded stores');
-    console.log('HUM variantStore', variantStore);
-    console.log('HUM tokenStore', tokenStore);
-    console.log('HUM metaStore', metaStore);
-    */
     if (index_version !== this.index_version) {
       Utils.warn(`version mismatch: current ${this.index_version}, importing ${serializedData.index_version}`);
     }

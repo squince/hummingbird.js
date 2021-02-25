@@ -25,11 +25,8 @@ describe('Index Serialization', function () {
     documentSet.forEach((doc) => hum.add(doc));
 
     beforeEach(function () {
-      //console.log('hum_clone', JSON.stringify(hum_clone));
       const dumped_hum = JSON.stringify(hum);
-      //console.log('dumped_hum', dumped_hum);
       hum_clone.load(JSON.parse(dumped_hum));
-      //console.log('hum_clone', JSON.stringify(hum_clone));
     });
 
     it('should produce an idential index upon reloading', function () {

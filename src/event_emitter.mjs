@@ -48,9 +48,13 @@ export default class EventEmitter {
   /* emit
   * Calls all functions bound to the given event
   */
-  emit(eventName, docId) {
+  emit(eventName) {
     if (!this.hasHandler(eventName)) return;
+    const funcArgs = [...arguments].slice(1);
 
-    this.events[eventName].forEach(fn => fn(docId));
+    function applyCallback(fn) {
+      fn.apply(undefined, funcArgs);
+    };
+    this.events[eventName].forEach(applyCallback);
   }
 };

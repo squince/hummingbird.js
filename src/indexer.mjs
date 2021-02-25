@@ -41,13 +41,6 @@ export default class Index {
    * than what is now supported by this version of Humminbird
   */
   load({ tokenStore, metaStore, createTime, lastUpdate }) {
-    /*
-    console.log('loaded stores');
-    console.log('tokenStore', tokenStore);
-    console.log('metaStore', metaStore);
-    console.log('createTime', createTime);
-    console.log('lastUpdate', lastUpdate);
-    */
     this.createTime = createTime ? new Date(createTime) : new Date();
     this.lastUpdate = lastUpdate ? new Date(lastUpdate) : null;
     this.tokenStore.load(tokenStore);
@@ -207,7 +200,7 @@ export default class Index {
     queryTokens.forEach((function(token, i, tokens) {
       let docRef, startMatchTime, startVariantMatch;
       if (this.loggingOn) startMatchTime = Utils.logTiming(`'${token}' score start`);
-  // name matches
+      // name matches
       for (docRef in this.tokenStore.get(token, false)) {
         switch (false) {
           case !((docSetHash[docRef] == null) && i <= minNumQueryTokens):
@@ -220,7 +213,7 @@ export default class Index {
       if (this.loggingOn) {
         startVariantMatch = Utils.logTiming(`\t\toriginal name:\t\t${Object.keys(this.tokenStore.get(token, false)).length} `, startMatchTime);
       }
-  // variant matches
+      // variant matches
       for (docRef in this.tokenStore.get(token, true)) {
         switch (false) {
           case !((docSetHash[docRef] == null) && i <= minNumQueryTokens):
