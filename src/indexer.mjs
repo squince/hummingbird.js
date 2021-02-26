@@ -57,11 +57,10 @@ export default class Index {
 
    * Optionally includes additional arbitrary name-value pairs to be stored, but not indexed
   */
-  add({doc, emitEvent, loggingOn}) {
-    emitEvent = (emitEvent === undefined ? true : emitEvent);
+  add({doc, emitEvent=true, loggingOn}) {
     if (this.metaStore.has(doc.id)) {
       if (loggingOn) Utils.debugLog(`Document ${doc.id} already indexed, replacing`);
-      this.update(doc, eventName);
+      this.update(doc, emitEvent);
       return;
     }
     this.tokenizeDoc(doc);
@@ -102,8 +101,7 @@ export default class Index {
 
   // remove
   // Removes the document from the index that is referenced by the 'id' property.
-  remove(docRef, emitEvent) {
-    emitEvent = (emitEvent === undefined && this.metaStore.has(docRef) ? true : emitEvent);
+  remove(docRef, emitEvent=true) {
     if (this.metaStore.has(docRef)) {
       //Only check the tokens for the doc name - don't loop over all tokens.
       this.tokenStore.remove(docRef, this.tokenizer.tokenize(this.metaStore.get(docRef).name));
@@ -119,8 +117,7 @@ export default class Index {
   // Updates the document from the index that is referenced by the 'id' property
   // In case the name has changed, we remove the old tokens and retokenize.
   // Otherwise, we just update the metaStore.
-  update(doc, emitEvent) {
-    emitEvent = (emitEvent === undefined ? true : emitEvent);
+  update(doc, emitEvent=true) {
     if (this.metaStore.has(doc.id)) {
       //Has the name changed?
       if (doc.name !== this.metaStore.get(doc.id).name) {
@@ -152,9 +149,9 @@ export default class Index {
   //   is ascending or descending
 
   // Finds matching names and returns them in order of best match.
-  search(query, callback, options) {
+  search(query, callback, options={}) {
     const startTime = new Date();
-    const { howMany, startPos, boostPrefix, secondarySortField='name', secondarySortOrder='asc', scoreThreshold } = options;
+    const { howMany, startPos, boostPrefix, secondarySortField='name', secondarySortOrder='asc', scoreThreshold=0.5 } = options;
     let minNumQueryTokens, minScore;
 
     if (this.loggingOn) Utils.logTiming('find matching docs');
@@ -170,23 +167,23 @@ export default class Index {
     const offset = ((options != null ? startPos : void 0) === undefined) ? 0 : Math.floor(startPos);
     const prefixBoost = options != null ? boostPrefix : void 0;
     // initialize result set vars and search options
+    // TODO: use a set instead of a hash for docSet score tracking
     const docSetHash = {};
     const docSetArray = [];
     const queryTokens = this.tokenizer.tokenize(query);
     const maxScore = Utils.maxScore(query, this.tokenizer, prefixBoost);
-    if ((options != null ? scoreThreshold : void 0) == null) {
-      minScore = 0.5 * maxScore;
-      minNumQueryTokens = Math.ceil(queryTokens.length * 0.5);
-    } else if ((options != null ? scoreThreshold : void 0) <= 0) {
+    console.log('MAX SCORE', maxScore);
+    if (scoreThreshold <= 0) {
       minScore = 0;
       minNumQueryTokens = queryTokens.length;
-    } else if ((options != null ? scoreThreshold : void 0) >= 1) {
+    } else if (scoreThreshold >= 1) {
       minScore = maxScore;
       minNumQueryTokens = 0;
     } else {
       minScore = scoreThreshold * maxScore;
       minNumQueryTokens = Math.ceil(queryTokens.length * (1 - scoreThreshold));
     }
+    console.log('MIN SCORE', minScore);
     const hasSomeToken = queryTokens.some(function(token) {
       return this.tokenStore.has(token);
     }, this);
@@ -198,33 +195,35 @@ export default class Index {
     }
     // retrieve docs from tokenStore
     queryTokens.forEach((function(token, i, tokens) {
+      const NOT_VARIANT = false;
+      const IS_VARIANT = true;
       let docRef, startMatchTime, startVariantMatch;
       if (this.loggingOn) startMatchTime = Utils.logTiming(`'${token}' score start`);
       // name matches
-      for (docRef in this.tokenStore.get(token, false)) {
+      for (docRef in this.tokenStore.get(token, NOT_VARIANT)) {
         switch (false) {
           case !((docSetHash[docRef] == null) && i <= minNumQueryTokens):
-            docSetHash[docRef] = Utils.tokenScore(token, false, prefixBoost);
+            docSetHash[docRef] = Utils.tokenScore(token, NOT_VARIANT, prefixBoost);
             break;
           case docSetHash[docRef] == null:
-            docSetHash[docRef] += Utils.tokenScore(token, false, prefixBoost);
+            docSetHash[docRef] += Utils.tokenScore(token, NOT_VARIANT, prefixBoost);
         }
       }
       if (this.loggingOn) {
-        startVariantMatch = Utils.logTiming(`\t\toriginal name:\t\t${Object.keys(this.tokenStore.get(token, false)).length} `, startMatchTime);
+        startVariantMatch = Utils.logTiming(`\t\toriginal name:\t\t${Object.keys(this.tokenStore.get(token, NOT_VARIANT)).length} `, startMatchTime);
       }
       // variant matches
-      for (docRef in this.tokenStore.get(token, true)) {
+      for (docRef in this.tokenStore.get(token, IS_VARIANT)) {
         switch (false) {
           case !((docSetHash[docRef] == null) && i <= minNumQueryTokens):
-            docSetHash[docRef] = Utils.tokenScore(token, true, prefixBoost);
+            docSetHash[docRef] = Utils.tokenScore(token, IS_VARIANT, prefixBoost);
             break;
           case docSetHash[docRef] == null:
-            docSetHash[docRef] += Utils.tokenScore(token, true, prefixBoost);
+            docSetHash[docRef] += Utils.tokenScore(token, IS_VARIANT, prefixBoost);
         }
       }
       if (this.loggingOn) {
-        Utils.logTiming(`\t\tvariant matches:\t${Object.keys(this.tokenStore.get(token, true)).length} `, startVariantMatch);
+        Utils.logTiming(`\t\tvariant matches:\t${Object.keys(this.tokenStore.get(token, IS_VARIANT)).length} `, startVariantMatch);
       }
     }), this);
     // convert hash to array of hashes for sorting

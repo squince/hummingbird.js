@@ -62,7 +62,7 @@ export default class Hummingbird {
     * @param {any_type} doc.arbitrary_key - meta data value to be returned with doc in search results
     * @param {boolean} [emitEvent=true] - whether to emit an event upon successful execution
   */
-  add(doc, emitEvent) {
+  add(doc, emitEvent=true) {
     this.idx.add({doc, emitEvent, loggingOn: this.loggingOn});
   };
 
@@ -76,7 +76,7 @@ export default class Hummingbird {
     * @param {any_type} doc.arbitrary_key - meta data value to be returned with doc in search results
     * @param {boolean} [emitEvent=true] - whether to emit an event upon successful execution
   */
-  update(doc, emitEvent) {
+  update(doc, emitEvent=true) {
     this.idx.update(doc, emitEvent);
   };
 
@@ -85,7 +85,7 @@ export default class Hummingbird {
     * @param {string} docRef - must be a unique identifier within a given index
     * @param {boolean} [emitEvent=true] - whether to emit an event upon successful execution
   */
-  remove(docRef, emitEvent) {
+  remove(docRef, emitEvent=true) {
     this.idx.remove(docRef, emitEvent);
   };
 
