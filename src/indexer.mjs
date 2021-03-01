@@ -4,15 +4,16 @@ import TokenStore from './token_store.mjs';
 import VariantStore from './variant_store.mjs';
 import * as Utils from "./utils.mjs";
 
-/* Index
+/* Indexer
  * The object that contains the inverted index of tokens
  * found in each name in the corpus, associated meta data, and methods
  * for interacting with the data
 */
-export default class Index {
-  constructor(variantsObj, tokenizer) {
+export default class Indexer {
+  constructor(variantsObj, tokenizer, loggingOn) {
     this.createTime = new Date();
     this.lastUpdate = null;
+    this.loggingOn = loggingOn;
     this.eventEmitter = new EventEmitter();
     this.metaStore = new MetaStore();
     this.tokenStore = new TokenStore();
@@ -57,9 +58,9 @@ export default class Index {
 
    * Optionally includes additional arbitrary name-value pairs to be stored, but not indexed
   */
-  add({doc, emitEvent=true, loggingOn}) {
+  add({doc, emitEvent=true}) {
     if (this.metaStore.has(doc.id)) {
-      if (loggingOn) Utils.debugLog(`Document ${doc.id} already indexed, replacing`);
+      if (this.loggingOn) Utils.debugLog(`Document ${doc.id} already indexed, replacing`);
       this.update(doc, emitEvent);
       return;
     }
@@ -172,7 +173,6 @@ export default class Index {
     const docSetArray = [];
     const queryTokens = this.tokenizer.tokenize(query);
     const maxScore = Utils.maxScore(query, this.tokenizer, prefixBoost);
-    console.log('MAX SCORE', maxScore);
     if (scoreThreshold <= 0) {
       minScore = 0;
       minNumQueryTokens = queryTokens.length;
@@ -183,7 +183,7 @@ export default class Index {
       minScore = scoreThreshold * maxScore;
       minNumQueryTokens = Math.ceil(queryTokens.length * (1 - scoreThreshold));
     }
-    console.log('MIN SCORE', minScore);
+
     const hasSomeToken = queryTokens.some(function(token) {
       return this.tokenStore.has(token);
     }, this);
@@ -197,35 +197,37 @@ export default class Index {
     queryTokens.forEach((function(token, i, tokens) {
       const NOT_VARIANT = false;
       const IS_VARIANT = true;
-      let docRef, startMatchTime, startVariantMatch;
+      const docNameScore = Utils.tokenScore(token, NOT_VARIANT, prefixBoost);
+      const docVariantScore = Utils.tokenScore(token, IS_VARIANT, prefixBoost);
+      let startMatchTime, startVariantMatch;
+
       if (this.loggingOn) startMatchTime = Utils.logTiming(`'${token}' score start`);
       // name matches
-      for (docRef in this.tokenStore.get(token, NOT_VARIANT)) {
-        switch (false) {
-          case !((docSetHash[docRef] == null) && i <= minNumQueryTokens):
-            docSetHash[docRef] = Utils.tokenScore(token, NOT_VARIANT, prefixBoost);
-            break;
-          case docSetHash[docRef] == null:
-            docSetHash[docRef] += Utils.tokenScore(token, NOT_VARIANT, prefixBoost);
+      for (const docRef in this.tokenStore.get(token, NOT_VARIANT)) {
+        if (!(docRef in docSetHash) && i <= minNumQueryTokens) {
+          docSetHash[docRef] = docNameScore;
+        } else if (docRef in docSetHash) {
+          docSetHash[docRef] += docNameScore;
         }
       }
+
       if (this.loggingOn) {
-        startVariantMatch = Utils.logTiming(`\t\toriginal name:\t\t${Object.keys(this.tokenStore.get(token, NOT_VARIANT)).length} `, startMatchTime);
+        startVariantMatch = Utils.logTiming(`\t\toriginal name:\t\t${Object.keys(this.tokenStore.get(token, NOT_VARIANT)).length} matched docs\t`, startMatchTime);
       }
       // variant matches
-      for (docRef in this.tokenStore.get(token, IS_VARIANT)) {
-        switch (false) {
-          case !((docSetHash[docRef] == null) && i <= minNumQueryTokens):
-            docSetHash[docRef] = Utils.tokenScore(token, IS_VARIANT, prefixBoost);
-            break;
-          case docSetHash[docRef] == null:
-            docSetHash[docRef] += Utils.tokenScore(token, IS_VARIANT, prefixBoost);
+      for (const docRef in this.tokenStore.get(token, IS_VARIANT)) {
+        if (!(docRef in docSetHash) && i <= minNumQueryTokens) {
+          docSetHash[docRef] = docVariantScore;
+        } else if (docRef in docSetHash) {
+          docSetHash[docRef] += docVariantScore;
         }
       }
+
       if (this.loggingOn) {
-        Utils.logTiming(`\t\tvariant matches:\t${Object.keys(this.tokenStore.get(token, IS_VARIANT)).length} `, startVariantMatch);
+        Utils.logTiming(`\t\tvariant matches:\t${Object.keys(this.tokenStore.get(token, IS_VARIANT)).length} matched docs\t`, startVariantMatch);
       }
     }), this);
+
     // convert hash to array of hashes for sorting
     // filter out results below the minScore
     // boost exact matches - consciously does not convert diacritics, but uncertain whether that's best

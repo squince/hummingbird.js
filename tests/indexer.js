@@ -1,4 +1,4 @@
-import Index from '../src/indexer.mjs';
+import Indexer from '../src/indexer.mjs';
 import Tokenizer from '../src/tokenizer.mjs';
 import assert from 'assert';
 
@@ -11,7 +11,7 @@ describe('Hummingbird Indexer', function () {
   const doc3 = { id: 3, desc: 'Mrs', name: 'Stephanie', title: 'female' };
 
   beforeEach(function () {
-    idx = new Index(null, tokenizer);
+    idx = new Indexer(null, tokenizer);
     addCallbackCalled = false;
     removeCallbackCalled = false;
     updateCallbackCalled = false;

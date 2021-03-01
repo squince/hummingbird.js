@@ -61,20 +61,20 @@ export function maxScore(phrase, tokenizer, prefixBoost) {
   let score = 0;
   if (!phrase) return score;
 
-  for (const token in tokenizer.tokenize(phrase)) {
-    score += this.tokenScore(token, false, prefixBoost);
+  for (const token of tokenizer.tokenize(phrase)) {
+    const tokScore = this.tokenScore(token, false, prefixBoost);
+    score += tokScore;
   };
   return score;
 };
 
 /* tokenScore
 * Returns the score for the given token
+* default to boosting prefix matches unless explicitly set to false
 */
-export function tokenScore(token, isVariant, prefixBoost) {
-  // default to boosting prefix matches unless explicitly set to false
-  const boostPrefixMatch = prefixBoost == null ? true : prefixBoost;
+export function tokenScore(token, isVariant, prefixBoost=true) {
   let score = token.length;
-  if (boostPrefixMatch && token.substring(0, 1) === START_OF_STRING_INDICATOR) score += 0.2;
+  if (prefixBoost && token.substring(0, 1) === START_OF_STRING_INDICATOR) score += 0.2;
   if (isVariant) score -= 0.4;
 
   return score;

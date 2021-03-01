@@ -15,14 +15,13 @@ export default class Hummingbird {
     * @param opts.min {int} sets the minimum number of characters per token
     * @param opts.max {int} limits the maximum number of characters per token
   */
-  constructor(variantsObj, opts) {
+  constructor(variantsObj, opts, loggingOn) {
     this.tokenizer = new Tokenizer(opts);
-    this.idx = new Index(variantsObj, this.tokenizer);
+    this.idx = new Index(variantsObj, this.tokenizer, loggingOn);
 
-    // .loggingOn
     // Set to true or false to enable or disable logging respectively
     // Defaults to false
-    this.loggingOn = false;
+    this.loggingOn = loggingOn;
 
     // .version
     // Version of the hummingbird code base
@@ -63,7 +62,7 @@ export default class Hummingbird {
     * @param {boolean} [emitEvent=true] - whether to emit an event upon successful execution
   */
   add(doc, emitEvent=true) {
-    this.idx.add({doc, emitEvent, loggingOn: this.loggingOn});
+    this.idx.add({doc, emitEvent});
   };
 
   /**
@@ -117,8 +116,7 @@ export default class Hummingbird {
    * @param {string} opts.secondarySortField='name' - if provided, results are sorted first by score descending, then by the property represented by this string
    * @param {string} opts.secondarySortOrder='asc' - ('asc' or 'desc') optionally specifies whether sort on secondarySortField is ascending or descending
   */
-  search(query, cb, opts) {
-    const options = {...opts, loggingOn: this.loggingOn };
+  search(query, cb, options) {
     return this.idx.search(query, cb, options);
   };
 };
