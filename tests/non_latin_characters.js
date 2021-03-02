@@ -1,4 +1,4 @@
-import Index from "../src/indexer.mjs";
+import Indexer from "../src/indexer.mjs";
 // TODO: do not import the tokenizer separate from the indexer
 import Tokenizer from "../src/tokenizer.mjs";
 import assert from "assert";
@@ -25,9 +25,9 @@ describe("Non Latin Characters", function () {
   };
 
   before(function () {
-    idx = new Index;
+    idx = new Indexer;
     idx.tokenizer = new Tokenizer({min: 1, max: 2});
-    [doc1, doc2, doc3].forEach( function (doc) {idx.add(doc)} );
+    [doc1, doc2, doc3].forEach( function (doc) {idx.add({doc})} );
   });
 
   describe('searching for a single token prefix should return 2 results', function () {
