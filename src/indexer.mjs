@@ -27,14 +27,14 @@ export default class Indexer {
    * Binds handler to events emitted by the index
   */
   on(eventName, handler) {
-    return this.eventEmitter.addListener(eventName, handler);
+    return this.eventEmitter.addListener({eventName, fn: handler});
   };
 
   /* off
    * Removes handler from event emitted by the index
   */
   off(eventName, handler) {
-    return this.eventEmitter.removeListener(eventName, handler);
+    return this.eventEmitter.removeListener({eventName, fn: handler});
   };
 
   /* load

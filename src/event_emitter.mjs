@@ -22,7 +22,7 @@ export default class EventEmitter {
   * Binds a handler function to specific events
   * Can bind a single function to many different events in one call
   */
-  addListener(eventName, fn) {
+  addListener({eventName, fn}) {
     if (typeof eventName !== 'string') {
       throw error('first argument must be a string representing an event name');
     }
@@ -36,7 +36,7 @@ export default class EventEmitter {
   /* removeListener
   * Removes a handler function from a specific event
   */
-  removeListener(eventName, fn) {
+  removeListener({eventName, fn}) {
     if (!this.hasHandler(eventName)) return;
 
     const fnIndex = this.events[eventName].indexOf(fn);
