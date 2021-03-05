@@ -25,7 +25,7 @@ describe('Index Serialization', function () {
     documentSet.forEach((doc) => hum.add(doc));
 
     beforeEach(function () {
-      const dumped_hum = JSON.stringify(hum);
+      const dumped_hum = JSON.stringify(hum.serialize());
       hum_clone.load(JSON.parse(dumped_hum));
     });
 

@@ -13,17 +13,6 @@ export default class MetaStore {
     this.root = serializedData.root;
   }
 
-  // .toJSON
-  // Returns a JSON representation of the MetaStore
-  // TODO: shouldn't this return a JSON string?
-  // TODO: why not just return `this` here?
-  // TODO: or better yet, wrap in try/catch and return JSON.stringify(this)
-  toJSON() {
-    return {
-      root: this.root
-    };
-  }
-
   // .has
   // Checks for this id in the MetaStore
   has(docId) {

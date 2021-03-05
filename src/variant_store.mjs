@@ -31,13 +31,6 @@ export default class VariantStore {
     return store;
   };
 
-  /* toJSON
-  * Returns a representation of the variant store ready for serialization.
-  */
-  toJSON() {
-    return this.variants;
-  };
-
   /* getVariantTokens
   * Returns an array of distinct tokens associated with variants of the provided name
   * These tokens would not otherwise be associated with the provided name.

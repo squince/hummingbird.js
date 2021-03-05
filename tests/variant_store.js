@@ -27,11 +27,11 @@ describe('Hummingbird Variant Store', function () {
       assert.deepEqual(d2_vTokens, []);
     });
 
-    it('should serialize the normalized nicknames using toJSON method', function () {
+    it('should serialize the normalized nicknames', function () {
       const normalizedVariantNames = testVariants['steve'].map( (name) => startOfStringIndicator.concat(name));
       const variants = {};
       variants[startOfStringIndicator.concat('steve')] = normalizedVariantNames;
-      assert.deepEqual(vStore.toJSON(), variants);
+      assert.deepEqual(vStore.variants, variants);
     });
   });
 });

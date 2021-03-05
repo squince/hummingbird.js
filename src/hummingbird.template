@@ -45,8 +45,8 @@ export default class Hummingbird {
     * @param {string} serializedData.variantStore
   */
   load(serializedData) {
-    const {index_version, variantStore, tokenStore, metaStore, createTime, lastUpdate} = typeof serializedData === 'object' ? serializedData : JSON.parse(serializedData);
-    this.idx = new Index(variantStore, this.tokenizer);
+    const {index_version, variantStore: {variants}, tokenStore, metaStore, createTime, lastUpdate} = typeof serializedData === 'object' ? serializedData : JSON.parse(serializedData);
+    this.idx = new Index(variants, this.tokenizer);
     if (index_version !== this.index_version) {
       Utils.warn(`version mismatch: current ${this.index_version}, importing ${serializedData.index_version}`);
     }
@@ -91,13 +91,13 @@ export default class Hummingbird {
   /**
     * Returns a representation of the index ready for serialization.
   */
-  toJSON() {
+  serialize() {
     return {
       version: this.version,
       index_version: this.index_version,
-      tokenStore: this.idx.tokenStore.toJSON(),
-      metaStore: this.idx.metaStore.toJSON(),
-      variantStore: this.idx.variantStore.toJSON(),
+      tokenStore: this.idx.tokenStore,
+      metaStore: this.idx.metaStore,
+      variantStore: this.idx.variantStore,
       createTime: this.idx.createTime.getTime(),
       lastUpdate: this.idx.lastUpdate?.getTime()
     };

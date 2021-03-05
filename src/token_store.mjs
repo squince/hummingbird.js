@@ -17,19 +17,8 @@ export default class TokenStore {
     this.root = serializedData && serializedData.root ? serializedData.root : {};
   };
 
-  /* .toJSON
-  * Returns a representation of the token store ready for serialization.
-  */
-  toJSON() {
-    return {
-      root: this.root
-    };
-  };
-
   /* .add
   * Adds to the store a new token and document 'id', and distinguishes between variant doc matches and normal name matches.
-  * TODO: consider changing object keys 'n' and 'v' to more human friendly values
-  * TODO: then transform to compressed versions in .toJSON and .load methods
   */
   add(token, isVariant, docId) {
     if (!(token && docId)) throw error('token and docId must both be supplied');

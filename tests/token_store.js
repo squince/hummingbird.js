@@ -30,13 +30,13 @@ describe("Hummingbird Token Store", function () {
     });
 
     it('should serialize to JSON', function () {
-      const storeJson = {};
-      storeJson['root'] = {};
-      storeJson['root'][doc1.token] = {};
-      storeJson['root'][doc1.token]['n'] = {};
-      storeJson['root'][doc1.token]['n'][doc1.id] = 1;
+      const testStore = {};
+      testStore['root'] = {};
+      testStore['root'][doc1.token] = {};
+      testStore['root'][doc1.token]['n'] = {};
+      testStore['root'][doc1.token]['n'][doc1.id] = 1;
 
-      assert.deepEqual(store.toJSON(), storeJson);
+      assert.deepEqual(store, testStore);
     });
   });
 
@@ -116,7 +116,7 @@ describe("Hummingbird Token Store", function () {
     it('should properly hydrate a new token store', function () {
       assert.equal(store.has(doc1.token), true);
       const newStore = new TokenStore();
-      newStore.load(store.toJSON());
+      newStore.load(store);
       assert.deepEqual(newStore, store);
       assert.equal(newStore.has(doc1.token), true);
     });
