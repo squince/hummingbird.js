@@ -10,16 +10,12 @@ export default class TokenStore {
     this.root = {};
   };
 
-  /* .load
-  * Loads a previously serialized token store
-  */
+  // Loads a previously serialized token store
   load(serializedData) {
     this.root = serializedData && serializedData.root ? serializedData.root : {};
   };
 
-  /* .add
-  * Adds to the store a new token and document 'id', and distinguishes between variant doc matches and normal name matches.
-  */
+  // Adds to the store a new token and document 'id', and distinguishes between variant doc matches and normal name matches.
   add(token, isVariant, docId) {
     if (!(token && docId)) throw error('token and docId must both be supplied');
 
@@ -41,16 +37,12 @@ export default class TokenStore {
     this.root[token] = storedToken;
   };
 
-  /* .has
-  * Checks whether this key is contained within this hummingbird.TokenStore.
-  */
+  // Checks whether this key is contained within this hummingbird.TokenStore.
   has(token) {
     return token ? token in this.root : false;
   };
 
-  /* .get
-  * Retrieve the documents for the given token
-  */
+  // Retrieve the documents for the given token
   get(token, isVariant) {
     const tokenType = isVariant ? 'v' : 'n';
     let docs = {};
@@ -61,9 +53,7 @@ export default class TokenStore {
     return docs;
   };
 
-  /* .count
-  * Number of documents associated with the given token
-  */
+  // Number of documents associated with the given token
   count(token) {
     if (!token || !this.root[token]) return 0;
 
@@ -75,14 +65,13 @@ export default class TokenStore {
     return count;
   };
 
-  /* .remove
-  * Remove the document identified by docRef from each token in the provided array of tokens (optimal).
-  * If no array is provided, traverse all tokens in the store and remove wherever the document appears.
-  */
+  // Remove the document identified by docRef from each token in the provided array of tokens (optimal).
+  // If no array is provided, traverse all tokens in the store and remove wherever the document appears.
   remove(docRef, tokens = Object.keys(this.root)) {
-    return tokens.forEach((function(token) {
+    for (const token of tokens) {
       const storedToken = this.root[token] || {};
       if (storedToken) {
+        // name matches
         if (storedToken.n && storedToken.n[docRef]) {
           delete storedToken.n[docRef];
           if (Object.keys(storedToken.n).length === 0) {
@@ -90,6 +79,7 @@ export default class TokenStore {
             delete storedToken.n;
           }
         }
+        // variant matches
         if (storedToken.v && storedToken.v[docRef]) {
           delete storedToken.v[docRef];
           if (Object.keys(storedToken.v).length === 0) {
@@ -102,6 +92,6 @@ export default class TokenStore {
           delete this.root[token];
         }
       }
-    }), this);
+    };
   };
 };
