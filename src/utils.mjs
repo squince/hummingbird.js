@@ -50,8 +50,11 @@ export function logTiming(msg, s) {
 * takes a string and normalizes it for case and diacritics
 */
 export function normalizeString(str) {
-  let newStr = diacritics.remove((str.toString()).toLowerCase()).replace(REG_EXP_START_INDICATOR, '');
-  return START_OF_STRING_INDICATOR.concat(newStr);
+  let normStr = str.toString();
+  normStr = normStr.toLowerCase();
+  normStr = diacritics.remove(normStr);
+  normStr = normStr.replace(REG_EXP_START_INDICATOR, '');
+  return START_OF_STRING_INDICATOR.concat(normStr);
 };
 
 /* maxScore
