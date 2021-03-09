@@ -12,6 +12,7 @@ export default class VariantStore {
     if (variantsObj) {
       this.variants = {};
       for (const name in variantsObj) {
+        if (!name) continue;
         const norm_name = Utils.normalizeString(name);
         this.variants[norm_name] = [];
         for (const variant of variantsObj[name]) {
@@ -36,6 +37,7 @@ export default class VariantStore {
   * These tokens would not otherwise be associated with the provided name.
   */
   getVariantTokens({name, tokenizer, tokens}) {
+    if (!name) return [];
     const variant_tokens = new Set();
     const norm_name = Utils.normalizeString(name);
 
