@@ -23,6 +23,7 @@ export default class Tokenizer {
   * characters elsewhere in sought terms.
   */
   tokenize(name) {
+    if (!name) return [];
     const norm_name = Utils.normalizeString(name);
     if (!norm_name) return [];
 

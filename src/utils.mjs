@@ -50,6 +50,7 @@ export function logTiming(msg, s) {
 * takes a string and normalizes it for case and diacritics
 */
 export function normalizeString(str) {
+  if (!str) return '';
   let normStr = str.toString();
   normStr = normStr.toLowerCase();
   normStr = diacritics.remove(normStr);
