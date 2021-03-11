@@ -18,7 +18,9 @@ describe("Hummingbird NGram Search", function () {
     const loggingOn = false;
     const tokenizer = new Tokenizer({min: 3});
     idx = new Indexer(variants, tokenizer, loggingOn);
-    [doc1, doc2, doc3, doc4, doc5, doc6].forEach( doc => idx.add({doc}));
+    for (const doc of [doc1, doc2, doc3, doc4, doc5, doc6]) {
+      idx.add({doc});
+    };
   });
 
   describe('searching for a combination of substrings from multiple document titles', function () {
