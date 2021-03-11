@@ -73,31 +73,32 @@ export default class Indexer {
   // tokenizeDoc
   // Internal method to tokenize and add doc to tokenstore.  Used by add and update methods
   tokenizeDoc(doc) {
-    let j, k, len, len1, results1, token, tokens, variant_tokens;
-    // tokenize the doc
-    if ((doc != null ? doc.name : void 0) != null) {
-      tokens = this.tokenizer.tokenize(doc.name);
-      const {tokenizer} = this;
-      const {name} = doc
-      variant_tokens = this.variantStore.getVariantTokens({name, tokenizer, tokens});
-    } else {
-      if (this.loggingOn) Utils.debugLog(`No 'name' property in doc\n${JSON.stringify(doc)}`);
-      tokens = [];
-      variant_tokens = [];
+    if (!doc) return;
+
+    if (!(doc.name) && this.loggingOn) {
+      Utils.debugLog(`No 'name' property in doc\n${JSON.stringify(doc)}`);
+      return;
     }
-  // add the name tokens to the tokenStore
-  // do this before variant tokens are added to ensure tokens are distinct
-    for (j = 0, len = tokens.length; j < len; j++) {
-      token = tokens[j];
+
+    let tokens = this.tokenizer.tokenize(doc.name);
+
+    // tokenize the doc
+    let variant_tokens = this.variantStore.getVariantTokens({
+      name: doc.name,
+      tokenizer: this.tokenizer,
+      tokens: this.tokenizer.tokenize(doc.name)
+    });
+
+    // add the name tokens to the tokenStore
+    // do this before variant tokens are added to ensure tokens are distinct
+    for (const token of tokens) {
       this.tokenStore.add(token, false, doc.id);
     }
-  // add the variant tokens to the tokenStore
-    results1 = [];
-    for (k = 0, len1 = variant_tokens.length; k < len1; k++) {
-      token = variant_tokens[k];
-      results1.push(this.tokenStore.add(token, true, doc.id));
+
+    // add the variant tokens to the tokenStore
+    for (const token of variant_tokens) {
+      this.tokenStore.add(token, true, doc.id);
     }
-    return results1;
   };
 
   // remove
@@ -108,9 +109,7 @@ export default class Indexer {
       this.tokenStore.remove(docRef, this.tokenizer.tokenize(this.metaStore.get(docRef).name));
       this.metaStore.remove(docRef);
       this.lastupdate = new Date();
-      if (emitEvent) {
-        this.eventEmitter.emit('remove', docRef, this);
-      }
+      if (emitEvent) this.eventEmitter.emit('remove', docRef, this);
     }
   };
 
@@ -128,9 +127,7 @@ export default class Indexer {
         this.metaStore.remove(doc.id);
       }
       this.metaStore.add(doc);
-      if (emitEvent) {
-        this.eventEmitter.emit('update', doc, this);
-      }
+      if (emitEvent) this.eventEmitter.emit('update', doc, this);
     }
   };
 
