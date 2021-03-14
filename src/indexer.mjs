@@ -149,37 +149,24 @@ export default class Indexer {
   // Finds matching names and returns them in order of best match.
   search(query, callback, options={}) {
     const startTime = new Date();
-    const { howMany, startPos, boostPrefix, secondarySortField='name', secondarySortOrder='asc', scoreThreshold=0.5 } = options;
-    let minNumQueryTokens, minScore;
+    const { howMany=10, startPos=0, boostPrefix=false, secondarySortField='name', secondarySortOrder='asc', scoreThreshold=0.5 } = options;
 
     if (this.loggingOn) Utils.logTiming('find matching docs');
 
     if ((query == null) || query.length < (this.tokenizer.min - 1)) {
-      callback([], {
-        hbTotalTime: new Date() - startTime
-      });
+      callback([], { hbTotalTime: new Date() - startTime });
       return;
     }
-    // search options
-    const numResults = ((options != null ? howMany : void 0) === undefined) ? 10 : Math.floor(howMany);
-    const offset = ((options != null ? startPos : void 0) === undefined) ? 0 : Math.floor(startPos);
-    const prefixBoost = options != null ? boostPrefix : void 0;
-    // initialize result set vars and search options
-    // TODO: use a set instead of a hash for docSet score tracking
+
+    const prefixBoost = options ? boostPrefix : undefined;
+
+    // initialize resultset vars
     const docSetHash = {};
     const docSetArray = [];
     const queryTokens = this.tokenizer.tokenize(query);
-    const maxScore = Utils.maxScore(query, this.tokenizer, prefixBoost);
-    if (scoreThreshold <= 0) {
-      minScore = 0;
-      minNumQueryTokens = queryTokens.length;
-    } else if (scoreThreshold >= 1) {
-      minScore = maxScore;
-      minNumQueryTokens = 0;
-    } else {
-      minScore = scoreThreshold * maxScore;
-      minNumQueryTokens = Math.ceil(queryTokens.length * (1 - scoreThreshold));
-    }
+    const queryTokensLength = queryTokens.length;
+    const maxScore = Utils.maxScore(query, this.tokenizer, boostPrefix);
+    const { minScore, minNumQueryTokens } = Utils.setMinThresholds({ scoreThreshold, queryTokensLength, maxScore });
 
     const hasSomeToken = queryTokens.some(function(token) {
       return this.tokenStore.has(token);
@@ -190,12 +177,14 @@ export default class Indexer {
       });
       return;
     }
+
     // retrieve docs from tokenStore
+    // Utils.getMatchingDocs({ queryTokens,  });
     queryTokens.forEach((function(token, i, tokens) {
       const NOT_VARIANT = false;
       const IS_VARIANT = true;
-      const docNameScore = Utils.tokenScore(token, NOT_VARIANT, prefixBoost);
-      const docVariantScore = Utils.tokenScore(token, IS_VARIANT, prefixBoost);
+      const docNameScore = Utils.tokenScore(token, NOT_VARIANT, boostPrefix);
+      const docVariantScore = Utils.tokenScore(token, IS_VARIANT, boostPrefix);
       let startMatchTime, startVariantMatch;
 
       if (this.loggingOn) startMatchTime = Utils.logTiming(`'${token}' score start`);
@@ -288,7 +277,7 @@ export default class Indexer {
       }
     });
     // loop over limited return set and augment with meta
-    const results = docSetArray.slice(offset, numResults);
+    const results = docSetArray.slice(startPos, howMany);
     if (this.loggingOn) {
       Utils.debugLog('**********');
       Utils.debugLog("score\tname (id)");

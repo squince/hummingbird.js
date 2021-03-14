@@ -83,3 +83,18 @@ export function tokenScore(token, isVariant, prefixBoost=true) {
 
   return score;
 };
+
+export function setMinThresholds({scoreThreshold, queryTokensLength, maxScore}) {
+  let minScore, minNumQueryTokens;
+  if (scoreThreshold <= 0) {
+    minScore = 0;
+    minNumQueryTokens = queryTokensLength;
+  } else if (scoreThreshold >= 1) {
+    minScore = maxScore;
+    minNumQueryTokens = 0;
+  } else {
+    minScore = scoreThreshold * maxScore;
+    minNumQueryTokens = Math.ceil(queryTokensLength * (1 - scoreThreshold));
+  }
+  return { minScore, minNumQueryTokens };
+};
