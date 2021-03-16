@@ -42,7 +42,7 @@ describe("Hummingbird NGram Search", function () {
         // console.log('#### doc6 AFTER ####', doc6);
         assert.deepStrictEqual(results[0], doc6);
         assert.equal(results[0].score, 10.6);
-      }, {'scoreThreshold':0});
+      }, {'scoreThreshold':0, 'loggingOn': false});
     });
   });
 

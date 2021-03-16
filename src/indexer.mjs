@@ -149,7 +149,7 @@ export default class Indexer {
   // Finds matching names and returns them in order of best match.
   search(query, callback, options={}) {
     const startTime = new Date();
-    const { howMany=10, startPos=0, boostPrefix=false, secondarySortField='name', secondarySortOrder='asc', scoreThreshold=0.5 } = options;
+    const { loggingOn=false, howMany=10, startPos=0, boostPrefix=true, secondarySortField='name', secondarySortOrder='asc', scoreThreshold=0.5 } = options;
 
     if (this.loggingOn) Utils.logTiming('find matching docs');
 
@@ -157,8 +157,6 @@ export default class Indexer {
       callback([], { hbTotalTime: new Date() - startTime });
       return;
     }
-
-    const prefixBoost = options ? boostPrefix : undefined;
 
     // initialize resultset vars
     const docSetHash = {};
@@ -195,9 +193,10 @@ export default class Indexer {
         } else if (docRef in docSetHash) {
           docSetHash[docRef] += docNameScore;
         }
+        if (loggingOn) Utils.logTiming(`name token match ${token} score ${docNameScore}`);
       }
 
-      if (this.loggingOn) {
+      if (this.loggingOn || loggingOn) {
         startVariantMatch = Utils.logTiming(`\t\toriginal name:\t\t${Object.keys(this.tokenStore.get(token, NOT_VARIANT)).length} matched docs\t`, startMatchTime);
       }
       // variant matches
@@ -207,9 +206,10 @@ export default class Indexer {
         } else if (docRef in docSetHash) {
           docSetHash[docRef] += docVariantScore;
         }
+        if (loggingOn) Utils.logTiming(`name token match ${token} score ${docVariantScore}`);
       }
 
-      if (this.loggingOn) {
+      if (this.loggingOn || loggingOn) {
         Utils.logTiming(`\t\tvariant matches:\t${Object.keys(this.tokenStore.get(token, IS_VARIANT)).length} matched docs\t`, startVariantMatch);
       }
     }), this);
@@ -278,14 +278,14 @@ export default class Indexer {
     });
     // loop over limited return set and augment with meta
     const results = docSetArray.slice(startPos, howMany);
-    if (this.loggingOn) {
+    if (this.loggingOn || loggingOn) {
       Utils.debugLog('**********');
       Utils.debugLog("score\tname (id)");
     }
     const resultSet = results.map(function(result, i, results) {
       result = this.metaStore.get(result.id);
       result.score = Math.round(results[i].score * 10) / 10;
-      if (this.loggingOn) Utils.debugLog(`${result.score}\t${result.name} (${result.id})`);
+      if (this.loggingOn || loggingOn) Utils.debugLog(`${result.score}\t${result.name} (${result.id})`);
       return result;
     }, this);
     const finishTime = new Date();
