@@ -3,6 +3,7 @@ import MetaStore from './meta_store.mjs';
 import TokenStore from './token_store.mjs';
 import VariantStore from './variant_store.mjs';
 import * as Utils from "./utils.mjs";
+import { getMatchingDocs } from "./searcher.mjs";
 
 /* Indexer
  * The object that contains the inverted index of tokens
@@ -175,7 +176,7 @@ export default class Indexer {
 
     // retrieve docs from tokenStore
     const { tokenStore } = this;
-    const docSetHash = Utils.getMatchingDocs({
+    const docSetHash = getMatchingDocs({
       queryTokens
       , boostPrefix
       , loggingOn: this.loggingOn || loggingOn
