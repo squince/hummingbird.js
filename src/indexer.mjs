@@ -158,9 +158,6 @@ export default class Indexer {
       return;
     }
 
-    // initialize resultset vars
-    const docSetHash = {};
-    const docSetArray = [];
     const queryTokens = this.tokenizer.tokenize(query);
     const queryTokensLength = queryTokens.length;
     const maxScore = Utils.maxScore(query, this.tokenizer, boostPrefix);
@@ -177,46 +174,19 @@ export default class Indexer {
     }
 
     // retrieve docs from tokenStore
-    // Utils.getMatchingDocs({ queryTokens,  });
-    queryTokens.forEach((function(token, i, tokens) {
-      const NOT_VARIANT = false;
-      const IS_VARIANT = true;
-      const docNameScore = Utils.tokenScore(token, NOT_VARIANT, boostPrefix);
-      const docVariantScore = Utils.tokenScore(token, IS_VARIANT, boostPrefix);
-      let startMatchTime, startVariantMatch;
-
-      if (this.loggingOn) startMatchTime = Utils.logTiming(`'${token}' score start`);
-      // name matches
-      for (const docRef in this.tokenStore.get(token, NOT_VARIANT)) {
-        if (!(docRef in docSetHash) && i <= minNumQueryTokens) {
-          docSetHash[docRef] = docNameScore;
-        } else if (docRef in docSetHash) {
-          docSetHash[docRef] += docNameScore;
-        }
-        if (loggingOn) Utils.logTiming(`name token match ${token} score ${docNameScore}`);
-      }
-
-      if (this.loggingOn || loggingOn) {
-        startVariantMatch = Utils.logTiming(`\t\toriginal name:\t\t${Object.keys(this.tokenStore.get(token, NOT_VARIANT)).length} matched docs\t`, startMatchTime);
-      }
-      // variant matches
-      for (const docRef in this.tokenStore.get(token, IS_VARIANT)) {
-        if (!(docRef in docSetHash) && i <= minNumQueryTokens) {
-          docSetHash[docRef] = docVariantScore;
-        } else if (docRef in docSetHash) {
-          docSetHash[docRef] += docVariantScore;
-        }
-        if (loggingOn) Utils.logTiming(`name token match ${token} score ${docVariantScore}`);
-      }
-
-      if (this.loggingOn || loggingOn) {
-        Utils.logTiming(`\t\tvariant matches:\t${Object.keys(this.tokenStore.get(token, IS_VARIANT)).length} matched docs\t`, startVariantMatch);
-      }
-    }), this);
+    const { tokenStore } = this;
+    const docSetHash = Utils.getMatchingDocs({
+      queryTokens
+      , boostPrefix
+      , loggingOn: this.loggingOn || loggingOn
+      , tokenStore: this.tokenStore
+      , minNumQueryTokens
+    });
 
     // convert hash to array of hashes for sorting
     // filter out results below the minScore
     // boost exact matches - consciously does not convert diacritics, but uncertain whether that's best
+    const docSetArray = [];
     const startHashArray = new Date();
     if (this.loggingOn) Utils.logTiming('hash to sorted array\n');
     for (let key in docSetHash) {
