@@ -4,6 +4,7 @@ import TokenStore from './token_store.mjs';
 import VariantStore from './variant_store.mjs';
 import * as Utils from "./utils.mjs";
 import { getMatchingDocs } from "./searcher.mjs";
+import { orderResultSet } from "./sorter.mjs"
 
 /* Indexer
  * The object that contains the inverted index of tokens
@@ -150,7 +151,15 @@ export default class Indexer {
   // Finds matching names and returns them in order of best match.
   search(query, callback, options={}) {
     const startTime = new Date();
-    const { loggingOn=false, howMany=10, startPos=0, boostPrefix=true, secondarySortField='name', secondarySortOrder='asc', scoreThreshold=0.5 } = options;
+    const {
+      loggingOn=false
+      , howMany=10
+      , startPos=0
+      , boostPrefix=true
+      , secondarySortField='name'
+      , secondarySortOrder='asc'
+      , scoreThreshold=0.5
+    } = options;
 
     if (this.loggingOn) Utils.logTiming('find matching docs');
 
@@ -163,114 +172,58 @@ export default class Indexer {
     const queryTokensLength = queryTokens.length;
     const maxScore = Utils.maxScore(query, this.tokenizer, boostPrefix);
     const { minScore, minNumQueryTokens } = Utils.setMinThresholds({ scoreThreshold, queryTokensLength, maxScore });
+    const hasSomeToken = queryTokens.some( (token) => this.tokenStore.has(token) );
 
-    const hasSomeToken = queryTokens.some(function(token) {
-      return this.tokenStore.has(token);
-    }, this);
     if (!hasSomeToken) {
-      callback([], {
-        hbTotalTime: new Date() - startTime
-      });
+      callback([], { hbTotalTime: new Date() - startTime });
       return;
     }
 
     // retrieve docs from tokenStore
     const { tokenStore } = this;
-    const docSetHash = getMatchingDocs({
-      queryTokens
-      , boostPrefix
-      , loggingOn: this.loggingOn || loggingOn
-      , tokenStore: this.tokenStore
-      , minNumQueryTokens
-    });
+    const matchOptions = { boostPrefix, loggingOn: this.loggingOn || loggingOn, minNumQueryTokens }
+
+    const docSetHash = getMatchingDocs({queryTokens, tokenStore, matchOptions});
 
     // convert hash to array of hashes for sorting
-    // filter out results below the minScore
-    // boost exact matches - consciously does not convert diacritics, but uncertain whether that's best
-    const docSetArray = [];
-    const startHashArray = new Date();
-    if (this.loggingOn) Utils.logTiming('hash to sorted array\n');
-    for (let key in docSetHash) {
-      if (docSetHash[key] >= minScore) {
-        // exact match?
-        const exactMatch = Utils.normalizeString(query) === Utils.normalizeString(this.metaStore.get(key).name) ? true : false;
-        // Make fields we retrieve optionally include custom secondarySortField value
-        if (secondarySortField === 'name') {
-          docSetArray.push({
-            id: key,
-            score: exactMatch ? docSetHash[key] + 0.1 : docSetHash[key],
-            name: this.metaStore.get(key).name
-          });
-        } else {
-          docSetArray.push({
-            id: key,
-            score: exactMatch ? docSetHash[key] + 0.1 : docSetHash[key],
-            name: this.metaStore.get(key).name,
-            custSortField: this.metaStore.get(key)[secondarySortField] != null ? this.metaStore.get(key)[secondarySortField] : void 0
-          });
-        }
-      }
-    }
-    const startArraySort = new Date();
-    docSetArray.sort(function(a, b) {
-      let compareObjects;
-      // Determines sort value (-1, 0, 1) based on data type and sort order
-      // stolen from nectar
-      compareObjects = function(a, b, property, order) {
-        let aprop, bprop, ref, ref1, ref2, ref3, sortOrder;
-        sortOrder = order === 'desc' ? -1 : 1;
-        aprop = ((ref = a[property]) != null ? ref.toLowerCase : void 0) != null ? (ref1 = a[property]) != null ? ref1.toLowerCase() : void 0 : a[property];
-        bprop = ((ref2 = b[property]) != null ? ref2.toLowerCase : void 0) != null ? (ref3 = b[property]) != null ? ref3.toLowerCase() : void 0 : b[property];
-        if (aprop === null && bprop !== null) {
-          return 1;
-        } else if (bprop === null) {
-          return -1;
-        } else {
-          return sortOrder * (aprop > bprop ? 1 : (aprop < bprop ? -1 : 0));
-        }
-      };
-      if (a.score !== b.score) {
-        // sort on score only
-        return compareObjects(a, b, 'score', 'desc');
-      } else {
-        if (secondarySortField === 'name') {
-          // no custom sort, secondary sort on name
-          return compareObjects(a, b, 'name', secondarySortOrder);
-        } else {
-          if (a.custSortField !== b.custSortField) {
-            // custom secondary sort
-            return compareObjects(a, b, 'custSortField', secondarySortOrder);
-          } else {
-            // ternary sort on name
-            return compareObjects(a, b, 'name', 'asc');
-          }
-        }
-      }
+    const { orderedResults, startHashArray, startArraySort } = orderResultSet({
+      query
+      , docSetHash
+      , metaStore: this.metaStore
+      , minScore
+      , secondarySortField
+      , secondarySortOrder
+      , loggingOn: this.loggingOn
     });
+
     // loop over limited return set and augment with meta
-    const results = docSetArray.slice(startPos, howMany);
+    const results = orderedResults.slice(startPos, howMany);
     if (this.loggingOn || loggingOn) {
       Utils.debugLog('**********');
       Utils.debugLog("score\tname (id)");
     }
+
     const resultSet = results.map(function(result, i, results) {
       result = this.metaStore.get(result.id);
       result.score = Math.round(results[i].score * 10) / 10;
       if (this.loggingOn || loggingOn) Utils.debugLog(`${result.score}\t${result.name} (${result.id})`);
       return result;
     }, this);
+
     const finishTime = new Date();
+
     callback(resultSet, {
       hbTotalTime: finishTime - startTime,
       findDocsTime: startHashArray - startTime,
       hashToArrayTime: startArraySort - startHashArray,
       sortArrayTime: finishTime - startArraySort
     });
+
     if (this.loggingOn) {
       Utils.logTiming('SUMMARY:');
       Utils.debugLog("");
       Utils.debugLog(`hash size:\t${Object.keys(docSetHash).length.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`);
-      Utils.debugLog(`array size:\t${docSetArray.length.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`);
+      Utils.debugLog(`array size:\t${orderedResults.length.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`);
       Utils.debugLog(`min score:\t${minScore}`);
       Utils.debugLog(`max score:\t${maxScore}`);
       Utils.debugLog(`query time:\t${finishTime - startTime} ms`);
