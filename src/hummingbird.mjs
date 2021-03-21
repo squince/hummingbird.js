@@ -116,15 +116,7 @@ export default class Hummingbird {
    * @param {string} opts.secondarySortField='name' - if provided, results are sorted first by score descending, then by the property represented by this string
    * @param {string} opts.secondarySortOrder='asc' - ('asc' or 'desc') optionally specifies whether sort on secondarySortField is ascending or descending
   */
-  search(query, cb, options={
-      loggingOn=false
-      , howMany=10
-      , startPos=0
-      , boostPrefix=true
-      , secondarySortField='name'
-      , secondarySortOrder='asc'
-      , scoreThreshold=0.5
-    }) {
+  search(query, cb, options) {
     return this.idx.search(query, cb, options);
   };
 };
