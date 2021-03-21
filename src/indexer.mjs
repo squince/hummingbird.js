@@ -136,6 +136,18 @@ export default class Indexer {
   // search
   // Takes a callback function that has the resultSet array and a profile object as arguments.
   // Optionally, takes an options object with the following possible properties
+  // * _howMany_ - the maximum number of results to be returned (_default=10_)
+  // * _startPos_ - how far into the sorted matched set should the returned resultset start (_default=0_)
+  // * _scoreThreshold_ - (number between 0,1 inclusive) only matches with a score equal to or greater
+  //   than this fraction of the maximum theoretical score will be returned in the result set (_default=0.5_,
+  //   includes all matches)
+  // * _boostPrefix_ - (boolean) if _true_ provides an additional boost to results that start with the first
+  //   query token (_default=true_)
+  // * _secondarySortField_ - (string) if provided, results are sorted first by score descending,
+  //   then by the property represented by this string
+  // * _secondarySortOrder_ - (string; 'asc' or 'desc') optionally specifies whether sort on secondarySortField
+  //   is ascending or descending
+
   // Finds matching names and returns them in order of best match.
   search(query, callback, options={}) {
     const startTime = new Date();
@@ -167,13 +179,13 @@ export default class Indexer {
       return;
     }
 
+    // retrieve docs from tokenStore
     const { tokenStore } = this;
     const matchOptions = { boostPrefix, loggingOn: this.loggingOn || loggingOn, minNumQueryTokens }
 
-    // retrieve docs from tokenStore
     const docSetHash = getMatchingDocs({queryTokens, tokenStore, matchOptions});
 
-    // order results by score
+    // convert hash to array of hashes for sorting
     const { orderedResults, startHashArray, startArraySort } = orderResultSet({
       query
       , docSetHash
@@ -184,14 +196,13 @@ export default class Indexer {
       , loggingOn: this.loggingOn
     });
 
-    // no point in taking time to add meta data to docs that won't be returned
+    // loop over limited return set and augment with meta
     const results = orderedResults.slice(startPos, howMany);
     if (this.loggingOn || loggingOn) {
       Utils.debugLog('**********');
       Utils.debugLog("score\tname (id)");
     }
 
-    // augment return set with meta
     const resultSet = results.map(function(result, i, results) {
       result = this.metaStore.get(result.id);
       result.score = Math.round(results[i].score * 10) / 10;
