@@ -1,6 +1,6 @@
 import * as Utils from "./utils.mjs";
 
-export function getMatchingDocs({ queryTokens=[], tokenStore, boostPrefix=false, loggingOn=false, minNumQueryTokens=0 }) {
+export function getMatchingDocs({ queryTokens=[], tokenStore, matchOptions: { boostPrefix=false, loggingOn=false, minNumQueryTokens=0 } }) {
   const docSetHash = {};
   queryTokens.forEach((function(token, i, tokens) {
     const NOT_VARIANT = false;
