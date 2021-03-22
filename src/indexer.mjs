@@ -23,6 +23,15 @@ export default class Indexer {
       new VariantStore(variantsObj) :
       new VariantStore();
     this.tokenizer = tokenizer;
+
+    this.augmentWithMetaData = (results) => {
+      return results.map(function(result, i, results) {
+        result = this.metaStore.get(result.id);
+        result.score = Math.round(results[i].score * 10) / 10;
+        if (this.loggingOn || loggingOn) Utils.debugLog(`${result.score}\t${result.name} (${result.id})`);
+        return result;
+      }, this);
+    };
   }
 
   /* on
@@ -186,18 +195,14 @@ export default class Indexer {
 
     // no point in taking time to add meta data to docs that won't be returned
     const results = orderedResults.slice(startPos, howMany);
+
     if (this.loggingOn || loggingOn) {
       Utils.debugLog('**********');
       Utils.debugLog("score\tname (id)");
     }
 
     // augment return set with meta
-    const resultSet = results.map(function(result, i, results) {
-      result = this.metaStore.get(result.id);
-      result.score = Math.round(results[i].score * 10) / 10;
-      if (this.loggingOn || loggingOn) Utils.debugLog(`${result.score}\t${result.name} (${result.id})`);
-      return result;
-    }, this);
+    const resultSet = this.augmentWithMetaData(results);
 
     const finishTime = new Date();
 
