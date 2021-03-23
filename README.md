@@ -155,18 +155,18 @@ _America_ as the primary key and _United States_ as a nickname/variant.
 
 ```javascript
 // example
-var variants = {
+const variants = {
       "United States": ["America","USA","U.S.A."],
       "America": ["United States"]
   }
-var idx = new hummingbird.Index(variants);
+const hum = new Hummingbird(variants, opts);
 ```
 
 
 ## Contribute
 1. Clone or fork the source, [github.com/glg/hummingbird.js](http://github.com/glg/hummingbird.js), then
-1. Requires [Node.js](https://nodejs.org/) 14.2 or newer
 1. `$ npm install`
 1. `$ npm test`
+    - Requires [Node.js](https://nodejs.org/) 14.2 or newer to run tests
     - execute individual test modules using `$ npm test --mod=<filename>`
     - e.g., `$ npm test --mod=ngram_search`
