@@ -2,7 +2,7 @@
   "opts": {
     "destination": "./api",
     "package": "./package.json",
-    "readme": "./docs/readme.md"
+    "readme": "./README.md"
   },
   "plugins": [
     "plugins/markdown"
