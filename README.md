@@ -165,6 +165,7 @@ var idx = new hummingbird.Index(variants);
 
 ## Contribute
 1. Clone or fork the source, [github.com/glg/hummingbird.js](http://github.com/glg/hummingbird.js), then
+1. Requires [Node.js](https://nodejs.org/) 14.2 or newer
 1. `$ npm install`
 1. `$ npm test`
     - execute individual test modules using `$ npm test --mod=<filename>`
