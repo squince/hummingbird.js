@@ -7,7 +7,7 @@
     "lib.version": "sed \"s/@@VERSION/$(echo $npm_package_version)/g\" src/hummingbird.template > src/hummingbird.mjs",
     "index.version": "sed -i '' \"s/@@INDEX_VERSION/$(echo $npm_package_index_version)/g\" src/hummingbird.mjs",
     "docs": "npm run prepare && rm -rf ./api && npm run cat.md && ./node_modules/jsdoc/jsdoc.js -c .jsdoc.json",
-    "cat.md": "rm ./docs/readme.md && cat README.md ./docs/inspiration.md ./docs/features.md ./docs/contribute.md ./docs/examples.md >> ./docs/readme.md"
+    "cat.md": "rm ./docs/readme.md; cat README.md ./docs/inspiration.md ./docs/features.md ./docs/contribute.md ./docs/examples.md >> ./docs/readme.md"
   },
   "homepage": "https://github.com/squince/hummingbird.js",
   "version": "2.2.0",
