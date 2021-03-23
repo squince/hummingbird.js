@@ -36,9 +36,11 @@
     "lib",
     "node_modules",
     "test",
+    "tests",
     "Gruntfile.js",
     "**/.*",
     "*.html",
-    "*.json"
+    "*.json",
+    "CODEOWNERS"
   ]
 }
