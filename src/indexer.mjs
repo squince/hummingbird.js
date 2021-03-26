@@ -144,8 +144,9 @@ export default class Indexer {
 
   // search
   // Takes a callback function that has the resultSet array and a profile object as arguments.
-  // Optionally, takes an options object with the following possible properties
+  // Optionally, takes an options object
   // Finds matching names and returns them in order of best match.
+  // TODO: callback needs to take a single object that has both results and diagnostics
   search(query, callback, options={}) {
     const startTime = new Date();
     const {

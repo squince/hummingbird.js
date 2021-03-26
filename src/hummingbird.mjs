@@ -119,4 +119,14 @@ export default class Hummingbird {
   search(query, cb, options) {
     return this.idx.search(query, cb, options);
   };
+
+  // searchAsync
+  // Takes a query and an options object
+  // Returns a promise
+  // Resolves with matching names in order of best match
+  async searchAsync(query, options) {
+    return new Promise((resolve, reject) => {
+      this.idx.search(query, resolve, options);
+    });
+  }
 };

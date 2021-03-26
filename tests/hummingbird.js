@@ -9,7 +9,7 @@ describe('Hummingbird API', function () {
   const doc2 = { id: 2, desc: 'Mr', name: 'Steven', title: 'male' };
   const doc3 = { id: 3, desc: 'Mrs', name: 'Stephanie', title: 'female' };
 
-  describe('searching an index with default options', function () {
+  describe('populating an index with a doc having no name property', function () {
     beforeEach(function () {
       hum = new Hummingbird();
       hum.add(doc1);
@@ -44,6 +44,29 @@ describe('Hummingbird API', function () {
 
     it('should have 2 docs in the metaStore', function () {
       assert.equal(Object.keys(hum.idx.metaStore.root).length, 2);
+    });
+
+    it('will execute the supplied callback when matches are found', function () {
+      const callback = (results, diagnostics) => {
+        console.log(results);
+        console.log(diagnostics);
+        assert.equal(results[0].id, doc2.id);
+        assert.equal(results[1].id, doc3.id);
+        assert.equal(Object.keys(diagnostics).length, 4);
+      }
+      hum.search('Steve', callback);
+    });
+
+    it('will resolve the promise with the matches that are found', function () {
+      const promiseHandler = (results, diagnostics) => {
+        console.log(results);
+        console.log(diagnostics);
+        assert.equal(results[1].id, doc3.id);
+        assert.equal(Object.keys(diagnostics).length, 4);
+      }
+      hum.searchAsync('Phanie')
+      .then(promiseHandler)
+        .catch((err) => console.log('promise rejected')) // TODO: figure out how to assert error
     });
   });
 
