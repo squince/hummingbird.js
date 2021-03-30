@@ -143,10 +143,9 @@ export default class Indexer {
   };
 
   // search
-  // Takes a callback function that has the resultSet array and a profile object as arguments.
+  // Takes a callback function that has the resultSet array as it's only argument.
   // Optionally, takes an options object
   // Finds matching names and returns them in order of best match.
-  // TODO: callback needs to take a single object that has both results and diagnostics
   search(query, callback, options={}) {
     const startTime = new Date();
     const {
@@ -162,7 +161,8 @@ export default class Indexer {
     if (this.loggingOn) Utils.logTiming('find matching docs');
 
     if ((query == null) || query.length < (this.tokenizer.min - 1)) {
-      callback([], { hbTotalTime: new Date() - startTime });
+      if (this.loggingOn || loggingOn) Utils.debugLog(`hbTotalTime: ${new Date() - startTime }`);
+      callback([]);
       return;
     }
 
@@ -173,7 +173,8 @@ export default class Indexer {
     const hasSomeToken = queryTokens.some( (token) => this.tokenStore.has(token) );
 
     if (!hasSomeToken) {
-      callback([], { hbTotalTime: new Date() - startTime });
+      if (this.loggingOn || loggingOn) Utils.debugLog(`hbTotalTime: ${new Date() - startTime }`);
+      callback([]);
       return;
     }
 
@@ -207,14 +208,9 @@ export default class Indexer {
 
     const finishTime = new Date();
 
-    callback(resultSet, {
-      hbTotalTime: finishTime - startTime,
-      findDocsTime: startHashArray - startTime,
-      hashToArrayTime: startArraySort - startHashArray,
-      sortArrayTime: finishTime - startArraySort
-    });
+    callback(resultSet);
 
-    if (this.loggingOn) {
+    if (this.loggingOn || loggingOn) {
       Utils.logTiming('SUMMARY:');
       Utils.debugLog("");
       Utils.debugLog(`hash size:\t${Object.keys(docSetHash).length.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`);

@@ -9,7 +9,7 @@ export function getMatchingDocs({ queryTokens=[], tokenStore, matchOptions: { bo
     const docVariantScore = Utils.tokenScore(token, IS_VARIANT, boostPrefix);
     let startMatchTime, startVariantMatch;
 
-    if (loggingOn) startMatchTime = Utils.logTiming(`'${token}' score start`);
+    if (loggingOn) startMatchTime = Utils.logTiming(`'${token}' start (name score ${docNameScore.toFixed(1)} | variant score ${docVariantScore.toFixed(1)})`);
     // name matches
     for (const docRef in tokenStore.get(token, NOT_VARIANT)) {
       if (!(docRef in docSetHash) && i <= minNumQueryTokens) {
@@ -17,7 +17,6 @@ export function getMatchingDocs({ queryTokens=[], tokenStore, matchOptions: { bo
       } else if (docRef in docSetHash) {
         docSetHash[docRef] += docNameScore;
       }
-      if (loggingOn) Utils.logTiming(`name token match ${token} score ${docNameScore}`);
     }
 
     if (loggingOn) {
@@ -30,7 +29,6 @@ export function getMatchingDocs({ queryTokens=[], tokenStore, matchOptions: { bo
       } else if (docRef in docSetHash) {
         docSetHash[docRef] += docVariantScore;
       }
-      if (loggingOn) Utils.logTiming(`name token match ${token} score ${docVariantScore}`);
     }
 
     if (loggingOn) {

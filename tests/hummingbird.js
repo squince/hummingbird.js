@@ -46,27 +46,20 @@ describe('Hummingbird API', function () {
       assert.equal(Object.keys(hum.idx.metaStore.root).length, 2);
     });
 
-    it('will execute the supplied callback when matches are found', function () {
-      const callback = (results, diagnostics) => {
-        console.log(results);
-        console.log(diagnostics);
+    it('will execute the supplied callback when matches are found', function (done) {
+      const callback = (results) => {
         assert.equal(results[0].id, doc2.id);
         assert.equal(results[1].id, doc3.id);
-        assert.equal(Object.keys(diagnostics).length, 4);
+        done();
       }
       hum.search('Steve', callback);
     });
 
     it('will resolve the promise with the matches that are found', function () {
-      const promiseHandler = (results, diagnostics) => {
-        console.log(results);
-        console.log(diagnostics);
-        assert.equal(results[1].id, doc3.id);
-        assert.equal(Object.keys(diagnostics).length, 4);
+      const promiseHandler = (results) => {
+        assert.equal(results[0].id, doc3.id);
       }
-      hum.searchAsync('Phanie')
-      .then(promiseHandler)
-        .catch((err) => console.log('promise rejected')) // TODO: figure out how to assert error
+      return hum.searchAsync('stefanie').then(promiseHandler)
     });
   });
 
