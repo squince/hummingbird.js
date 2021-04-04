@@ -1,5 +1,7 @@
-## Overview
+# Hummingbird.js
 ![Test](tests/badge.svg)
+
+## Overview
 
 _Impossibly quick and remarkably precise_
 
