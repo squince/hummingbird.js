@@ -1,5 +1,5 @@
 # Hummingbird.js
-![Test](tests/badge.svg)
+![Test](https://raw.githubusercontent.com/squince/hummingbird.js/es6/tests/badge.svg?sanitize=true)
 
 ## Overview
 
