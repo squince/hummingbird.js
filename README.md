@@ -1,4 +1,5 @@
 ## Overview
+![Test](tests/badge.svg)
 
 _Impossibly quick and remarkably precise_
 
