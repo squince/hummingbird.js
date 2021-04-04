@@ -15,13 +15,13 @@ just matches against _name_ and returns the document.
 Any other properties are just carried along, but are not indexed.
 
 ```javascript
-    var idx = new hummingbird.Index();
-    idx.add({id: 1, name: 'Hi Mom', female: true});
-    idx.add({id: 2, name: 'Sup Dad', male: true});
-    idx.search('Dad', function(results){
-        results.forEach(function(doc){
-            console.log(doc);
-        });
+    const hum = new hummingbird();
+    hum.add({id: 1, name: 'Benjamin Franklin', female: true});
+    hum.add({id: 2, name: 'Richard Feynman', male: true});
+    hum.search('Dick Feynman', function (results){
+      for (const doc of results) {
+        console.log(doc);
+      };
     });
 ```
 
@@ -97,7 +97,7 @@ _secondarySortOrder_ - (string; 'asc' or 'desc') optionally specifies whether so
 
 ```javascript
 // example
-var options = {
+const options = {
   'boostPrefix': false,
   'scoreThreshold': 0.75,
   'howMany': 5,
@@ -105,7 +105,7 @@ var options = {
   'secondarySortField': 'title',
   'secondarySortOrder': 'desc'
 };
-idx.search('bob', printResults(), options);
+hum.search('bob', printResults(), options);
 ```
 
 ### Arbitrary Meta Data
@@ -159,9 +159,9 @@ _America_ as the primary key and _United States_ as a nickname/variant.
 ```javascript
 // example
 const variants = {
-      "United States": ["America","USA","U.S.A."],
-      "America": ["United States"]
-  }
+    "United States": ["America","USA","U.S.A."],
+    "America": ["United States"]
+}
 const hum = new Hummingbird(variants, opts);
 ```
 

@@ -2,11 +2,13 @@
   "name": "hummingbird",
   "description": "Misspellings and nicknames are no match for this fast and forgiving typeahead engine.",
   "scripts": {
-    "test": "module=./tests/${npm_config_mod:-*}.js; npm run prepare && ./node_modules/mocha/bin/mocha --reporter ./node_modules/mocha-badge-generator --reporter-options=badge_output=./tests/badge.svg ${module}",
+    "test": "module=./tests/${npm_config_mod:-*}.js; npm run prepare && ./node_modules/mocha/bin/mocha ${module}",
+    "test.report": "./node_modules/mocha/bin/mocha --reporter ./node_modules/mocha-badge-generator --reporter-options=badge_output=./tests/badge.svg ./tests/*.js",
     "prepare": "npm run lib.version && npm run index.version",
     "lib.version": "sed \"s/@@VERSION/$(echo $npm_package_version)/g\" src/hummingbird.template > src/hummingbird.mjs",
     "index.version": "sed -i '' \"s/@@INDEX_VERSION/$(echo $npm_package_index_version)/g\" src/hummingbird.mjs",
-    "docs": "npm run prepare && rm -rf ./api && ./node_modules/jsdoc/jsdoc.js -c .jsdoc.json"
+    "docs": "npm run prepare && rm -rf ./api && ./node_modules/jsdoc/jsdoc.js -c .jsdoc.json",
+    "publish": "npm run docs && npm run test.report"
   },
   "homepage": "https://github.com/squince/hummingbird.js",
   "version": "2.2.0",
